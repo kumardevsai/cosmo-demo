@@ -1,0 +1,14 @@
+<nodes>
+	<node title='center'>
+		<nodes>
+			<node title='side1'>
+			</node>
+			<node title='side2'>
+			</node>
+			<node title='side3'>
+			</node>
+			<node title='side4'>
+			</node>
+		</nodes>
+	</node>
+</nodes>
