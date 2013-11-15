@@ -30,3 +30,7 @@ window.onload = function () {
     connections.push(r.connection(shapes[0], shapes[1], "#000000"));
     connections.push(r.connection(shapes[1], shapes[2], "#000000", "#fff|5"));
 };
+
+var Test = {
+    path : 'demo.xml'
+};
