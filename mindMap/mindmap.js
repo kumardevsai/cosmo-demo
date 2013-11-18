@@ -1,5 +1,5 @@
 // 脑图节点定义
-function MindNode(text, id, R, x, y) {
+function MindNode(text, id, R, x, y, leaf) {
     this.text = text ? text : '';
     this.id = id ? id : '';
     // 父节点
@@ -7,7 +7,7 @@ function MindNode(text, id, R, x, y) {
     // 子节点
     this.childMindNodes = [];
     // 直径
-    this.R = R ? R : 20;
+    this.R = R ? R : 4;
     // 绑定的绘制面板元素
     this.mindPaper = null;
     // 中心点
@@ -20,6 +20,8 @@ function MindNode(text, id, R, x, y) {
     this.isDrawed = false;
     // 绘制在页面的显示元素
     this.element = null;
+    // 左子节点或者右子节点，默认左
+    this.leaf = leaf ? leaf : 'left';
 };
 
 // 脑图节点绘制
@@ -161,4 +163,3 @@ MindPaper.prototype.clear = function() {
     this.mindTexts = [];
     return this;
 };
-
