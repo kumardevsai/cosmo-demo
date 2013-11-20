@@ -18,7 +18,11 @@ function pucker() {
 		for (var j = 0; j <= max_row - 1; j++) {
 			var cell = tbody.children[i].cells[j];
 			if (attr(cell, 'row') < max_row)
+			{
+				// 兼容ie的做法 , 其他浏览器在遇到使用attr(cell , 'rowSpan_prop')的时候都可以用cell.rowSpan代替
+				attr(cell , 'rowSpan_prop' , cell.rowSpan);
 				cell.innerHTML = '<img src="images/elbow-minus-nl.gif" style="vertical-align:middle;" collapse="false" onclick="javascript:pucker_img(this , 1)">' + cell.innerHTML;
+			}
 		}
 	}
 }
@@ -26,17 +30,17 @@ function pucker() {
 
 
 function pucker_horizontal(cell, collapse) {
-	var rowSpan = parseInt(cell.rowSpan, 10);
+	var rowSpan_prop = parseInt(attr(cell , 'rowSpan_prop'), 10);
 	var col_num = parseInt(attr(cell, 'col'));
 	var row_num = parseInt(attr(cell, 'row'));
 	var tbody = cell.parentNode.parentNode;
 	var tb = tbody.parentNode;
 	var row_index = cell.parentNode.rowIndex;
 	var tHead_num = tb.tHead.children.length;
-	var factRowSpan = attr(cell, 'factRowSpan') === null ? parseInt(rowSpan) : parseInt(attr(cell, 'factRowSpan'));
+	var factRowSpan = attr(cell, 'factRowSpan') === null ? rowSpan_prop : parseInt(attr(cell, 'factRowSpan'));
 	if (collapse === true) {
 		// 实际需要遍历查询的单元行数
-		var fac_rowSpan = factRowSpan > rowSpan ? factRowSpan : rowSpan;
+		var fac_rowSpan = factRowSpan > rowSpan_prop ? factRowSpan : rowSpan_prop;
 		// 右单元格操作
 		for (var i = row_index; i < fac_rowSpan + col_num; i++) {
 			var row = tbody.children[i - tHead_num];
@@ -46,12 +50,13 @@ function pucker_horizontal(cell, collapse) {
 					var cell_ = row.cells[j];
 					if (parseInt(attr(cell_, 'row')) === row_num + 1 && col_num == attr(cell_, 'col')) {
 						if (attr(cell, 'factRowSpan') === null)
-							attr(cell, 'factRowSpan', cell.rowSpan);
+							attr(cell, 'factRowSpan', attr(cell , 'rowSpan_prop'));
 						cell.rowSpan = parseInt(cell_.rowSpan);
+						attr(cell , 'rowSpan_prop' , cell.rowSpan);
 						break;
 					}
 				}
-			} else if (i > row_index + parseInt(cell.rowSpan) - 1) {
+			} else if (i > row_index + parseInt(attr(cell , 'rowSpan_prop')) - 1) {
 				if (row.style.display !== 'none') {
 					if (attr(cell, 'collapse_rows') === null)
 						attr(cell, 'collapse_rows', i - tHead_num);
@@ -65,13 +70,13 @@ function pucker_horizontal(cell, collapse) {
 		for (var i = 0; i < tbody.children.length; i++) {
 			for (var j = 0; j < tbody.children[i].cells.length; j++) {
 				var cell_ = tbody.children[i].cells[j];
-				if (parseInt(attr(cell_, 'row')) >= row_num || parseInt(attr(cell_, 'col')) > col_num || parseInt(attr(cell_, 'col')) + parseInt(attr(cell_, 'factRowSpan') !== null ? attr(cell_, 'factRowSpan') : cell_.rowSpan) - 1 < col_num)
+				if (parseInt(attr(cell_, 'row')) >= row_num || parseInt(attr(cell_, 'col')) > col_num || parseInt(attr(cell_, 'col')) + parseInt(attr(cell_, 'factRowSpan') !== null ? attr(cell_, 'factRowSpan') : attr(cell_ , 'rowSpan_prop')) - 1 < col_num)
 					break;
 				else {
-					if (parseInt(cell_.rowSpan) >= rowSpan) {
+					if (parseInt(attr(cell_ , 'rowSpan_prop')) >= rowSpan_prop) {
 						if (attr(cell_, 'factRowSpan') === null)
-							attr(cell_, 'factRowSpan', cell_.rowSpan);
-						cell_.rowSpan = parseInt(attr(cell_, 'factRowSpan') !== null ? attr(cell_, 'factRowSpan') : cell_.rowSpan) - (factRowSpan - cell.rowSpan);
+							attr(cell_, 'factRowSpan', attr(cell_ , 'rowSpan_prop'));
+						//cell_.rowSpan = parseInt(attr(cell_, 'factRowSpan') !== null ? attr(cell_, 'factRowSpan') : cell_.rowSpan) - (factRowSpan - cell.rowSpan);
 					}
 				}
 			}
@@ -84,19 +89,22 @@ function pucker_horizontal(cell, collapse) {
 		for (var i = 0; i < collapse_rows.length; i++) {
 			tbody.children[collapse_rows[i]].style.display = '';
 		}
-		cell.rowSpan = parseInt(cell.rowSpan) + collapse_rows.length;
+		// 还原跨行  TODO 这样做不好，应该计算还原 兼容ie
+		cell.rowSpan = factRowSpan;
+		attr(cell , 'rowSpan_prop' , factRowSpan);
+		// 移出标记的隐藏行属性
 		cell.removeAttribute('collapse_rows');
 		// 左单元格设置跨行属性
 		for (var i = 0; i < tbody.children.length; i++) {
 			for (var j = 0; j < tbody.children[i].cells.length; j++) {
 				var cell_ = tbody.children[i].cells[j];
-				if (parseInt(attr(cell_, 'row')) >= row_num || parseInt(attr(cell_, 'col')) > col_num || parseInt(attr(cell_, 'col')) + parseInt(attr(cell_, 'factRowSpan') !== null ? attr(cell_, 'factRowSpan') : cell_.rowSpan) - 1 < col_num)
+				if (parseInt(attr(cell_, 'row')) >= row_num || parseInt(attr(cell_, 'col')) > col_num || parseInt(attr(cell_, 'col')) + parseInt(attr(cell_, 'factRowSpan') !== null ? attr(cell_, 'factRowSpan') : attr(cell_ , 'rowSpan_prop')) - 1 < col_num)
 					break;
 				else {
-					if (parseInt(cell_.rowSpan) >= rowSpan) {
+					if (parseInt(attr(cell_ , 'rowSpan_prop')) >= rowSpan_prop) {
 						if (attr(cell_, 'factRowSpan') === null)
-							attr(cell_, 'factRowSpan', cell_.rowSpan);
-						cell_.rowSpan = parseInt(cell_.rowSpan) + (factRowSpan - 1);
+							attr(cell_, 'factRowSpan', attr(cell_ , 'rowSpan_prop'));
+						//cell_.rowSpan = parseInt(cell_.rowSpan) + (factRowSpan - 1);
 					}
 				}
 			}
