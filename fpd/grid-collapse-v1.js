@@ -27,8 +27,6 @@ function pucker() {
 	}
 }
 
-
-
 function pucker_horizontal(cell, collapse) {
 	var rowSpan_prop = parseInt(attr(cell , 'rowSpan_prop'), 10);
 	var col_num = parseInt(attr(cell, 'col'));
@@ -76,7 +74,8 @@ function pucker_horizontal(cell, collapse) {
 					if (parseInt(attr(cell_ , 'rowSpan_prop')) >= rowSpan_prop) {
 						if (attr(cell_, 'factRowSpan') === null)
 							attr(cell_, 'factRowSpan', attr(cell_ , 'rowSpan_prop'));
-						//cell_.rowSpan = parseInt(attr(cell_, 'factRowSpan') !== null ? attr(cell_, 'factRowSpan') : cell_.rowSpan) - (factRowSpan - cell.rowSpan);
+						// 左侧所属单元格并行
+						// cell_.rowSpan = parseInt(attr(cell_, 'factRowSpan') !== null ? attr(cell_, 'factRowSpan') : cell_.rowSpan) - (factRowSpan - cell.rowSpan);
 					}
 				}
 			}
@@ -104,7 +103,8 @@ function pucker_horizontal(cell, collapse) {
 					if (parseInt(attr(cell_ , 'rowSpan_prop')) >= rowSpan_prop) {
 						if (attr(cell_, 'factRowSpan') === null)
 							attr(cell_, 'factRowSpan', attr(cell_ , 'rowSpan_prop'));
-						//cell_.rowSpan = parseInt(cell_.rowSpan) + (factRowSpan - 1);
+						// 左侧所属单元格并行
+						// cell_.rowSpan = parseInt(cell_.rowSpan) + (factRowSpan - 1);
 					}
 				}
 			}
