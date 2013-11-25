@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+	<head>
+		<title>
+			图片查看器
+		</title>
+		<meta charset='utf-8'>
+        <meta name="viewport" content="width=device-width, 
+            initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, 
+            user-scalable=no">
+		<script type="text/javascript" src='ImageView.js'></script>
+		<link rel="stylesheet" type="text/css" href="ImageView.css">
+	</head>
+	<body oncontextmenu="return false" ondragstart="return false" onselectstart="return false" onselect="document.selection.empty()" oncopy="document.selection.empty()" onbeforecopy="return false" onmouseup="document.selection.empty()">
+		<div class="view-layer">
+            <table border="0" cellpadding="0" cellspacing="2">
+                <tbody>
+                    <tr>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            <div class='view-icons view-up' onclick="clickMove('up')" title="向上"></div>
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class='view-icons view-left' onclick="clickMove('left')" title="向左"></div>
+                        </td>
+                        <td>
+                            <div class='view-icons view-zoom' onclick="realsize();" title="还原大小 shift 0"></div>
+                        </td>
+                        <td>
+                            <div class='view-icons view-right' onclick="clickMove('right')" title="向右"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            <div class='view-icons view-down' onclick="clickMove('down')" title="向下"></div>
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            <div class='view-icons view-zoomin' onclick="bigit();" title="放大 shift +"></div>
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            <div class='view-icons view-zoomout' onclick="smallit();" title="缩小 shift -"></div>
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                    </tr>
+                     <tr>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            <div class='view-icons view-max' onclick="featsize();" title="屏幕大小 shift 9"></div>
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class='pic-hide'>
+            <img id='img_hide' border="0">
+        </div>
+        <div id="pic_view" class='pic-view'>
+            <img id='img_view' class='pic-view-img'>
+        </div>
+	</body>
+</html>

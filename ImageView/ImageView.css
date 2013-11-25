@@ -1,0 +1,62 @@
+body,html{
+	overflow:hidden;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+}
+.view-layer{
+	z-index: 200;
+	position: fixed;
+	top:0;
+	left:0;
+}
+.view-icons{
+	cursor: pointer;
+	height: 20px;
+	width: 20px;
+}
+.view-up{
+	background-image: url('icons/up.png');
+}
+.view-left{
+	background-image: url('icons/left.png');
+}
+.view-right{
+	background-image: url('icons/right.png');
+}
+.view-down{
+	background-image: url('icons/down.png');
+}
+.view-zoom{
+	background-image: url('icons/zoom.png');
+}
+.view-zoomin{
+	background-image: url('icons/zoom_in.png');
+}
+.view-zoomout{
+	background-image: url('icons/zoom_out.png');
+}
+.view-pos{
+	background-image: url('icons/pos.png');
+}
+.view-max{
+	background-image: url('icons/max.png');
+}
+.pic-hide{
+	position:absolute; 
+	left:0; 
+	top:0; 
+	width:0; 
+	height:0; 
+	z-index:1; 
+	visibility: hidden;
+}
+.pic-view{
+	z-index: 10; 
+	position: absolute; 
+	left:0;
+	top:0;
+}
+.pic-view-img{
+	border: none;
+}
