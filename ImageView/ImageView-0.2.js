@@ -1,168 +1,14 @@
 'use strict';
+var imgname = '16220441-1-63F2.jpg';
+AttachEvent(window, 'load', function() {
+	initImage(imgname);
+}, false);
+AttachEvent(window, 'resize', function() {
+	if (def.isMaxed === false)
+		setMaxView(true);
+}, false);
 
-// 初始化body
-function initBody() {
-	AttachEvent(document.body, 'dragstart', function() {
-		return false;
-	}, false);
-	AttachEvent(document.body, 'contextmenu', function() {
-		return false;
-	}, false);
-	AttachEvent(document.body, 'selectstart', function() {
-		return false;
-	}, false);
-	AttachEvent(document.body, 'select', function() {
-		document.selection.empty();
-	}, false);
-	AttachEvent(document.body, 'copy', function() {
-		document.selection.empty();
-	}, false);
-	AttachEvent(document.body, 'beforecopy', function() {
-		return false;
-	}, false);
-	AttachEvent(document.body, 'mouseup', function() {
-		document.selection.empty();
-	}, false);
-	AttachEvent(document.body, 'keyup', keyBoardMove, false);
-
-	AttachEvent(window, 'resize', function() {
-		if (def.isMaxed === false)
-			setMaxView(true);
-	}, false);
-};
-
-// 初始化组件
-function initComponents() {
-	// 工具栏
-	var layer = document.createElement('div');
-	layer.className = 'view-layer';
-	// 创建表格
-	var table = document.createElement('table');
-	table.cellpadding = 0;
-	table.cellspacing = 0;
-	table.style.border = '0';
-
-	var tbody = document.createElement('tbody');
-
-	tbody.appendChild(createComponentRow(['', {
-		className: 'view-icons view-up',
-		title: '向上',
-		attach: {
-			name: 'click',
-			func: function() {
-				clickMove('up');
-			}
-		}
-	}, '']));
-	tbody.appendChild(createComponentRow([{
-		className: 'view-icons view-left',
-		title: '向左',
-		attach: {
-			name: 'click',
-			func: function() {
-				clickMove('left');
-			}
-		}
-	}, {
-		className: 'view-icons view-zoom',
-		title: '屏幕大小 shift 9',
-		attach: {
-			name: 'click',
-			func: function() {
-				featsize();
-			}
-		}
-	}, {
-		className: 'view-icons view-right',
-		title: '向右',
-		attach: {
-			name: 'click',
-			func: function() {
-				clickMove('right');
-			}
-		}
-	}]));
-	tbody.appendChild(createComponentRow(['', {
-		className: 'view-icons view-down',
-		title: '向下',
-		attach: {
-			name: 'click',
-			func: function() {
-				clickMove('down');
-			}
-		}
-	}, '']));
-	tbody.appendChild(createComponentRow(['', {
-		className: 'view-icons view-zoomin',
-		title: '放大 shift +',
-		attach: {
-			name: 'click',
-			func: function() {
-				bigit();
-			}
-		}
-	}, '']));
-	tbody.appendChild(createComponentRow(['', {
-		className: 'view-icons view-zoomout',
-		title: '缩小 shift -',
-		attach: {
-			name: 'click',
-			func: function() {
-				smallit();
-			}
-		}
-	}, '']));
-	tbody.appendChild(createComponentRow(['', {
-		className: 'view-icons view-max',
-		title: '实际大小 shift 0',
-		attach: {
-			name: 'click',
-			func: function() {
-				realsize();
-			}
-		}
-	}, '']));
-	table.appendChild(tbody);
-	layer.appendChild(table);
-	document.body.appendChild(layer);
-	return layer;
-};
-
-// 创建组件行
-function createComponentRow(arr, refer) {
-	var tr = document.createElement('tr');
-	for (var i = 0; i < arr.length; i++) {
-		tr.appendChild(createComponetCell(arr[i]));
-	}
-	if (refer)
-		refer.appendChild(tr);
-	return tr;
-};
-
-// 创建单个组件
-function createComponetCell(obj, refer) {
-	var td = document.createElement('td');
-	if (obj === '')
-		return td;
-	var div = document.createElement('div');
-	if (obj.className)
-		div.className = obj.className;
-	if (obj.title)
-		div.title = obj.title;
-	if (obj.attach)
-		AttachEvent(div, obj.attach.name, obj.attach.func, false);
-	td.appendChild(div);
-	if (refer)
-		refer.appendChild(td);
-	return td;
-};
-
-function initImage(imgid) {
-
-	initBody();
-	initComponents();
-	initPics();
-
+function initImage(imgsrc) {
 	AttachEvent(document.getElementById('pic_view'), 'mouseout', function() {
 		def.drag = 0
 	}, false);
@@ -175,60 +21,19 @@ function initImage(imgid) {
 	}
 	window.onmousewheel = document.onmousewheel = scrollScale;
 
-	if (document.all) {
-		var imgele = document.getElementById(imgid);
-		imgele.style.display = 'none';
+	AttachEvent(document.body, 'keyup', keyBoardMove, false);
+
+	//test
+	var img = new Image();
+	img.src = imgsrc;
+	img.onload = function() {
 		var imgHide = document.getElementById('img_hide');
-		imgHide.src = imgele.src;
+		imgHide.src = img.src;
 		var imgView = document.getElementById('img_view');
-		imgView.style.display = 'none';
-		imgView.src = imgele.src;
+		imgView.src = img.src;
 		setMaxView(true);
-		imgView.style.display = '';
-	} else
-		var intervalImg = setTimeout(function() {
-			var imgele = document.getElementById(imgid);
-			if (imgele !== null) {
-				imgele.style.display = 'none';
-				var img = new Image();
-				img.src = imgele.src;
-				img.onload = function() {
-					var imgHide = document.getElementById('img_hide');
-					imgHide.src = imgele.src;
-					imgHide.onload = function() {
-						var imgView = document.getElementById('img_view');
-						imgView.style.display = 'none';
-						imgView.src = imgele.src;
-						imgView.onload = function() {
-							setMaxView(true);
-							imgView.style.display = '';
-							clearInterval(intervalImg);
-						};
-					};
-				};
-			}
-		}, 10);
+	};
 };
-
-function initPics() {
-	var picHide = document.createElement('div');
-	picHide.className = 'pic-hide';
-	var imgHide = document.createElement('img');
-	imgHide.style.border = '0';
-	imgHide.id = 'img_hide';
-	picHide.appendChild(imgHide);
-
-	var picView = document.createElement('div');
-	picView.className = 'pic-view';
-	picView.id = 'pic_view';
-	var imgView = document.createElement('img');
-	imgView.id = 'img_view';
-	imgView.className = 'pic-view-img';
-	picView.appendChild(imgView);
-	document.body.appendChild(picHide);
-	document.body.appendChild(picView);
-};
-
 var def = {
 	drag: 0,
 	nTY: 0,
@@ -240,7 +45,7 @@ var def = {
 	oDragObj: null,
 	isMoved: false,
 	isScaled: false,
-	isMaxed: false
+	isMaxed: false,
 };
 
 // 键盘移动图片
@@ -403,6 +208,21 @@ function featsize() {
 	def.isMoved = false;
 	def.isScaled = false;
 	setMaxView(true, true);
+}
+
+// 事件兼容
+function AttachEvent(target, eventName, handler, argsObject) {
+	var eventHandler = handler;
+	if (argsObject) {
+		eventHander = function(e) {
+			handler.call(argsObject, e);
+		}
+	}
+	eventName = eventName.replace('on', '');
+	if (window.attachEvent) //IE   
+		target.attachEvent("on" + eventName, eventHandler);
+	else //FF   
+		target.addEventListener(eventName, eventHandler, false);
 }
 
 // 设置图片缩放

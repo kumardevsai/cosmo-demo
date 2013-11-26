@@ -1,168 +1,13 @@
 'use strict';
+AttachEvent(window, 'load', initImage, false);
+AttachEvent(window, 'resize', function() {
+	if (def.isMaxed === true)
+		setMaxView(true);
+	else
+		setAutoView();
+}, false);
 
-// 初始化body
-function initBody() {
-	AttachEvent(document.body, 'dragstart', function() {
-		return false;
-	}, false);
-	AttachEvent(document.body, 'contextmenu', function() {
-		return false;
-	}, false);
-	AttachEvent(document.body, 'selectstart', function() {
-		return false;
-	}, false);
-	AttachEvent(document.body, 'select', function() {
-		document.selection.empty();
-	}, false);
-	AttachEvent(document.body, 'copy', function() {
-		document.selection.empty();
-	}, false);
-	AttachEvent(document.body, 'beforecopy', function() {
-		return false;
-	}, false);
-	AttachEvent(document.body, 'mouseup', function() {
-		document.selection.empty();
-	}, false);
-	AttachEvent(document.body, 'keyup', keyBoardMove, false);
-
-	AttachEvent(window, 'resize', function() {
-		if (def.isMaxed === false)
-			setMaxView(true);
-	}, false);
-};
-
-// 初始化组件
-function initComponents() {
-	// 工具栏
-	var layer = document.createElement('div');
-	layer.className = 'view-layer';
-	// 创建表格
-	var table = document.createElement('table');
-	table.cellpadding = 0;
-	table.cellspacing = 0;
-	table.style.border = '0';
-
-	var tbody = document.createElement('tbody');
-
-	tbody.appendChild(createComponentRow(['', {
-		className: 'view-icons view-up',
-		title: '向上',
-		attach: {
-			name: 'click',
-			func: function() {
-				clickMove('up');
-			}
-		}
-	}, '']));
-	tbody.appendChild(createComponentRow([{
-		className: 'view-icons view-left',
-		title: '向左',
-		attach: {
-			name: 'click',
-			func: function() {
-				clickMove('left');
-			}
-		}
-	}, {
-		className: 'view-icons view-zoom',
-		title: '屏幕大小 shift 9',
-		attach: {
-			name: 'click',
-			func: function() {
-				featsize();
-			}
-		}
-	}, {
-		className: 'view-icons view-right',
-		title: '向右',
-		attach: {
-			name: 'click',
-			func: function() {
-				clickMove('right');
-			}
-		}
-	}]));
-	tbody.appendChild(createComponentRow(['', {
-		className: 'view-icons view-down',
-		title: '向下',
-		attach: {
-			name: 'click',
-			func: function() {
-				clickMove('down');
-			}
-		}
-	}, '']));
-	tbody.appendChild(createComponentRow(['', {
-		className: 'view-icons view-zoomin',
-		title: '放大 shift +',
-		attach: {
-			name: 'click',
-			func: function() {
-				bigit();
-			}
-		}
-	}, '']));
-	tbody.appendChild(createComponentRow(['', {
-		className: 'view-icons view-zoomout',
-		title: '缩小 shift -',
-		attach: {
-			name: 'click',
-			func: function() {
-				smallit();
-			}
-		}
-	}, '']));
-	tbody.appendChild(createComponentRow(['', {
-		className: 'view-icons view-max',
-		title: '实际大小 shift 0',
-		attach: {
-			name: 'click',
-			func: function() {
-				realsize();
-			}
-		}
-	}, '']));
-	table.appendChild(tbody);
-	layer.appendChild(table);
-	document.body.appendChild(layer);
-	return layer;
-};
-
-// 创建组件行
-function createComponentRow(arr, refer) {
-	var tr = document.createElement('tr');
-	for (var i = 0; i < arr.length; i++) {
-		tr.appendChild(createComponetCell(arr[i]));
-	}
-	if (refer)
-		refer.appendChild(tr);
-	return tr;
-};
-
-// 创建单个组件
-function createComponetCell(obj, refer) {
-	var td = document.createElement('td');
-	if (obj === '')
-		return td;
-	var div = document.createElement('div');
-	if (obj.className)
-		div.className = obj.className;
-	if (obj.title)
-		div.title = obj.title;
-	if (obj.attach)
-		AttachEvent(div, obj.attach.name, obj.attach.func, false);
-	td.appendChild(div);
-	if (refer)
-		refer.appendChild(td);
-	return td;
-};
-
-function initImage(imgid) {
-
-	initBody();
-	initComponents();
-	initPics();
-
+function initImage() {
 	AttachEvent(document.getElementById('pic_view'), 'mouseout', function() {
 		def.drag = 0
 	}, false);
@@ -175,60 +20,19 @@ function initImage(imgid) {
 	}
 	window.onmousewheel = document.onmousewheel = scrollScale;
 
-	if (document.all) {
-		var imgele = document.getElementById(imgid);
-		imgele.style.display = 'none';
+	AttachEvent(document.body, 'keyup', keyBoardMove, false);
+
+	//test
+	var img = new Image();
+	img.src = '16220441-1-63F2.jpg';
+	img.onload = function() {
 		var imgHide = document.getElementById('img_hide');
-		imgHide.src = imgele.src;
+		imgHide.src = img.src;
 		var imgView = document.getElementById('img_view');
-		imgView.style.display = 'none';
-		imgView.src = imgele.src;
-		setMaxView(true);
-		imgView.style.display = '';
-	} else
-		var intervalImg = setTimeout(function() {
-			var imgele = document.getElementById(imgid);
-			if (imgele !== null) {
-				imgele.style.display = 'none';
-				var img = new Image();
-				img.src = imgele.src;
-				img.onload = function() {
-					var imgHide = document.getElementById('img_hide');
-					imgHide.src = imgele.src;
-					imgHide.onload = function() {
-						var imgView = document.getElementById('img_view');
-						imgView.style.display = 'none';
-						imgView.src = imgele.src;
-						imgView.onload = function() {
-							setMaxView(true);
-							imgView.style.display = '';
-							clearInterval(intervalImg);
-						};
-					};
-				};
-			}
-		}, 10);
+		imgView.src = img.src;
+		setAutoView();
+	};
 };
-
-function initPics() {
-	var picHide = document.createElement('div');
-	picHide.className = 'pic-hide';
-	var imgHide = document.createElement('img');
-	imgHide.style.border = '0';
-	imgHide.id = 'img_hide';
-	picHide.appendChild(imgHide);
-
-	var picView = document.createElement('div');
-	picView.className = 'pic-view';
-	picView.id = 'pic_view';
-	var imgView = document.createElement('img');
-	imgView.id = 'img_view';
-	imgView.className = 'pic-view-img';
-	picView.appendChild(imgView);
-	document.body.appendChild(picHide);
-	document.body.appendChild(picView);
-};
-
 var def = {
 	drag: 0,
 	nTY: 0,
@@ -240,7 +44,7 @@ var def = {
 	oDragObj: null,
 	isMoved: false,
 	isScaled: false,
-	isMaxed: false
+	isMaxed: false,
 };
 
 // 键盘移动图片
@@ -393,16 +197,61 @@ function bigit(times) {
 	def.isScaled = true;
 }
 
-// 重置为图片实际尺寸
+// 重置为适中大小
 function realsize() {
-	setMaxView(false);
+	def.isMoved = false;
+	def.isScaled = false;
+	setAutoView(true);
 }
 
-// 重置页面大小
+// 充值未页面大小
 function featsize() {
 	def.isMoved = false;
 	def.isScaled = false;
 	setMaxView(true, true);
+}
+
+// 设置自动缩放，图片适中大小
+function setAutoView(flag) {
+	var imgHide = document.getElementById('img_hide');
+	var imgView = document.getElementById('img_view');
+
+	// body尺寸
+	var body_height = document.body.offsetHeight;
+	var body_width = document.body.offsetWidth;
+
+	// 移动或拖动后，在页面窗口发生变化后，不缩放图片
+	if ((def.isScaled === false || flag === true) && def.isMoved === false) {
+		if (imgHide.offsetWidth >= imgHide.offsetHeight) {
+			imgView.style.width = body_width / 2 + 'px';
+			imgView.style.height = 'auto';
+		} else {
+			imgView.style.height = body_height / 2 + 'px';
+			imgView.style.width = 'auto';
+		}
+	}
+	var picView = imgView.parentElement;
+	// 移动或拖动后，在页面窗口发生变化后，不重置图片层位置
+	if ((def.isMoved === false || flag === true) && def.isScaled === false) {
+		picView.style.left = (body_width - imgView.offsetWidth) / 2 + 'px';
+		picView.style.top = (body_height - imgView.offsetHeight) / 2 + 'px';
+	}
+	def.isMaxed = false;
+};
+
+// 事件兼容
+function AttachEvent(target, eventName, handler, argsObject) {
+	var eventHandler = handler;
+	if (argsObject) {
+		eventHander = function(e) {
+			handler.call(argsObject, e);
+		}
+	}
+	eventName = eventName.replace('on', '');
+	if (window.attachEvent) //IE   
+		target.attachEvent("on" + eventName, eventHandler);
+	else //FF   
+		target.addEventListener(eventName, eventHandler, false);
 }
 
 // 设置图片缩放
@@ -427,7 +276,7 @@ function setMaxView(flag, redraw) {
 			imgView.style.width = size.width + 'px';
 			picView.style.left = (body_width - size.width) / 2 + 'px';
 			picView.style.top = (body_height - size.height) / 2 + 'px';
-			def.isMaxed = false;
+			def.isMaxed = true;
 		}
 	} else {
 		if (body_width <= imgHide.offsetWidth)
@@ -440,7 +289,7 @@ function setMaxView(flag, redraw) {
 			picView.style.top = (body_height - imgHide.offsetHeight) / 2 + 'px';
 		imgView.style.height = imgHide.offsetHeight + 'px';
 		imgView.style.width = imgHide.offsetWidth + 'px';
-		def.isMaxed = true;
+		def.isMaxed = false;
 	}
 };
 
@@ -457,10 +306,10 @@ function getObjSize(obj, ref) {
 	} else {
 		if (obj.height > ref.height)
 			obj.height = ref.height;
-		obj.width = (obj.height / obj_.height) * obj.width;
+		obj.width = (obj.height / obj_.height) * obj.height;
 		if (obj.width > ref.width)
 			obj.width = ref.width;
-		obj.height = (obj.width / obj_.width) * obj_.height;
+		obj.height = (obj.height / obj_.height) * obj_.height;
 	}
 	return obj;
 };
