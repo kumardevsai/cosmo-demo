@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+	<head>
+		<title>
+			test
+		</title>
+		<meta charset='utf-8'>
+		<link rel="stylesheet" type="text/css" href="css/tip_spec.css">
+		<script type="text/javascript" src='tip_spec.js'></script>
+		<style type="text/css">
+			body,html{
+				height: 100%;
+				width: 100%;
+				margin: 0;
+				padding: 0;
+			}
+			.d{
+				font-size: 12px;
+				text-decoration: underline;
+				cursor: default;
+				top: 100px;
+				left: 200px;
+				position: absolute;
+				width: 150px;
+			}
+			.t{
+				margin-top: 40px;
+				display: block;
+			}
+			.t:hover{
+				color: red;
+			}
+		</style>
+	</head>
+	<body>
+		<div class='d'>
+			<span class='t' id='up'>
+				click me ! arrow up
+			</span>
+			<span class='t' id='left'>
+				click me ! arrow left
+			</span>
+			<span class='t' id='down'>
+				click me ! arrow down
+			</span>
+			<span class='t' id='right'>
+				click me ! arrow right
+			</span>
+		</div>
+	</body>
+	<script type="text/javascript">
+		var up = document.getElementById('up');
+		var down = document.getElementById('down');
+		var left = document.getElementById('left');
+		var right = document.getElementById('right');
+		var alertTip_up = function(){
+			mxwToolTipSpec({title : '06月09日',text:'<span>存款</span><font color="green">123123</font>'});
+		};
+		var alertTip_down = function(){
+			mxwToolTipSpec({title : '06月09日',text:'<span>存款</span><font color="green">123123</font>' , direction:'down'});
+		};
+		var alertTip_left = function(){
+			mxwToolTipSpec({title : '06月09日',text:'<span>存款</span><font color="green">123123</font>' , direction : 'left'});
+		};
+		var alertTip_right = function(){
+			mxwToolTipSpec({title : '06月09日',text:'<span>存款</span><font color="green">123123</font>' , direction : 'right'});
+		};
+		if(window.attachEvent)
+		{
+			up.attachEvent('onclick' , alertTip_up);
+			down.attachEvent('onclick' , alertTip_down);
+			left.attachEvent('onclick' , alertTip_left);
+			right.attachEvent('onclick' , alertTip_right);
+		}
+		else if(window.addEventListener)
+		{
+			up.addEventListener('click' , alertTip_up , false);
+			down.addEventListener('click' , alertTip_down , false);
+			left.addEventListener('click' , alertTip_left , false);
+			right.addEventListener('click' , alertTip_right , false);
+		}
+	</script>
+</html>
