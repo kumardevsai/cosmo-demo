@@ -40,7 +40,7 @@
     border:2px solid #d3d0d9;
     z-index: 250;
     background-color: #FFF;
-    display: inline-block;
+    display:inline-block;
 }
 
 .tip-inner{
@@ -54,8 +54,8 @@
 	line-height: 20px;
 	margin: 0;
 	background-color: #9B30FF;
-	width: 100%;
 	text-align: center;
+    _width:expression(this.offsetWidth<140 ? 140 + 'px':this.nextSibling.offsetWidth + 'px');
 }
 .tip-content{
 	height:40px;
@@ -64,4 +64,9 @@
 	margin: 0;
 	min-width: 140px;
 	text-align: center;
+	width: auto;
+    display:inline-block;
+    _width:expression(this.offsetWidth<140 ? 140 + 'px':this.offsetWidth + 'px');
+    padding-left: 5px;
+    padding-right: 5px;
 }

@@ -15,6 +15,10 @@ var mxwToolTipSpec = (function() {
 	return function(options) {
 		// 获取事件
 		var e = window.event ? window.event : arguments.callee.caller.arguments[0];
+		if (typeof e === 'string') {
+			if (options.e)
+				e = options.e;
+		}
 		preventDefault(e);
 		// 出发元素
 		var et = e.srcElement ? e.srcElement : e.target;
@@ -51,7 +55,7 @@ var mxwToolTipSpec = (function() {
 		// 模板
 		var templates = {
 			spec: {
-				html: '<div class="tip-inner"><div class="tip-arrow {arrow}" id="tip_arrow"></div><div class="tip-text" id="tip_text"><div class="tip-title">{title}</div><div class="tip-content">{text}</div></div></div>'
+				html: '<div class="tip-inner"><div class="tip-arrow {arrow}" id="tip_arrow"></div><div class="tip-text" id="tip_text"><div class="tip-title">{title}</div><span class="tip-content">{text}</span></div></div>'
 			}
 		};
 
@@ -90,11 +94,11 @@ var mxwToolTipSpec = (function() {
 			if (opts.blankRemove === true) {
 				if (window.attachEvent) {
 					div.attachEvent('onclick', function(e_) {
-						preventDefault(e_);
+						e_.cancelBubble = true;
 					});
 				} else if (window.addEventListener) {
 					instance.ele.addEventListener('click', function(e_) {
-						preventDefault(e_);
+						e_.stopPropagation();
 					}, false);
 				}
 			}
@@ -212,10 +216,12 @@ var mxwToolTipSpec = (function() {
 			}
 		};
 		if (opts.blankRemove === true) {
-			if (window.attachEvent)
+			if (window.attachEvent) {
+				// 兼容ie各版本及兼容模式
 				document.body.attachEvent('onclick', remove);
-			else if (window.addEventListener)
-				document.body.addEventListener('click', remove, false);
+				window.attachEvent('onlick', remove);
+			} else if (window.addEventListener)
+				window.addEventListener('click', remove, false);
 		}
 	};
 })();
