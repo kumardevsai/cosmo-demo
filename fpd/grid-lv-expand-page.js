@@ -1,6 +1,6 @@
 // 折叠展开方法
 var cellListExpand = function(t) {
-	var btn =t;
+	var btn = t;
 	if (btn === null)
 		return;
 	var cell_obj = getEventCell(btn);
@@ -9,11 +9,40 @@ var cellListExpand = function(t) {
 	if (cell.getAttribute('row_collapse') === null || cell.getAttribute('row_collapse') === 'true') {
 		expandNextCells(cell_obj);
 		cell.setAttribute('row_collapse', 'false');
-		btn.innerHTML = '&lt;&lt;';
+		btn.className = 'arrow arrow-l-hover';
 	} else {
 		collapseNextCells(cell_obj);
 		cell.setAttribute('row_collapse', 'true');
-		btn.innerHTML = '&gt;&gt;';
+		btn.className = 'arrow arrow-r-hover';
+	}
+};
+
+// 修改鼠标移动到折叠箭头时候的样式
+var btnMouseOver = function(t) {
+	var btn = t;
+	if (btn === null)
+		return;
+	var cell_obj = getEventCell(btn);
+	var cell = cell_obj.cell;
+	// 初始化时折叠的
+	if (cell.getAttribute('row_collapse') === null || cell.getAttribute('row_collapse') === 'true') {
+		btn.className = 'arrow arrow-r-hover';
+	} else {
+		btn.className = 'arrow arrow-l-hover';
+	}
+};
+
+var btnMouseOut = function(t) {
+	var btn = t;
+	if (btn === null)
+		return;
+	var cell_obj = getEventCell(btn);
+	var cell = cell_obj.cell;
+	// 初始化时折叠的
+	if (cell.getAttribute('row_collapse') === null || cell.getAttribute('row_collapse') === 'true') {
+		btn.className = 'arrow arrow-r';
+	} else {
+		btn.className = 'arrow arrow-l';
 	}
 };
 

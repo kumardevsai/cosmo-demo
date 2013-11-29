@@ -1,0 +1,25 @@
+.arrow-l{
+	background-image: url('../images/arrow-l.png');
+}
+.arrow-l-hover{
+	background-image: url('../images/arrow-l-hover.png');
+}
+.arrow-r{
+	background-image: url('../images/arrow-r.png');
+}
+.arrow-r-hover{
+	background-image: url('../images/arrow-r-hover.png');
+}
+.arrow{
+	background-size: 100% 100%;
+	height:16px;
+	width: 16px;
+	font-size: 1px;
+	cursor: pointer;
+	vertical-align: middle;
+	display: block;
+	float:left;
+}
+td span{
+	vertical-align: middle;
+}

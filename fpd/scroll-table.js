@@ -143,7 +143,7 @@ var divScroll = function(divname, direction)
 	var div = document.getElementById(divname);
 	// 创建最外层容器div
 	outerDiv.style.height = div.offsetHeight;
-	outerDiv.style.width = div.offsetWidth;
+	outerDiv.style.width = div.style.width ? parseInt(div.style.width) : div.offsetWidth;
 	outerDiv.style.overflow = 'hidden';
 	outerDiv.style.top = div.style.top;
 	outerDiv.style.left = div.style.left;
