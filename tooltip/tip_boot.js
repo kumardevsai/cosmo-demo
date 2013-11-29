@@ -224,7 +224,8 @@ var mxwToolTip = (function() {
 			MxwToolTip.prototype.remove = function() {
 				if (this.ele && this.ele.parentNode)
 					this.ele.parentNode.removeChild(this.ele);
-				this = null;
+				instance = null;
+				// 其他浏览器可以使用this=null
 			};
 			// 创建
 			instance = new MxwToolTip();

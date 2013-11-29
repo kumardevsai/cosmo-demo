@@ -1,6 +1,6 @@
 // 折叠展开方法
-var cellListExpand = function(e) {
-	var btn = getEventTarget(e);
+var cellListExpand = function(t) {
+	var btn =t;
 	if (btn === null)
 		return;
 	var cell_obj = getEventCell(btn);
@@ -36,18 +36,6 @@ function getEventCell(btn) {
 			row: row
 		};
 	}
-};
-
-// 获取事件触发的按钮
-function getEventTarget(e) {
-	e = window.event ? window.event : e;
-	if (!e)
-		e = arguments.callee.caller.arguments[0];
-	if (e) {
-		var et = e.srcElement ? e.srcElement : e.target;
-		return et;
-	}
-	return null;
 };
 
 // 展开单元格
