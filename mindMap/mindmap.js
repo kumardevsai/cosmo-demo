@@ -82,7 +82,25 @@ MindNode.prototype.getRightLeaves = function() {
     return this.getLeaves('right');
 };
 
-
+// 添加子节点，默认添加到左侧
+MindNode.prototype.addLeafNode = function(mindNode) {
+    if (this.isRoot === true) {
+        if (mindNode.leaf !== 'left' && mindNode.leaf !== 'right') {
+            var clength = this.childMindNodes.length;
+            var rlength = this.getRightLeaves().length;
+            if (clength > rlength * 2)
+                mindNode.leaf = 'right';
+            else
+                mindNode.leaf = 'left';
+        }
+    } else {
+        if (this.leaf === 'left')
+            mindNode.leaf = 'left';
+        else if (this.leaf === 'right')
+            mindNode.leaf = 'right';
+    }
+    this.childMindNodes.push(mindNode);
+};
 // 脑图连接线定义
 function MindConnection(text, id) {
     // 左侧脑图节点
@@ -186,4 +204,18 @@ MindPaper.prototype.setRoot = function(root) {
     if (root.isRoot === false)
         root.isRoot = true;
     this.rootMindNode = root;
+};
+
+var MindConfigration = {
+    // 节点位置
+    mindNode: {
+        // 节点间垂直间距
+        verticalMargin: 60,
+        // 节点间水平间距
+        horizonMargin: 100
+    },
+    // 根据脑图根节点计算子节点
+    childrenPosition: function(parentNode, children_length) {
+        var p_centerPoint = parentNode.centerPoint;
+    }
 };

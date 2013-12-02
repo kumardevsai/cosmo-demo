@@ -61,22 +61,6 @@ var getViewPoint = function(mindPaper) {
     return new MindPoint(mindPaper.width / 2, mindPaper.height / 2);
 };
 
-var Caculation = {
-    MindMapPositionConfig: {
-        // 节点位置
-        mindNode: {
-            // 节点间垂直间距
-            verticalMargin: 60,
-            // 节点间水平间距
-            horizonMargin: 100
-        }
-    },
-    // 根据脑图根节点计算子节点
-    childrenPosition: function(parentNode, children_length) {
-        var p_centerPoint = parentNode.centerPoint;
-    }
-};
-
 // xml加载定义
 var Load = {
     // 获取xml上下文本对象呢
