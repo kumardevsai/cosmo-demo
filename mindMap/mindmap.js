@@ -1,5 +1,5 @@
 // 脑图节点定义
-function MindNode(text, id, R, x, y, leaf) {
+function MindNode(text, id, R, x, y, leaf, isRoot) {
     this.text = text ? text : '';
     this.id = id ? id : '';
     // 父节点
@@ -22,6 +22,8 @@ function MindNode(text, id, R, x, y, leaf) {
     this.element = null;
     // 左子节点或者右子节点，默认左
     this.leaf = leaf ? leaf : 'left';
+    // 是否为最初根节点
+    this.isRoot = isRoot ? isRoot : false;
 };
 
 // 脑图节点绘制
@@ -48,11 +50,38 @@ MindNode.prototype.draw = function() {
 MindNode.prototype.bindMindPaper = function(mindPaper) {
     if (this.mindPaper === null) {
         // 绑定关系
-        mindPaper.mindNodes.push(this);
         this.mindPaper = mindPaper;
+        mindPaper.mindNodes.push(this);
+        // 设置画板的根节点
+        if (this.isRoot === true)
+            mindPaper.setRoot(this);
     }
     return this;
 };
+
+// 获取节点的全部节点
+MindNode.prototype.getLeaves = function(side) {
+    var chls = this.childMindNodes;
+    if (side === undefined || side !== 'left' || side !== 'right')
+        return chls;
+    var arr = [];
+    for (var i = 0; i < chls.length; i++) {
+        if (side === chls[i].leaf)
+            arr.push(chls[i]);
+    }
+    return arr;
+};
+
+// 获取节点的全部左子节点
+MindNode.prototype.getLeftLeaves = function() {
+    return this.getLeaves('left');
+};
+
+// 获取节点的全部右子节点
+MindNode.prototype.getRightLeaves = function() {
+    return this.getLeaves('right');
+};
+
 
 // 脑图连接线定义
 function MindConnection(text, id) {
@@ -105,21 +134,6 @@ function MindText() {
     this.text = text ? text : '';
 };
 
-// xml加载定义
-var Load = {
-    // 获取xml上下文本对象呢
-    getXmlDoc: function(xml) {
-        return LoadXml(xml);
-    },
-    // 根据文件地址获取xml字符串
-    getXml: function(path) {
-        var ajax = new Ajax(path);
-        var response = ajax.doGet();
-        if (response !== '' && response.indexOf('错误') === -1)
-            return response;
-    }
-};
-
 // 基本点定义
 function MindPoint(x, y) {
     this.x = x ? x : 0;
@@ -143,6 +157,8 @@ function MindPaper(bindElement, id, width, height) {
     this.mindTexts = [];
     // 是否绘制在页面
     this.isDrawed = false;
+    // 根节点
+    this.rootMindNode = null;
 };
 
 // 面板绘制
@@ -162,4 +178,12 @@ MindPaper.prototype.clear = function() {
     this.mindNodes = [];
     this.mindTexts = [];
     return this;
+};
+
+// 设置根节点 可以有重绘操作
+MindPaper.prototype.setRoot = function(root) {
+    // TODO 其他设置
+    if (root.isRoot === false)
+        root.isRoot = true;
+    this.rootMindNode = root;
 };

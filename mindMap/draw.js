@@ -31,11 +31,11 @@ window.onload = function() {
     var mindPaper = new MindPaper(document.body, 'mindPaper0');
     var r = mindPaper.draw().raphael;
 
-    var mindNode0 = new MindNode('', 'mindeNode0', 4, 190, 100).bindMindPaper(mindPaper).draw();
+    var mindNode0 = new MindNode('', 'mindeNode0', 4, 190, 100, '', true).bindMindPaper(mindPaper).draw();
 
-    var mindNode1 = new MindNode('', 'mindeNode1', 4, 290, 80).bindMindPaper(mindPaper).draw();
+    var mindNode1 = new MindNode('', 'mindeNode1', 4, 290, 80, 'left').bindMindPaper(mindPaper).draw();
 
-    var mindNode2 = new MindNode('', 'mindeNode2', 4, 390, 100).bindMindPaper(mindPaper).draw();
+    var mindNode2 = new MindNode('', 'mindeNode2', 4, 390, 100, 'right').bindMindPaper(mindPaper).draw();
 
     for (var i = 0, ii = mindPaper.mindNodes.length; i < ii; i++) {
         mindPaper.mindNodes[i].element.attr({
@@ -61,7 +61,7 @@ var getViewPoint = function(mindPaper) {
     return new MindPoint(mindPaper.width / 2, mindPaper.height / 2);
 };
 
-var Caculate = {
+var Caculation = {
     MindMapPositionConfig: {
         // 节点位置
         mindNode: {
@@ -74,7 +74,20 @@ var Caculate = {
     // 根据脑图根节点计算子节点
     childrenPosition: function(parentNode, children_length) {
         var p_centerPoint = parentNode.centerPoint;
-        
     }
 };
 
+// xml加载定义
+var Load = {
+    // 获取xml上下文本对象呢
+    getXmlDoc: function(xml) {
+        return LoadXml(xml);
+    },
+    // 根据文件地址获取xml字符串
+    getXml: function(path) {
+        var ajax = new Ajax(path);
+        var response = ajax.doGet();
+        if (response !== '' && response.indexOf('错误') === -1)
+            return response;
+    }
+};

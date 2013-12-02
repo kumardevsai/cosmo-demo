@@ -108,23 +108,31 @@ function pucker_horizontal(cell, collapse) {
 		for (var m = 1; m < attr(cell, 'factRowSpan'); m++) {
 			islastcell = islastcell.nextSibling;
 		}
-		if (!islastcell.nextSibling) {
-			// 左单元格设置跨行属性
-			for (var i = 0; i < tbody.children.length; i++) {
-				for (var j = 0; j < tbody.children[i].cells.length; j++) {
-					var cell_ = tbody.children[i].cells[j];
-					if (parseInt(attr(cell_, 'row')) >= row_num || parseInt(attr(cell_, 'col')) > col_num || parseInt(attr(cell_, 'col')) + parseInt(attr(cell_, 'factRowSpan') !== null ? attr(cell_, 'factRowSpan') : attr(cell_, 'rowSpan_prop')) - 1 < col_num)
-						break;
-					else {
-						if (parseInt(attr(cell_, 'rowSpan_prop')) >= rowSpan_prop) {
-							if (attr(cell_, 'factRowSpan') === null)
-								attr(cell_, 'factRowSpan', attr(cell_, 'rowSpan_prop'));
-							if (attr(cell, 'preRowSpan') == null)
-								cell_.rowSpan = parseInt(cell_.rowSpan) + (factRowSpan - 1);
+
+		// 左单元格设置跨行属性
+		for (var i = 0; i < tbody.children.length; i++) {
+			for (var j = 0; j < tbody.children[i].cells.length; j++) {
+				var cell_ = tbody.children[i].cells[j];
+				if (parseInt(attr(cell_, 'row')) >= row_num || parseInt(attr(cell_, 'col')) > col_num || parseInt(attr(cell_, 'col')) + parseInt(attr(cell_, 'factRowSpan') !== null ? attr(cell_, 'factRowSpan') : attr(cell_, 'rowSpan_prop')) - 1 < col_num)
+					break;
+				else {
+					if (parseInt(attr(cell_, 'rowSpan_prop')) >= rowSpan_prop) {
+						var islastcell_ = cell_.parentNode;
+						for (var m = 1; m < attr(cell_, 'factRowSpan'); m++) {
+							islastcell_ = islastcell_.nextSibling;
+						}
+						if (attr(cell_, 'factRowSpan') === null)
+							attr(cell_, 'factRowSpan', attr(cell_, 'rowSpan_prop'));
+						if (!islastcell.nextSibling) {
+							if (islastcell_.nextSibling || !attr(cell, 'preRowSpan'))
+								cell_.rowSpan = attr(cell_, 'factRowSpan');
 							else
 								cell_.rowSpan = parseInt(cell_.rowSpan) + (attr(cell, 'preRowSpan') - 1);
-							attr(cell_, 'preRowSpan', cell_.rowSpan);
+						} else {
+							if (islastcell_.nextSibling)
+								cell_.rowSpan = attr(cell_, 'factRowSpan');
 						}
+						attr(cell_, 'preRowSpan', cell_.rowSpan);
 					}
 				}
 			}

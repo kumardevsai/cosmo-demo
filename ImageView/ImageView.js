@@ -183,11 +183,13 @@ function initImage(imgid) {
 		var imgView = document.getElementById('img_view');
 		imgView.style.display = 'none';
 		imgView.src = imgele.src;
-		// ie下第一次加载，图片显示的很小 是否应该添加onload给imgHide
-		setMaxView(true);
-		imgView.style.display = '';
+		imgView.onload = function() {
+			// ie下第一次加载，图片显示的很小 是否应该添加onload给imgHide
+			setMaxView(true);
+			imgView.style.display = '';
+		};
 	} else
-		var intervalImg = setTimeout(function() {
+		var intervalImg = setInterval(function() {
 			var imgele = document.getElementById(imgid);
 			if (imgele !== null) {
 				imgele.style.display = 'none';

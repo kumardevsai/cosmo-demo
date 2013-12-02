@@ -12,13 +12,15 @@
 }
 .arrow{
 	background-size: 100% 100%;
-	height:16px;
-	width: 16px;
+	height:12px;
+	width: 18px;
 	font-size: 1px;
 	cursor: pointer;
 	vertical-align: middle;
-	display: block;
 	float:left;
+	margin-top: 1px;
+	/**IE下无法使div垂直对齐**/
+	_margin-top:2px;
 }
 td span{
 	vertical-align: middle;
