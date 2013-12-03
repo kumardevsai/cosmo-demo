@@ -1,0 +1,58 @@
+.mxwlink{
+	background-size:100% 100%;
+	box-sizing:border-box;
+	display: block;
+}
+
+.link-c{
+	background-repeat: repeat-x;
+}
+.link-l , .link-r{
+	background-repeat: no-repeat;
+}
+
+.link-top{
+	margin-bottom: 0px;
+}
+
+.link-top-normal{
+	height:26px;
+	line-height: 26px;
+}
+.link-top-normal-l{
+	background-image:url();
+}
+.link-top-normal-r{
+	background-image:url();
+}
+.link-top-normal-c{
+	background-image:url();
+}
+
+.link-top-active{
+	height:30px;
+	line-height: 30px;
+}
+.link-top-active-l{
+	background-image:url();
+}
+.link-top-active-r{
+	background-image:url();
+}
+.link-top-active-c{
+	background-image:url();
+}
+
+.link-top-mouseover{
+	height:26px;
+	line-height: 26px;
+}
+.link-top-mouseover-l{
+	background-image:url();
+}
+.link-top-mouseover-r{
+	background-image:url();
+}
+.link-top-mouseover-c{
+	background-image:url();
+}
