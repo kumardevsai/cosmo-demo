@@ -17,25 +17,29 @@ function setTabLinks(divId, direction, defaultIndex, clearAStyle) {
 	for (var i = 0; i < c_chld_length; i++) {
 		var a_link = container.children[i];
 		// 获取转换后的标签
-		var link = getOneTabLink(a_link, clearAStyle, 'tab_' + tabDef.tabNum);
+		var link = getOneTabLink(a_link, clearAStyle, 'tab_' + tabDef.tabNum, direct_);
 		// 替换节点
 		if (a_link.replaceNode)
 			a_link.replaceNode(link);
 		else
 			a_link.parentNode.replaceChild(link, a_link);
-		AttachEvent(link, 'click', setTabLinkActived, false);
-		AttachEvent(link, 'mousedown', setTabLinkMouseOver, false);
-		AttachEvent(link, 'mouseover', setTabLinkMouseOver, false);
-		AttachEvent(link, 'mouseout', setTabLinkMouseOut, false);
+		AttachEvent(link.firstChild, 'click', setTabLinkActived, false);
+		AttachEvent(link.firstChild, 'mousedown', setTabLinkMouseOver, false);
+		AttachEvent(link.firstChild, 'mouseover', setTabLinkMouseOver, false);
+		AttachEvent(link.firstChild, 'mouseout', setTabLinkMouseOut, false);
 		// 默认激活一个标签
 		if (defaultIndex !== undefined && defaultIndex === i)
-			link.click();
+			link.firstChild.click();
 	}
 };
 
 // 创建一个标签
-function getOneTabLink(a_link, clearAStyle, tab) {
+function getOneTabLink(a_link, clearAStyle, tab, direction) {
+	var container = document.createElement('div');
+	// 设置左、右侧标签的最外层样式，主要是设置宽度
+	container.className = 'link-container-' + direction;
 	var link = document.createElement('div');
+	container.appendChild(link);
 	var c = document.createElement('div');
 	var l = document.createElement('div');
 	var r = document.createElement('div');
@@ -51,7 +55,7 @@ function getOneTabLink(a_link, clearAStyle, tab) {
 	link.setAttribute('ownTab', tab);
 	// 显示普通标签样式
 	setOneTabLinkNormally(link);
-	return link;
+	return container;
 };
 
 // 激活标签样式

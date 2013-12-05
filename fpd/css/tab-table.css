@@ -1,3 +1,63 @@
+/**
+	样式层关系
+	[{
+		.link-container-left: {
+			.link-left: [{
+				.link-l .link-left-normal-l, .link-c .link-left-normal-c, .link-r .link-left-normal-r
+			}, {
+				.link-l .link-left-mouseover-l, .link-c .link-left-mouseover-c, .link-r .link-left-mouseover-r
+			}, {
+				.link-l .link-left-active-l, .link-c .link-left-active-c, .link-r .link-left-active-r
+			}]
+		}
+	}, {
+		.link-container-top: {
+			.link-top: [{
+				.link-l .link-top-normal-l, .link-c .link-top-normal-c, .link-r .link-top-normal-r
+			}, {
+				.link-l .link-top-mouseover-l, .link-c .link-top-mouseover-c, .link-r .link-top-mouseover-r
+			}, {
+				.link-l .link-top-active-l, .link-c .link-top-active-c, .link-r .link-top-active-r
+			}]
+		}
+	}, {
+		.link-container-bottom: {
+			.link-bottom: [{
+				.link-l .link-bottom-normal-l, .link-c .link-bottom-normal-c, .link-r .link-bottom-normal-r
+			}, {
+				.link-l .link-bottom-mouseover-l, .link-c .link-bottom-mouseover-c, .link-r .link-bottom-mouseover-r
+			}, {
+				.link-l .link-bottom-active-l, .link-c .link-bottom-active-c, .link-r .link-bottom-active-r
+			}]
+		}
+	}, {
+		.link-container-right: {
+			.link-right: [{
+				.link-l .link-right-normal-l, .link-c .link-right-normal-c, .link-r .link-right-normal-r
+			}, {
+				.link-l .link-right-mouseover-l, .link-c .link-right-mouseover-c, .link-r .link-right-mouseover-r
+			}, {
+				.link-l .link-right-active-l, .link-c .link-right-active-c, .link-r .link-right-active-r
+			}]
+		}
+	}]
+**/
+
+.link-container-left{
+	width: 100%;
+	float:right;
+}
+.link-container-right{
+	width: 100%;
+	float:left;
+}
+.link-container-top{
+	float:left;
+}
+.link-container-bottom{
+	float:right;
+}
+
 .link-c{
 	background-repeat: repeat-x;
 	padding-left:5px;
