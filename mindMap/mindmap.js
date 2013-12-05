@@ -1,4 +1,4 @@
-// 脑图节点定义
+// 脑图节点定义 TODO 左右子节点集应该独立设置  leafChildMindNodes and rightChildMindNodes
 function MindNode(text, id, R, x, y, leaf, isRoot) {
     this.text = text ? text : '';
     this.id = id ? id : '';
@@ -101,6 +101,117 @@ MindNode.prototype.addLeafNode = function(mindNode) {
     }
     this.childMindNodes.push(mindNode);
 };
+
+// 获取子节点位置
+MindNode.prototype.getLeafPosition = function(leaf, reGet) {
+    if (reGet === true)
+        return this.reGetLeafPosition(leaf);
+    else
+        return leaf.centerPoint;
+    return null;
+};
+
+// 经过计算重新获取子节点的位置
+MindNode.prototype.reGetLeafPosition = function(leaf) {
+    if (leaf.leaf === 'right')
+        return this.getRightChildLeafPosition(leaf);
+    else if (leaf.leaf === 'leaf')
+        return this.getLeftChildLeafPosition(leaf);
+    return null;
+};
+
+// 根据节点获取它在父节点左侧的相对位置
+MindNode.prototype.getLeftChildLeafPosition = function(leaf) {
+    var leftChldNodes = this.getLeftLeaves();
+    var left_length = leftChldNodes.length;
+    var leafIndex = this.getLeftLeafIndex(leaf);
+    var y = this.getLeafRelativePoint(leafIndex, left_length);
+    var x = this.centerPoint.x - MindConfigration.mindNode.horizonMargin;
+    if (leafIndex > left_length / 2)
+        return new MindPoint(x, this.centerPoint.y + y);
+    else
+        return new MindPoint(x, -(this.centerPoint.y + y));
+};
+
+// 根据节点获取它在父节点右侧的相对位置
+MindNode.prototype.getRightChildLeafPosition = function(leaf) {
+    var rightChldNodes = this.getRightLeaves();
+    var right_length = rightChldNodes.length;
+    var leafIndex = this.getRightLeafIndex(leaf);
+    var y = this.getLeafRelativePoint(leafIndex, right_length);
+    var x = this.centerPoint.x + MindConfigration.mindNode.horizonMargin;
+    if (leafIndex > right_length / 2)
+        return new MindPoint(x, this.centerPoint.y + y);
+    else
+        return new MindPoint(x, -(this.centerPoint.y + y));
+};
+
+// 根据父节点获取子节点的Y轴
+MIndNode.prototype.getLeafRelativeY = function(leafIndex, leaf_length) {
+    var y;
+    if (leafIndex * 2 > leaf_length && (leafIndex - 1) * 2 < leaf_length)　
+        y = this.centerPoint.y;
+    else {
+        var odd_even;
+        if (leaf_length % 2 === 0)
+            odd_even = true;
+        else
+            odd_even = false;
+        if (odd_even === true)
+            y = (leafIndex - leaf_length / 2 - 1 / 2) * MindConfigration.mindNode.verticalMargin;
+        else
+            y = (leafIndex - (leaf_length - leaf_length % 2) / 2) * MindConfigration.mindNode.verticalMargin;
+    }
+    return y;
+};
+
+// 根据节点获取它在父节点的索引位置
+MindNode.prototype.getLeafIndex = function(leaf) {
+    if (leaf.leaf === 'right')
+        return this.getLeftLeafIndex(leaf);
+    else if (leaf.leaf === 'left')
+        return this.getRightLeafIndex(leaf);
+    else
+        return null;
+};
+
+// 根据节点获取它在父元素左侧的索引位置
+MindNode.prototype.getLeftLeafIndex = function(leaf) {
+    var leftChldNodes = this.getLeftLeaves();
+    var left_length = leftChldNodes.length;
+    for (var i = 0; i < left_length; i++) {
+        var leaf_ = leftChldNodes[i];
+        if (leaf_ === leaf) {
+            return i;
+        }
+    }
+    return null;
+};
+
+// 根据节点获取它在父元素侧的索引右位置
+MindNode.prototype.getLeftLeafIndex = function(leaf) {
+    var rightChldNodes = this.getRightLeaves();
+    var right_length = leftChldNodes.length;
+    for (var i = 0; i < right_length; i++) {
+        var leaf_ = rightChldNodes[i];
+        if (leaf_ === leaf) {
+            return i;
+        }
+    }
+    return null;
+};
+
+// 逐级绘制子节点
+MindNode.prototype.drawChildren = function() {
+    var children = this.childMindNodes;
+    for (var i = 0; i < children.length; i++) {
+        var c = children[i];
+        c.draw();
+        if (c.childMindNodes.length > 0)
+            c.drawChildren();
+    }
+};
+
 // 脑图连接线定义
 function MindConnection(text, id) {
     // 左侧脑图节点
