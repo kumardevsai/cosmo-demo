@@ -1,14 +1,42 @@
-<nodes>
-	<node title='center'>
+<root>
+	<node text='center'>
 		<nodes>
-			<node title='side1'>
+			<node text='side1'>
+				<nodes>
+					<node text='side1-1'>
+					</node>
+					<node text='side1-2'>
+					</node>
+					<node text='side1-3'>
+					</node>
+					<node text='side1-4'>
+					</node>
+				</nodes>
 			</node>
-			<node title='side2'>
+			<node text='side2'>
 			</node>
-			<node title='side3'>
+			<node text='side3'>
 			</node>
-			<node title='side4'>
+			<node text='side4'>
+			</node>
+			<node text='side5' side='right'>
+			</node>
+			<node text='side6' side='right'>
+			</node>
+			<node text='side7' side='right'>
+				<nodes>
+					<node text='side7-1'>
+					</node>
+					<node text='side7-2'>
+					</node>
+				</nodes>
+			</node>
+			<node text='side8' side='right'>
+			</node>
+			<node text='side9' side='right'>
+			</node>
+			<node text='side10' side='right'>
 			</node>
 		</nodes>
 	</node>
-</nodes>
+</root>

@@ -9,7 +9,8 @@ function pucker() {
 	for (var i = 0; i < tHead.children.length - 1; i++) {
 		for (var j = 0; j < tHead.children[i].cells.length; j++) {
 			var cell = tHead.children[i].cells[j];
-			if (!arr[attr(cell, 'row')])
+			// 合并情况下不出现折叠按钮
+			if (!arr[attr(cell, 'row')] && cell.id != 'cell_connect')
 				cell.innerHTML = '<img src="images/elbow-minus-nl.gif" style="vertical-align:middle;" collapse="false" onclick="javascript:pucker_img(this , 0)">' + cell.innerHTML;
 		}
 	}
@@ -17,7 +18,8 @@ function pucker() {
 	for (var i = 0; i < tbody.children.length; i++) {
 		for (var j = 0; j <= max_row - 1; j++) {
 			var cell = tbody.children[i].cells[j];
-			if (attr(cell, 'row') < max_row) {
+			// 合并情况下不出现折叠按钮
+			if (attr(cell, 'row') < max_row && cell.id != 'cell_connect') {
 				// 兼容ie的做法 , 其他浏览器在遇到使用attr(cell , 'rowSpan_prop')的时候都可以用cell.rowSpan代替
 				attr(cell, 'rowSpan_prop', cell.rowSpan);
 				cell.innerHTML = '<img src="images/elbow-minus-nl.gif" style="vertical-align:middle;" collapse="false" onclick="javascript:pucker_img(this , 1)">' + cell.innerHTML;
@@ -27,7 +29,7 @@ function pucker() {
 }
 
 
-
+// 列折叠
 function pucker_horizontal(cell, collapse) {
 	var rowSpan_prop = parseInt(attr(cell, 'rowSpan_prop'), 10);
 	var col_num = parseInt(attr(cell, 'col'));
@@ -36,110 +38,184 @@ function pucker_horizontal(cell, collapse) {
 	var tb = tbody.parentNode;
 	var row_index = cell.parentNode.rowIndex;
 	var tHead_num = tb.tHead.children.length;
-	var factRowSpan = attr(cell, 'factRowSpan') === null ? rowSpan_prop : parseInt(attr(cell, 'factRowSpan'));
+	// 折叠
 	if (collapse === true) {
-		// 实际需要遍历查询的单元行数
-		var fac_rowSpan = factRowSpan > rowSpan_prop ? factRowSpan : rowSpan_prop;
-		// 右单元格操作
-		for (var i = row_index; i < fac_rowSpan + col_num; i++) {
-			var row = tbody.children[i - tHead_num];
-			// 基准行，当前执行折叠单元格所属的行
-			if (i === row_index) {
-				for (var j = 0; j < row.cells.length; j++) {
-					var cell_ = row.cells[j];
-					if (parseInt(attr(cell_, 'row')) === row_num + 1 && col_num == attr(cell_, 'col')) {
-						if (attr(cell, 'factRowSpan') === null)
-							attr(cell, 'factRowSpan', attr(cell, 'rowSpan_prop'));
-						cell.rowSpan = parseInt(cell_.rowSpan);
-						attr(cell, 'rowSpan_prop', cell.rowSpan);
-						break;
-					}
-				}
-			} else if (i > row_index + parseInt(attr(cell, 'rowSpan_prop')) - 1) {
-				if (row.style.display !== 'none') {
-					if (attr(cell, 'collapse_rows') === null)
-						attr(cell, 'collapse_rows', i - tHead_num);
-					else
-						attr(cell, 'collapse_rows', attr(cell, 'collapse_rows') + ',' + (i - tHead_num));
-					row.style.display = 'none';
+		// 当列合并的时候
+		if (cell.rowSpan > 1) {
+			// 假如前后单元格合并列一致，不进行折叠
+			if (parseInt(attr(cell.nextSibling, 'rowSpan_prop'), 10) == rowSpan_prop)
+				return false;
+			// 行对象
+			var trDom = tb.getElementsByTagName('tr');
+			// 折叠后该单元格显示的列数
+			var collapseNum = cell.nextSibling.rowSpan;
+			if (document.all) {
+				attr(cell, "cos_row", attr(cell.nextSibling, "row"));
+				attr(cell, "cos_col", attr(cell.nextSibling, "col"));
+			}
+			for (var i = collapseNum; i < rowSpan_prop; i++) {
+				trDom[col_num + i].style.display = 'none';
+				if (attr(trDom[col_num + i], 'hiddenRow') == null) {
+					// 增加隐藏行属性，用于记录属于哪行
+					attr(trDom[col_num + i], 'hiddenRow', row_num);
+					attr(trDom[col_num + i], 'hiddenCol', col_num);
 				}
 			}
-		}
-		var islastcell = cell.parentNode;
-		for (var m = 1; m < attr(cell, 'factRowSpan'); m++) {
-			islastcell = islastcell.nextSibling;
-		}
-
-		if (!islastcell.nextSibling) {
-			// 左单元格操作
-			for (var i = 0; i < tbody.children.length; i++) {
-				for (var j = 0; j < tbody.children[i].cells.length; j++) {
-					var cell_ = tbody.children[i].cells[j];
-					if (parseInt(attr(cell_, 'row')) >= row_num || parseInt(attr(cell_, 'col')) > col_num || parseInt(attr(cell_, 'col')) + parseInt(attr(cell_, 'factRowSpan') !== null ? attr(cell_, 'factRowSpan') : attr(cell_, 'rowSpan_prop')) - 1 < col_num)
-						break;
-					else {
-						if (parseInt(attr(cell_, 'rowSpan_prop')) >= rowSpan_prop) {
-							if (attr(cell_, 'factRowSpan') === null)
-								attr(cell_, 'factRowSpan', attr(cell_, 'rowSpan_prop'));
-							cell_.rowSpan = parseInt(attr(cell_, 'factRowSpan') !== null ? attr(cell_, 'factRowSpan') : cell_.rowSpan) - (factRowSpan - cell.rowSpan);
-							attr(cell_, 'preRowSpan', cell_.rowSpan);
+			// 节点的父节点集合
+			var parentArr = [];
+			// 左侧单元格
+			for (var i = 0; i < trDom.length; i++) {
+				var tdDom = trDom[i].getElementsByTagName('td');
+				for (var j = 0; j < row_num; j++) {
+					// 存在跨列时执行
+					if (tdDom[j].rowSpan > 1) {
+						var pCol = parseInt(attr(tdDom[j], 'col'));
+						var pRow = parseInt(attr(tdDom[j], 'row'));
+						var pRowspan = parseInt(attr(tdDom[j], 'rowSpan_prop'), 10);
+						if ((pCol <= col_num) && ((pCol + pRowspan) >= (col_num + rowSpan_prop)) && pRow < row_num) {
+							// 插入节点
+							parentArr.push(tdDom[j]);
+							// 非ie
+							if (!document.all) {
+								tdDom[j].rowSpan -= (cell.rowSpan - collapseNum);
+							} else {
+								// ie下最后一行需要重新计算rowspan
+								if ((pCol + pRowspan) == (col_num + rowSpan_prop)) {
+									tdDom[j].rowSpan -= (cell.rowSpan - collapseNum);
+									// 判断左侧单元格的父节点是否也处于最下面一行
+									if (parentArr.length > 1) {
+										var PPdom = parentArr[parentArr.length - 2];
+										var PPCol = parseInt(attr(PPdom, 'col'));
+										if ((col_num + parseInt(cell.rowSpan)) == (PPCol + parseInt(PPdom.rowSpan))) {
+											PPdom.rowSpan -= (cell.rowSpan - collapseNum);
+										}
+									}
+								}
+								// 当父节点折叠后，在ie下最上一层子节点折叠时需要改变父节点rowspan
+								if (attr(tdDom[j], 'cos_row') == attr(cell, 'row') && attr(tdDom[j], 'cos_col') == attr(cell, 'col')) {
+									tdDom[j].rowSpan -= (cell.rowSpan - collapseNum);
+									var len = parentArr.length;
+									if (len > 1) {
+										for (var k = len - 1; k > 0; k--) {
+											if (parentArr[k - 1]) {
+												var pNum1 = parseInt(attr(parentArr[k], 'col')) + parseInt(attr(parentArr[k], 'rowSpan_prop'), 10);
+												var pNum2 = parseInt(attr(parentArr[k - 1], 'col')) + parseInt(attr(parentArr[k - 1], 'rowSpan_prop'), 10);
+												// 当父单元与子单元都在最下方时
+												if (pNum1 == pNum2 || parentArr[k - 1].rowSpan == cell.rowSpan) {
+													parentArr[k - 1].rowSpan -= (cell.rowSpan - collapseNum);
+												}
+											}
+										}
+									}
+								}
+							}
 						}
 					}
 				}
 			}
-		}
-	} else {
-		var collapse_rows = attr(cell, 'collapse_rows');
-		if (!stringAvialable(collapse_rows))
-			return;
-		collapse_rows = collapse_rows.split(',');
-		for (var i = 0; i < collapse_rows.length; i++) {
-			tbody.children[collapse_rows[i]].style.display = '';
-		}
-		// 还原跨行  TODO 这样做不好，应该计算还原 兼容ie
-		if (attr(cell, 'preRowSpan') != null)
-			cell.rowSpan = attr(cell, 'preRowSpan');
-		else
-			cell.rowSpan = factRowSpan;
-		attr(cell, 'rowSpan_prop', factRowSpan);
-		// 移出标记的隐藏行属性
-		cell.removeAttribute('collapse_rows');
-		var islastcell = cell.parentNode;
-		for (var m = 1; m < attr(cell, 'factRowSpan'); m++) {
-			islastcell = islastcell.nextSibling;
-		}
-
-		// 左单元格设置跨行属性
-		for (var i = 0; i < tbody.children.length; i++) {
-			for (var j = 0; j < tbody.children[i].cells.length; j++) {
-				var cell_ = tbody.children[i].cells[j];
-				if (parseInt(attr(cell_, 'row')) >= row_num || parseInt(attr(cell_, 'col')) > col_num || parseInt(attr(cell_, 'col')) + parseInt(attr(cell_, 'factRowSpan') !== null ? attr(cell_, 'factRowSpan') : attr(cell_, 'rowSpan_prop')) - 1 < col_num)
-					break;
-				else {
-					if (parseInt(attr(cell_, 'rowSpan_prop')) >= rowSpan_prop) {
-						var islastcell_ = cell_.parentNode;
-						for (var m = 1; m < attr(cell_, 'factRowSpan'); m++) {
-							islastcell_ = islastcell_.nextSibling;
-						}
-						if (attr(cell_, 'factRowSpan') === null)
-							attr(cell_, 'factRowSpan', attr(cell_, 'rowSpan_prop'));
-						if (!islastcell.nextSibling) {
-							if (islastcell_.nextSibling || !attr(cell, 'preRowSpan'))
-								cell_.rowSpan = attr(cell_, 'factRowSpan');
-							else
-								cell_.rowSpan = parseInt(cell_.rowSpan) + (attr(cell, 'preRowSpan') - 1);
-						} else {
-							if (islastcell_.nextSibling)
-								cell_.rowSpan = attr(cell_, 'factRowSpan');
-						}
-						attr(cell_, 'preRowSpan', cell_.rowSpan);
-					}
-				}
-			}
+			// 本单元格合并
+			cell.rowSpan = collapseNum;
 		}
 	}
+	// 列展开
+	else {
+		// 假如前后单元格合并列一致，不进行展开
+		if (parseInt(attr(cell.nextSibling, 'rowSpan_prop'), 10) == rowSpan_prop)
+			return false;
+		// 行对象
+		var trDom = tb.getElementsByTagName('tr');
+		// 折叠后该单元格显示的列数
+		var collapseNum = cell.nextSibling.rowSpan;
+		// 显示最底部行的个数
+		var showTrNum = 0;
+		// 所有显示行的个数
+		var allShowNum = 0;
+		var isEnd = true;
+		// 当前行要增加减去的row个数
+		var cellTrNum = 0;
+		var cellEnd = true;
+		// 显示隐藏的行
+		for (var i = trDom.length - 1; i > col_num; i--) {
+			var hiddenRow = attr(trDom[i], 'hiddenRow');
+			var hiddenCol = attr(trDom[i], 'hiddenCol');
+			// 当隐藏行不是同级时不予显示
+			if ((hiddenRow == null || (hiddenRow == row_num && hiddenCol == col_num)) && trDom[i].style.display == 'none') {
+				trDom[i].style.display = '';
+				isEnd = false;
+				if (i < (col_num + rowSpan_prop))
+					cellEnd = false;
+				// 移出标记的隐藏行属性
+				trDom[i].removeAttribute('hiddenRow');
+				trDom[i].removeAttribute('hiddenCol');
+				allShowNum++;
+			}
+			// 记录所有
+			if (isEnd == true)
+				showTrNum++;
+			// 只记录当前
+			if ((i < (col_num + rowSpan_prop)) && cellEnd == true) {
+				cellTrNum++;
+			}
+		}
+		// 节点的父节点集合
+		var parentArr = [];
+		// 左侧单元格
+		for (var i = 0; i < trDom.length; i++) {
+			var tdDom = trDom[i].getElementsByTagName('td');
+			for (var j = 0; j < row_num; j++) {
+				var pCol = parseInt(attr(tdDom[j], 'col'));
+				var pRow = parseInt(attr(tdDom[j], 'row'));
+				var pRowspan = parseInt(attr(tdDom[j], 'rowSpan_prop'), 10);
+				if ((pCol <= col_num) && ((pCol + pRowspan) >= (col_num + rowSpan_prop)) && pRow < row_num) {
+					// 插入节点
+					parentArr.push(tdDom[j]);
+					// 非ie
+					if (!document.all) {
+						tdDom[j].rowSpan += allShowNum;
+					} else {
+						// ie下最后一行需要重新计算rowspan
+						if ((pCol + pRowspan) == (col_num + rowSpan_prop)) {
+							tdDom[j].rowSpan = pRowspan - cellTrNum;
+							// 判断左侧单元格的父节点是否也处于最下面一行
+							if (parentArr.length > 1) {
+								var PPdom = parentArr[parentArr.length - 2];
+								var PPCol = parseInt(attr(PPdom, 'col'));
+								var PPRowspan = parseInt(attr(PPdom, 'rowSpan_prop'), 10);
+								if ((col_num + parseInt(cell.rowSpan)) == (PPCol + parseInt(PPdom.rowSpan))) {
+									PPdom.rowSpan = parseInt(PPdom.rowSpan) + allShowNum;
+								}
+							}
+						}
+						// 当父节点折叠后，在ie下最上一层子节点折叠时需要改变父节点rowspan
+						if (attr(tdDom[j], 'cos_row') == attr(cell, 'row') && attr(tdDom[j], 'cos_col') == attr(cell, 'col')) {
+							tdDom[j].rowSpan = col_num - pCol + (rowSpan_prop - cellTrNum);
+							var len = parentArr.length;
+							if (len > 1) {
+								for (var k = len - 1; k > 0; k--) {
+									if (parentArr[k - 1]) {
+										var pNum1 = parseInt(attr(parentArr[k], 'col')) + parseInt(attr(parentArr[k], 'rowSpan_prop'), 10);
+										var pNum2 = parseInt(attr(parentArr[k - 1], 'col')) + parseInt(attr(parentArr[k - 1], 'rowSpan_prop'), 10);
+										// 当父单元与子单元都在最下方时
+										if (pNum1 == pNum2 || parentArr[k - 1].rowSpan == cell.rowSpan) {
+											parentArr[k - 1].rowSpan = col_num - parseInt(attr(parentArr[len - 2], 'col')) + (rowSpan_prop - cellTrNum);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		if (document.all) {
+			cell.rowSpan = rowSpan_prop - cellTrNum;
+			cell.removeAttribute("cos_row");
+			cell.removeAttribute("cos_col");
+		} else
+			cell.rowSpan += allShowNum;
+	}
 }
-
+// 表头折叠
 function pucker_vertical(cell, collapse) {
 	var colSpan = parseInt(cell.colSpan, 10);
 	var row_number = parseInt(attr(cell, 'row'));
@@ -147,6 +223,7 @@ function pucker_vertical(cell, collapse) {
 	var thead = cell.parentNode.parentNode;
 	var tb = thead.parentNode;
 	if (collapse === true) {
+		attr(cell, 'preColSpan', cell.colSpan);
 		// 下表头收缩
 		for (var i = cell.parentNode.rowIndex + 1; i < thead.children.length; i++) {
 			var row = thead.children[i];
@@ -180,6 +257,8 @@ function pucker_vertical(cell, collapse) {
 					if (!attr(cell_, 'factColSpan'))
 						attr(cell_, 'factColSpan', cell_.colSpan);
 					cell_.colSpan = cell_.colSpan - (colSpan - parseInt(cell.colSpan));
+					if (attr(cell_, 'preColSpan'))
+						attr(cell_, 'preColSpan', attr(cell_, 'preColSpan') - (colSpan - parseInt(cell.colSpan)));
 					break;
 				}
 			}
@@ -216,6 +295,7 @@ function pucker_vertical(cell, collapse) {
 		var arrb = chargeArrayProperty(collapse_bcells.split(','));
 		collapse_bcells = collapse_bcells.split(',');
 		var factColSpan = parseInt(attr(cell, 'factColSpan'));
+		var preColSpan = parseInt(attr(cell, 'preColSpan'));
 		// 上表头设置跨行属性
 		for (var i = 0; i < cell.parentNode.rowIndex; i++) {
 			var row = thead.children[i];
@@ -223,7 +303,9 @@ function pucker_vertical(cell, collapse) {
 				var cell_ = row.cells[j];
 				var cell_row = parseInt(attr(cell_, 'row'));
 				if (cell_row + parseInt(cell_.colSpan) >= row_number + colSpan || cell_row + parseInt(attr(cell_, 'factColSpan')) >= row_number + colSpan) {
-					cell_.colSpan = cell_.colSpan + factColSpan - 1;
+					cell_.colSpan = cell_.colSpan + preColSpan - cell.colSpan;
+					if (attr(cell_, 'preColSpan'))
+						attr(cell_, 'preColSpan', parseInt(attr(cell_, 'preColSpan')) + (preColSpan - cell.colSpan));
 					break;
 				}
 			}
@@ -240,7 +322,7 @@ function pucker_vertical(cell, collapse) {
 						num += cell_.colSpan;
 				}
 				if (arrh[i + '_' + cell_row] !== '' && arrh[i + '_' + cell_row] !== undefined)
-					cell_.style.display = 'block';
+					cell_.style.display = '';
 			}
 		}
 		cell.colSpan = num;
@@ -251,7 +333,7 @@ function pucker_vertical(cell, collapse) {
 				var cell_ = row.cells[j];
 				var cell_row = parseInt(attr(cell_, 'row'));
 				if (arrb[i + '_' + cell_row] !== '' && arrb[i + '_' + cell_row] !== undefined)
-					cell_.style.display = 'block';
+					cell_.style.display = '';
 			}
 		}
 		cell.removeAttribute('collapse_hcells');
