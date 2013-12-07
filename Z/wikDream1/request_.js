@@ -16,6 +16,7 @@
   } else {
     GeeTestOptions = GeeTestOptions.concat(option);
   };
+  /**
   var node, scripts = document.body.getElementsByTagName('script'),
     src = "http://api.geetest.com/get.php?gt=" + option.geetestid;
   for (var i = 0; i < scripts.length; i++) {
@@ -32,4 +33,5 @@
       break;
     }
   }
-})()
+  **/
+})();

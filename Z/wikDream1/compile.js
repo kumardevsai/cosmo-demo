@@ -543,6 +543,7 @@ var compile_ = function(a) {
 							f = H - (a.clientY || a.changedTouches[0].clientY);
 						R.push([e, f, d]);
 						var i = new y(R);
+						var ddd = P;
 						return P += i.encode(), P += ";", R = [], X(p, F), l = !0, document.body.style.cursor = "auto", g() || h(a) ? (z.removeEvent($), x.removeEvent(Z), void 0) : (C.removeEvent($), D.removeEvent(Z), void 0)
 					},
 					$ = function(c) {
