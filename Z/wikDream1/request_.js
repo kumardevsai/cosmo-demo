@@ -1,20 +1,22 @@
 (function() {
   var option = {
     "product": "embed",
-    "challenge": "91c519d0f48a4dda68edfeec7f8a85a4W2dQ2xo2j2kHD6Sz0W2rUefr4NT1lc2yg7P9D2x0t3X1B8f4C3UV1nO7Jh2bN9KCS8vt2w9z8HYg2EKd2Ty2q3M3R6i2k7F9m2IB4O1l3o1mJ7bn2vsI0u3Gj1w8Ls4aYAM2u6ZaV0QGZ3eE5ihLP5Ac1pR8Xp4Fq",
-    "ypos": "27",
+    "challenge": "6908a2cd8250b8d10ab18fa73991906frG3NUpfa5VOgP6l3P9e4J4R5s1Z4z3C2tTkCtjU3R3b7nq4G7v0zoHsi4M1du3h3Q7ZuT5nW4w3c2H3X7aEm5S3Qf9IAK4N4BrE7F0y4VOKm5x1Lh3b3e7I4Y8XLkW9i4J1D3pgq5FBD0v8j3c5od6A3SMx3w7yYl",
+    "ypos": "3",
     "apiserver": "http://api.geetest.com/",
-    "sliceurl": "pictures/gt/fb94a30b/26343581.jpg",
-    "link": "http://data.geetest.com/redirect?des=lhb.265g.com/2013/",
+    "sliceurl": "pictures/gt/fb94a30b/6733b1f8.jpg",
+    "link": "http://lhb.265g.com/2013/",
     "imgserver": "http://static.geetest.com/",
     "geetestid": "482708a0f54c0bff54c6dafe3629d7bc",
-    "id": "a91c519d0f48a4dda68edfeec7f8a85a4",
+    "id": "a6908a2cd8250b8d10ab18fa73991906f",
     "imgurl": "pictures/gt/fb94a30b.jpg"
   };
   if (!window.GeeTestOptions) {
     window.GeeTestOptions = [option];
+    window.GeeTestOptions_ = [option];
   } else {
     GeeTestOptions = GeeTestOptions.concat(option);
+    GeeTestOptions_ = GeeTestOptions_.concat(option);
   };
   /**
   var node, scripts = document.body.getElementsByTagName('script'),

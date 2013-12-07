@@ -680,4 +680,4 @@ var compile_ = function(a) {
 		"complete" == document.readyState || "interactive" == document.readyState && !k ? f.initDom().createSlice().setWidget().loadModule(x()).regEvent() : setTimeout(A, 500)
 	};
 	setTimeout(z, 100)
-};
+}(window);
