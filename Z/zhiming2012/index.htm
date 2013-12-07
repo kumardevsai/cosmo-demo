@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" type="text/css" href="style.css" media="all" />
+<link rel="stylesheet" type="text/css" href="back.css" media="all" />
+<script type="text/javascript" src="share.js"></script>
+<script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" src="house.js"></script>
+<script type="text/javascript" src='showroom.js'></script>
+<title>楼盘户型</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+		<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+        <meta name="Keywords" content="微盟、微信营销、微信代运营、微信定制开发、微信托管、微网站、微商城、微营销" />
+        <meta name="Description" content="微盟，国内最大的微信公众智能服务平台，微盟八大微体系：微菜单、微官网、微会员、微活动、微商城、微推送、微服务、微统计，企业微营销必备。" />
+        <!-- Mobile Devices Support @begin -->
+            <meta content="application/xhtml+xml;charset=UTF-8" http-equiv="Content-Type">
+            <meta content="no-cache,must-revalidate" http-equiv="Cache-Control">
+            <meta content="no-cache" http-equiv="pragma">
+            <meta content="0" http-equiv="expires">
+            <meta content="telephone=no, address=no" name="format-detection">
+            <meta content="width=device-width, initial-scale=1.0" name="viewport">
+            <meta name="apple-mobile-web-app-capable" content="yes" /> <!-- apple devices fullscreen -->
+            <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <!-- Mobile Devices Support @end -->
+        <link rel="shortcut icon" href="http://stc.weimob.com/img/favicon.ico" />
+    </head>
+    <body onselectstart="return true;" ondragstart="return false;">
+        
+<div class="wrapper" id="container">
+	<!-- start -->
+		<div class="act_top" id="actTop">
+			<div class="act_top_show">
+				<img id="bannerPic" style="width:100%;max-height:175px;" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="loading...">
+			</div>
+		</div>
+		<div id="roomDetails"></div>
+		<p>&nbsp;</p>
+	<!-- end -->
+</div>
+<div class="pop_tips" id="popTips" style="display:none;">
+	<div class="oval"></div>
+	<div class="pop_show">
+		<h4 id="tipsTitle">温馨提示</h4>
+		<div class="pop_info" id="tipsMsg">
+			<p></p>
+		</div>
+		<div class="pop_btns">
+			<a href="javascript:void(0);" id="tipsOK">确定</a>
+			<a href="javascript:void(0);" style="display:none;" id="tipsCancel">取消</a>
+		</div>
+	</div>
+</div>
+<div id="popFail" style="">
+	<div class="bk"></div>
+	<div class="cont">
+		<img src="loading.gif" alt="loading...">
+		正在加载...
+	</div>
+</div>
+<!-- 户型简介 start -->
+	<script type="text/template" id="template">
+		<%
+		var isIOS = /Mac OS/i.test(navigator.userAgent);
+		for(var idx=0,idxLen=data.length;idx<idxLen; idx++){
+			var rooms =data[idx].rooms,
+			len = rooms.length,
+			style = '';
+			boxCls = ' box_up';
+			if(len<=4){
+				boxCls += ' box_up'+len;
+			}
+			if(len<=4&&idx==0){
+				style = ' style=" height:auto;"';
+			}
+		%>
+		<div class="box<%=boxCls%>" id="box<%=idx%>">
+			<h3><%=data[idx].key%></h3>
+			<div class="box_type"<%=style%>>
+				<ul class="house_type">
+					<%for(var j=0,jl=len;j<jl;j++){ %>
+						<li id="boxLi<%=rooms[j].id%>"<%if(j==0&&idx==0){%> class="current"<%}%>>
+							<a href="javascript:void(0);" onclick="List.toggleList(<%=rooms[j].id%>,<%=idx%>);">
+								<strong><%=rooms[j].name%></strong>
+								<span><%=rooms[j].desc%></span>
+								<em><%=rooms[j].rooms%> <%=rooms[j].area%></em>
+							</a>
+							<div class="house_photo<%if(j==0&&idx==0){%> house_arrow<%}%>"<%if(j!=0||idx!=0){%> style="display:none;"<%}%>>
+								<a href="javascript:void(0);" onclick="List.showDetail(<%=rooms[j].id%>);return false;" class="ico_type">户型图</a>
+								<% if(rooms[j].full3d&&rooms[j].full3d.length){ %><a href="javascript:void(0);" onclick="List.show3D(<%=rooms[j].id%>);return false;" class="ico_360">全景图</a><%}%>
+							</div>
+						</li>
+					<% } /* end of for j rooms.length */ %>
+				</ul>
+			</div>
+			<%if((idx==0&&len>3)||(idx>0&&len>4)){%>
+				<a href="javascript:void(0);" onclick="List.switchList(this,<%=rooms.length%>,<%=idx%>);return false;" class="btn_more">
+					<span>查看全部户型(<%=rooms.length%>)</span>
+				</a>
+			<% } %>
+		</div>
+		<% }
+		/*end of for desc in categories */
+		%>
+	</script>
+<!-- 户型简介 end -->
+
+<script>
+var PID = 2356;
+var WECHATID = 'o8ViLjt2J0aXQpR1qumUbysA3B0o';
+</script>
+
+<a href="javascript:history.go(-1);" class="back360" style="">&nbsp;</a>        		<div mark="stat_code" style="width:0px; height:0px; display:none;">
+					</div>
+	</body>
+</html>
