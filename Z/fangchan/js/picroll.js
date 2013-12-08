@@ -167,7 +167,8 @@ FCAPP.HOUSE.Picroll = {
         });
         List.push('<img id="pic0" idx="pic0" width="' + R.w + '" border="0" height="' + R.h + '" ' + imgdata + '>');
         R.Img.push(room.bimg);
-        R.ImgName.push([1 + '/' + (pics.length + 1), room.desc.replace(/\.jpe?g$/gi, ''), room.name.replace(/\.jpe?g$/gi, '')]);
+        R.ImgName.push([1 + '/' + (pics.length + 1), room.name.replace(/\.jpe?g$/gi, ''), room.name.replace(/\.jpe?g$/gi, '')]);
+        //R.ImgName.push([1 + '/' + (pics.length + 1), room.desc.replace(/\.jpe?g$/gi, ''), room.name.replace(/\.jpe?g$/gi, '')]);
         R.loadSize.push({
             w: room.width,
             h: room.height
