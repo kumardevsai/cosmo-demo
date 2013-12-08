@@ -116,14 +116,26 @@ FCAPP.HOUSE.List = {
         return newCategory;
     },
     showDetail: function(id) {
-        FCAPP.Common.jumpTo('/Webestate/Picroll', {
+        /**
+            FCAPP.Common.jumpTo('/Webestate/Picroll', {
+                houseid: id
+            },
+            true);
+        **/
+        // 直接使用本地地址
+        FCAPP.Common.jumpTo('huxingtu.htm', {
             houseid: id
         },
         true);
     },
     show3D: function(houseid) {
         var t = new Date();
-        FCAPP.Common.jumpTo('/Webestate/Picfull', {
+        /**
+            FCAPP.Common.jumpTo('/Webestate/Picfull', {
+                houseid: houseid
+            });
+        **/
+        FCAPP.Common.jumpTo('huxingtu.htm', {
             houseid: houseid
         });
     },

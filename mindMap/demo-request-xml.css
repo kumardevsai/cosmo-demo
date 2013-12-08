@@ -1,0 +1,32 @@
+body , html
+{
+	height:100%;
+	width:100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+.nav-bar{
+	height:30px;
+	line-height: 30px;
+	vertical-align: middle;
+}
+
+.nav-btn{
+	height: 26px;
+	line-height: 26px;
+	margin-left: 0px;
+	margin-right: 5px;
+}
+
+.draw-panel{
+	height: 100%;
+	width: 100%;
+	position:absolute;
+	top:0;
+	left: 0;
+	margin: 0;
+	padding: 0;
+	border: none;
+}

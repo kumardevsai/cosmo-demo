@@ -3,17 +3,17 @@
     
     <head>
         <meta charset="utf-8" />
-        <link rel="stylesheet" type="text/css" href="style.css"
+        <link rel="stylesheet" type="text/css" href="css/style.css"
         media="all" />
-        <link rel="stylesheet" type="text/css" href="back.css"
+        <link rel="stylesheet" type="text/css" href="css/back.css"
         media="all" />
-        <script type="text/javascript" src="share.js">
+        <script type="text/javascript" src="js/share.js">
         </script>
-        <script type="text/javascript" src="common.js">
+        <script type="text/javascript" src="js/common.js">
         </script>
-        <script type="text/javascript" src="picroll.js">
+        <script type="text/javascript" src="js/picroll.js">
         </script>
-        <script type="text/javascript" src='showroom.js'></script>
+        <script type="text/javascript" src='js/showroom.js'></script>
         <title>
             楼盘户型图
         </title>
@@ -45,7 +45,7 @@
             .btn_zoom_in,.btn_zoom_out,.btn_down {bottom: 100px;} .btn_down{left:
             20px;} .btn_zoom_in,.btn_zoom_out{right:20px;} .zoomDiv{ width:100%; height:100%;
             display:none; z-index:299; overflow:scroll; text-align:center; background:
-            rgba(0,0,0,0.7) url('loading.gif')
+            rgba(0,0,0,0.7) url('images/loading.gif')
             no-repeat center center; background-size:30px 30px; } .type_up .btn_more{top:45px;}
             .type_full .type_up .btn_more{top:22px;} .type_full .type_info .type_num{display:none;}
         </style>
@@ -59,7 +59,7 @@
             </div>
             <div class="type_info" id="picDetail" onclick="Picroll.switchDetail();">
             </div>
-            <a href="javascript:void(0);" class="btn_show_close">
+            <a href="javascript:history.go(-1);" class="btn_show_close">
                 <span>
                     关闭
                 </span>
@@ -100,7 +100,7 @@
             <div class="bk">
             </div>
             <div class="cont">
-                <img src="loading.gif"
+                <img src="images/loading.gif"
                 alt="loading...">
                 正在加载...
             </div>

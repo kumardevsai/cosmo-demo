@@ -8,6 +8,6 @@
     z-index:1000;
     background:red;
     border-radius:60px;
-    background:url('back.png') no-repeat center center;
+    background:url('../images/back.png') no-repeat center center;
     background-size:100% 100%;
 }

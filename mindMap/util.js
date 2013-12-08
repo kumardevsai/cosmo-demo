@@ -126,3 +126,17 @@ String.prototype.LTrim = function() {
 String.prototype.RTrim = function() {
 	return this.replace(/(\s*$)/g, "");
 }
+
+function AttachEvent(target, eventName, handler, argsObject) {
+	var eventHandler = handler;
+	if (argsObject) {
+		eventHander = function(e) {
+			handler.call(argsObject, e);
+		}
+	}
+	eventName = eventName.replace('on', '');
+	if (window.attachEvent) //IE   
+		target.attachEvent("on" + eventName, eventHandler);
+	else //FF   
+		target.addEventListener(eventName, eventHandler, false);
+}

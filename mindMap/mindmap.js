@@ -7,7 +7,7 @@ function MindNode(text, id, R, x, y, side, isRoot) {
     // 子节点
     this.childMindNodes = [];
     // 直径
-    this.R = R ? R : 4;
+    this.R = R ? R : 20;
     // 绑定的绘制面板元素
     this.mindPaper = null;
     // 中心点
@@ -24,6 +24,8 @@ function MindNode(text, id, R, x, y, side, isRoot) {
     this.side = side ? side : 'left';
     // 是否为最初根节点
     this.isRoot = isRoot ? isRoot : false;
+    // 是否被选中
+    this.selected = false;
 };
 
 // 脑图节点绘制
@@ -46,9 +48,10 @@ MindNode.prototype.draw = function() {
     if (paper) {
         // 默认绘制在左上角
         if (this.centerPoint === null || this.centerPoint.x - this.R / 2 < 0 || this.centerPoint.y - this.R / 2 < 0)
-            this.element = paper.ellipse(this.R / 2, this.R / 2, this.R / 2, this.R / 2);
+            this.element = paper.ellipse(this.R / 2, this.R / 2, (this.R / 2) * 1.5, this.R / 2);
         else
-            this.element = paper.ellipse(this.centerPoint.x, this.centerPoint.y, this.R / 2, this.R / 2);
+            this.element = paper.ellipse(this.centerPoint.x, this.centerPoint.y, (this.R / 2) * 1.5, this.R / 2);
+        this.element.ownMindNode = this;
     }
     // 已经绘制在面板中
     this.isDrawed = true;
@@ -201,7 +204,8 @@ MindNode.prototype.drawChildren = function() {
     var children = this.childMindNodes;
     for (var i = 0; i < children.length; i++) {
         var c = children[i];
-        c.draw();
+        if (c.isDrawed === false)
+            c.draw();
         if (c.childMindNodes.length > 0)
             c.drawChildren();
     }
@@ -258,6 +262,7 @@ MindConnection.prototype.draw = function() {
         return;
     // 连接两端的节点并且绘制，默认颜色是黑色
     this.element = this.mindPaper.raphael.connection(this.leftMindNode.element, this.rightMindNode.element, '#000000');
+    this.element.ownMindConnection = this;
     // 已经绘制到页面
     this.isDrawed = true;
     return this;
@@ -293,6 +298,8 @@ function MindPaper(bindElement, id, width, height) {
     this.isDrawed = false;
     // 根节点
     this.rootMindNode = null;
+    // 当前被选中的元素
+    this.currentSelected = null;
 };
 
 // 面板绘制
@@ -335,6 +342,12 @@ MindPaper.prototype.drawChildMindNodesConnection = function() {
     for (var i = 0; i < connections.length; i++) {
         connections[i].draw();
     }
+};
+
+// 设置画板上当前被选中的元素
+MindPaper.prototype.setCurrentSelected = function(mindNode) {
+    if (mindNode instanceof MindNode)
+        this.currentSelected = mindNode;
 };
 
 var MindConfigration = {

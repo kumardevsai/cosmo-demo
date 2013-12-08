@@ -58,7 +58,7 @@ FCAPP.HOUSE.Picroll = {
         R.zoomDiv = $('#zoomDiv');
     },
     bindEvents: function(R) {
-        R.closeBtn.click(Picroll.closePage);
+        //R.closeBtn.click(Picroll.closePage);
         R.zoomBtn.click(Picroll.zoomPic);
         R.downBtn.click(Picroll.downPic);
         $(window).resize(Picroll.resizeLayout);
