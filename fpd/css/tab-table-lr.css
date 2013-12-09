@@ -1,0 +1,59 @@
+.link-container-left-justified , .link-container-right-justified{
+	text-align: center;
+	border-right:1px solid #e5e5e5;
+	border-left: 1px solid #e5e5e5;
+	border-bottom: 1px solid #e5e5e5;
+	cursor: pointer;
+	height: 30px;
+	line-height: 30px;
+	vertical-align: center;
+}
+/** ie7 8 不识别
+	.link-container-left-justified:first-child,.link-container-right-justified:first-child{
+		border-top: 1px solid #e5e5e5;
+	}
+**/
+
+.link-justified-c{
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.link-left-justified,.link-right-justified{
+	width: 100%;
+}
+
+.link-left-justified-normal,.link-right-justified-normal{
+	background-color: blue;
+	background-color: #eaeaea;
+	background-image: -moz-linear-gradient(#fafafa, #eaeaea);
+	background-image: -webkit-linear-gradient(#fafafa, #eaeaea);
+	background-image: linear-gradient(#fafafa, #eaeaea);
+}
+
+.link-left-justified-normal-c,.link-right-justified-normal-c{
+
+}
+
+.link-left-justified-acitve,.link-right-justified-acitve{
+	background-color: white;
+}
+
+.link-left-justified-acitve-c,.link-right-justified-acitve-c{
+	
+}
+
+.link-left-justified-mouseover,.link-right-justified-mouseover{
+	background-color: #fafafa;
+}
+
+.link-left-justified-mouseover-c,.link-right-justified-mouseover-c{
+	
+}
+
+.link-left-justified-active-c a,.link-right-justified-active-c a{
+	color:black;
+}
+.link-left-justified-mouseover-c a , .link-left-justified-normal-c a,.link-right-justified-mouseover-c a , .link-right-justified-normal-c a{
+	color:white;
+}
