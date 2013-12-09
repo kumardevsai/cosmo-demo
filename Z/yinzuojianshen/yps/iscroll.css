@@ -14,9 +14,17 @@
 	position:relative;	/* On older OS versions "position" and "z-index" must be defined, */
 	z-index:1;			/* it seems that recent webkit is less picky and works anyway. */
 	overflow:hidden;
-	
 }
-
+#borderWrapper{
+	border-radius: 5px;
+	margin-top:4px;
+	margin-left:4px;
+	margin-right: 4px; 
+	height:auto;
+	float:left;
+	position:relative;	/* On older OS versions "position" and "z-index" must be defined, */
+	overflow:hidden;
+}
 #scroller {
 	height:auto;
 	float:left;
