@@ -68,12 +68,19 @@
                                   <img src="yps/Ljj2sycH1o.jpg" border="0">
                               </a>
                           </li>
+                          <li>
+                              <p>
+                              </p>
+                              <a href="#">
+                                  <img src="yps/Ljj2sycH1o.jpg" border="0">
+                              </a>
+                          </li>
                       </ul>
                   </div>
               </div>
             </div>
             <div id="nav">
-                <div id="prev" onclick="myScroll.scrollToPage(&#39;prev&#39;, 0,400,1);return false">
+                <div id="prev" onclick="myScroll.scrollToPage('prev', 0,400,1);return false">
                     ← prev
                 </div>
                 <ul id="indicator">
@@ -83,8 +90,11 @@
                     <li>
                         2
                     </li>
+                    <li>
+                        3
+                    </li>
                 </ul>
-                <div id="next" onclick="myScroll.scrollToPage(&#39;next&#39;, 0,400,1);return false">
+                <div id="next" onclick="myScroll.scrollToPage('next', 0,400,1);return false">
                     next →
                 </div>
             </div>
@@ -269,11 +279,11 @@
             var count = document.getElementById("thelist").getElementsByTagName("img").length;
 
             for (i = 0; i < count; i++) {
-                document.getElementById("thelist").getElementsByTagName("img").item(i).style.cssText = " width:" + document.body.clientWidth + "px";
+                document.getElementById("thelist").getElementsByTagName("img").item(i).style.cssText = " width:" + (document.body.clientWidth - 8) + "px";
 
             }
-            document.getElementById("scroller").style.cssText = " width:" + document.body.clientWidth * count + "px";
-            document.getElementById('borderWrapper').style.width = document.body.clientWidth + "px";
+            document.getElementById("scroller").style.cssText = " width:" + (document.body.clientWidth - 8) * count + "px";
+            document.getElementById('borderWrapper').style.width = (document.body.clientWidth -8)+ "px";
 
             setInterval(function() {
                 myScroll.scrollToPage('next', 0, 400, count);
@@ -281,10 +291,10 @@
             3500);
             window.onresize = function() {
                 for (i = 0; i < count; i++) {
-                    document.getElementById("thelist").getElementsByTagName("img").item(i).style.cssText = " width:" + document.body.clientWidth + "px";
+                    document.getElementById("thelist").getElementsByTagName("img").item(i).style.cssText = " width:" + (document.body.clientWidth - 8) + "px";
                 }
-                document.getElementById("scroller").style.cssText = " width:" + document.body.clientWidth * count + "px";
-                document.getElementById('borderWrapper').style.width = document.body.clientWidth + "px";
+                document.getElementById("scroller").style.cssText = " width:" + (document.body.clientWidth - 8) * count + "px";
+                document.getElementById('borderWrapper').style.width = (document.body.clientWidth - 8) + "px";
             }
         </script>
         <div class="plug-div">
