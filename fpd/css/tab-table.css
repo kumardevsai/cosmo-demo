@@ -44,10 +44,14 @@
 **/
 
 .link-container-left{
-	width: 90%;
 	float:right;
+	width: 100%;
+	margin-bottom: 4px;
 }
 .link-container-right{
+	float: left;
+	width: 100%;
+	margin-bottom: 4px;
 }
 .link-container-top{
 	float:left;
@@ -57,6 +61,7 @@
 }
 
 .link-c{
+	clear:none;
 	background-repeat: repeat-x;
 	padding-left:5px;
 	padding-right:5px;
@@ -67,6 +72,7 @@
 	width: auto;
 }
 .link-l , .link-r{
+	clear:none;
 	background-repeat: no-repeat;
 	width:5px;
 	height:100%;
@@ -193,10 +199,9 @@
 
 
 .link-left{
-	margin-bottom: 4px;
-	white-space: nowrap;
-	display: inline-block;
 	float:right;
+	display: block;
+	white-space: nowrap;
 }
 
 .link-left-normal{
@@ -249,10 +254,9 @@
 }
 
 .link-right{
-	margin-bottom: 4px;
+	display: block;
 	white-space: nowrap;
-	float:left;
-
+	float: left;
 }
 
 .link-right-normal{

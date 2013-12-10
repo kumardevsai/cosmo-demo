@@ -15,12 +15,12 @@
     /**
       从上到下布局样式
     **/
-    .big-graph .project {
+    .big-graph .project-layup {
       width: 45px;
       height: 60px;
       float: left;
     }
-    .project p{
+    .project-layup p{
       margin-bottom: 0.0em;
     }
   </style>
@@ -219,7 +219,7 @@
 
 <script src="../js/jquery-1.7.1.min.js"></script>
 <script src="../jquery.isotope.js"></script>
-<script src="../js/make-big-graph-projects-layup.js"></script> 
+<script src="../js/make-big-graph-projects.js"></script> 
 <script>
 
   // categoryRows custom layout mode
@@ -265,7 +265,36 @@
         $.each( group, function( i, elem ) {
           x = props.column * bigGraphOpts.columnWidth + props.gutter * gutterWidth;
           // 从上到下排列
-          y =  props.row  * bigGraphOpts.rowHeight;
+          if(sortBy === 'program')
+          {
+            y =  props.row  * bigGraphOpts.rowHeight;
+            if($(elem).hasClass('project')))
+            {
+              $(elem).removeClass('project');
+              $(elem).addClass('project-layup');
+              var elem_p = $($(elem).children('p')[0]);
+              var elem_icon = $($(elem).children('div')[0]);
+              // 节点交换
+              var elem_icon_clone =elem_icon.clone();
+              elem_icon.remove();
+              elem_icon_clone.after(elem_p);
+            }
+          }
+          else
+          {
+            y = (bigGraphOpts.maxRows - props.row - 1) * bigGraphOpts.rowHeight;
+            if($(elem).hasClass('project-layup')))
+            {
+              $(elem).removeClass('project-layup');
+              $(elem).addClass('project');
+              var elem_p = $($(elem).children('p')[0]);
+              var elem_icon = $($(elem).children('div')[0]);
+              // 节点交换
+              var elem_p_clone =elem_p.clone();
+              elem_p.remove();
+              elem_p_clone.after(elem_icon);
+            }
+          }
           instance._pushPosition( $(elem), x, y );
           
           if ( props.row >= groupMaxRows - 1 ) {
@@ -307,7 +336,7 @@
     
     // -------- dynamically create items ---------------- //
     
-    var i = 120,
+    var i = 1,
         projects = [];
     
     while (i--) {

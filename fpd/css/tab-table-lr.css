@@ -24,7 +24,6 @@
 }
 
 .link-left-justified-normal,.link-right-justified-normal{
-	background-color: blue;
 	background-color: #eaeaea;
 	background-image: -moz-linear-gradient(#fafafa, #eaeaea);
 	background-image: -webkit-linear-gradient(#fafafa, #eaeaea);

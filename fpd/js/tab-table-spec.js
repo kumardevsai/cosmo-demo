@@ -6,8 +6,10 @@
  * @param direction 标签方向  有四个值  top left botton right
  * @param defaultIndex 默认打开的标签
  * @param clearAStyle  清楚自由页面设置超链接的样式  可选值true false
+ * @param showMouseOver 是否显示鼠标移动到、鼠标按下时候的事件及样式 默认false
+ * @param autoWdith 是否自动填充父元素的宽度，默认为true，根据标签最宽字符进行设置
  */
-function setTabLinks(divId, direction, defaultIndex, clearAStyle) {
+function setTabLinks(divId, direction, defaultIndex, clearAStyle, showMouseOver, autoWidth) {
 	// 标签计数器加1
 	tabDef.tabNum++;
 	// 获取外部div容器
@@ -15,55 +17,65 @@ function setTabLinks(divId, direction, defaultIndex, clearAStyle) {
 	// 超练级数量
 	var c_chld_length = container.children.length;
 	if (c_chld_length <= 0)
-		return; 
+		return;
 	// 默认标签方向
 	var direct_ = tabDef.defaultDirection;
 	if (checkAvialiableString(direction))
 		direct_ = direction;
 	// 缓存标签信息
 	tabDef.tabDirections['tab_' + tabDef.tabNum] = direct_;
+	var links = [];
 	for (var i = 0; i < c_chld_length; i++) {
 		var a_link = container.children[i];
 		// 获取转换后的标签
-		var link = getOneTabLink(a_link, clearAStyle, 'tab_' + tabDef.tabNum, direct_);
+		var link = getOneTabLink(a_link, clearAStyle, 'tab_' + tabDef.tabNum, direct_, autoWidth);
 		// 替换节点
 		if (a_link.replaceNode)
 			a_link.replaceNode(link);
 		else
 			a_link.parentNode.replaceChild(link, a_link);
+		links.push(link);
 		AttachEvent(link.firstChild, 'click', setTabLinkActived, false);
-		AttachEvent(link.firstChild, 'mousedown', setTabLinkMouseOver, false);
-		AttachEvent(link.firstChild, 'mouseover', setTabLinkMouseOver, false);
-		AttachEvent(link.firstChild, 'mouseout', setTabLinkMouseOut, false);
+		// 显示标签浮动效果
+		if (showMouseOver === true) {
+			AttachEvent(link.firstChild, 'mousedown', setTabLinkMouseOver, false);
+			AttachEvent(link.firstChild, 'mouseover', setTabLinkMouseOver, false);
+			AttachEvent(link.firstChild, 'mouseout', setTabLinkMouseOut, false);
+		}
 		// 默认激活一个标签
 		if (defaultIndex !== undefined && defaultIndex === i)
 			link.firstChild.click();
 	}
+	// 设置单个标签的样式
+	if (autoWidth === true && (direct_ === 'left' || direct_ === 'right')) {
+		var maxWidth = 0;
+		for (var i = 0; i < links.length; i++) {
+			var link = links[i];
+			if (link.offsetWidth) {
+				if (maxWidth < link.offsetWidth)
+					maxWidth = link.offsetWidth;
+				if (maxWidth > link.offsetWidth)
+					links[i].style.width = maxWidth + 'px';
+			}
+		}
+	}
 };
 
 // 创建一个标签
-function getOneTabLink(a_link, clearAStyle, tab, direction) {
-	var container = document.createElement('div');
-	// 设置左、右侧标签的最外层样式，主要是设置宽度
-	container.className = 'link-container-' + direction;
+function getOneTabLink(a_link, clearAStyle, tab, direction, autoWidth) {
 	var link = document.createElement('div');
-	container.appendChild(link);
-	var c = document.createElement('div');
-	var l = document.createElement('div');
-	var r = document.createElement('div');
+	// 设置左、右侧标签的最外层样式，主要是设置宽度
+	link.className = 'link-outer-' + direction;
 	var a_clone = a_link.cloneNode(true);
 	// 清楚自由页面默认设置的超链接样式，替换为css文件的样式
 	if (clearAStyle === true)
 		a_clone.style.cssText = ''
-	c.appendChild(a_clone);
-	link.appendChild(l);
-	link.appendChild(c);
-	link.appendChild(r);
+	link.appendChild(a_clone);
 	// 设置所属的tab组
 	link.setAttribute('ownTab', tab);
 	// 显示普通标签样式
 	setOneTabLinkNormally(link);
-	return container;
+	return link;
 };
 
 // 激活标签样式
@@ -114,8 +126,6 @@ function getEventTabLink(e) {
 	e = window.event ? window.event : e;
 	var link = e.srcElement ? e.srcElement : e.target;
 	if (link.tagName.toLowerCase() === 'a')
-		return link.parentNode.parentNode;
-	if (link.className.indexOf('-r ') !== -1 || link.className.indexOf('-c ') !== -1 || link.className.indexOf('-l ') !== -1)
 		return link.parentNode;
 	return link;
 };
@@ -124,10 +134,10 @@ function getEventTabLink(e) {
 var tabDef = {
 	activedTabLink: null,
 	classPrefix: {
-		top: 'link-top',
-		left: 'link-left',
-		bottom: 'link-bottom',
-		right: 'link-right'
+		top: 'link-outer-top',
+		left: 'link-outer-left',
+		bottom: 'link-outer-bottom',
+		right: 'link-outer-right'
 	},
 	// 默认标签显示的方向
 	defaultDirection: 'top',
@@ -145,33 +155,16 @@ function checkAvialiableString(str) {
 		return false;
 };
 
-// 获取标签的不同部分 ， 兼容写法
-function getLinkObj(link) {
-	var l = link.firstChild;
-	var c = l.nextSibling;
-	var r = link.lastChild;
-	return {
-		l: l,
-		c: c,
-		r: r
-	};
-};
-
 // 设置标签的样式
 function setTabLinkStyle(link, sty) {
 	if (sty) {
 		// 获取标签class前缀
 		var prefix = tabDef.classPrefix[tabDef.tabDirections[link.getAttribute('ownTab')]];
-		var linkObj = getLinkObj(link);
 		link.className = prefix + ' ' + prefix + '-' + sty;
-		linkObj.l.className = prefix + '-' + sty + '-l link-l';
-		linkObj.c.className = prefix + '-' + sty + '-c link-c';
-		linkObj.r.className = prefix + '-' + sty + '-r link-r';
 	}
 };
 
 // 执行鼠标点击操作
 function openTabLink(link) {
-	var linkObj = getLinkObj(link);
-	linkObj.c.firstChild.click();
+	link.firstChild.click();
 };

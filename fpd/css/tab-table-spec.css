@@ -1,0 +1,74 @@
+/**
+	注释:
+	左侧和右侧的标签设置了左、右、下的边框样式，上边框的样式需要在容器div进行设置
+	上边的标签设置了上、下、右侧的边框样式，左边框的样式需要在容器div进行设置
+	下边的标签设置了上、下、左侧的边框样式，右边框的样式需要在容器div进行设置
+
+	若标签显示在左边，请手动设置左侧容器单元格的宽度
+**/
+.link-outer-left , .link-outer-top , .link-outer-bottom , .link-outer-right{
+	height: 30px;
+	line-height: 30px;
+	padding-left: 5px;
+	padding-right: 5px;
+	cursor: pointer;
+	box-sizing:border-box;
+	text-overflow:ellipsis;
+	display: block;
+	white-space:nowrap; 
+	overflow:hidden;
+	text-align: center;
+}
+
+.link-outer-left-active , .link-outer-top-active , .link-outer-bottom-active , .link-outer-right-active{
+	background-color: white;
+}
+
+.link-outer-left-active a, .link-outer-top-active a, .link-outer-bottom-active a, .link-outer-right-active a, .link-outer-left-mouseover a, .link-outer-top-mouseover a, .link-outer-bottom-mouseover a, .link-outer-right-mouseover a{
+	color: black;
+}
+
+.link-outer-left-normal , .link-outer-top-normal , .link-outer-bottom-normal , .link-outer-right-normal{
+	background-color: #eaeaea;
+	background-image: -moz-linear-gradient(#fafafa, #eaeaea);
+	background-image: -webkit-linear-gradient(#fafafa, #eaeaea);
+	background-image: linear-gradient(#fafafa, #eaeaea);
+}
+
+.link-outer-left-mouseover , .link-outer-top-mouseover , .link-outer-bottom-mouseover , .link-outer-right-mouseover{
+	background-color: #fafafa;
+}
+
+.link-outer-left-normal , .link-outer-top-normal , .link-outer-bottom-normal , .link-outer-right-normal{
+	color:black;
+}
+
+.link-outer-left{
+	clear: both;
+	float:right;
+	width: 100%;
+	border-right:1px solid #e5e5e5;
+	border-left: 1px solid #e5e5e5;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.link-outer-right{
+	width: 100%;
+	border-right:1px solid #e5e5e5;
+	border-left: 1px solid #e5e5e5;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.link-outer-top{
+	border-top:1px solid #e5e5e5;
+	border-right: 1px solid #e5e5e5;
+	border-bottom: 1px solid #e5e5e5;
+	float:left;
+}
+
+.link-outer-bottom{
+	border-top:1px solid #e5e5e5;
+	border-left: 1px solid #e5e5e5;
+	border-bottom: 1px solid #e5e5e5;
+	float:right;
+}
