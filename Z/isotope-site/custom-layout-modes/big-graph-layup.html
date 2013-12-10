@@ -22,7 +22,48 @@
     }
     .project-layup p{
       margin-bottom: 0.0em;
+      line-height: 14px;
+      font-size: 10.5px;
+      color: black;
+      margin-left: 7px;
     }
+    .big-graph .project-layup .icon {
+      pointer-events: none;
+      width: 31px;
+      height: 31px;
+      background: white;
+      margin-left: 7px;
+      -webkit-transition: -webkit-transform 0.25s;
+         -moz-transition: -moz-transform    0.25s;
+          -ms-transition: -ms-transform     0.25s;
+           -o-transition: -o-transform      0.25s;
+              transition: transform         0.25s;
+    }
+
+    .big-graph .project-layup:hover {
+      z-index: 5;
+      
+    }
+
+    .big-graph .project-layup:hover .icon {
+      -webkit-transform: scale(3);
+         -moz-transform: scale(3);
+          -ms-transform: scale(3);
+           -o-transform: scale(3);
+              transform: scale(3);
+    }
+
+    .big-graph .project-layup.commercial .icon { background: #6B6B6B; }
+    .big-graph .project-layup.urbanism .icon { background: #00CF00; }
+    .big-graph .project-layup.public-space .icon { background: #FF8D00; }
+    .big-graph .project-layup.culture .icon { background: #D61919; }
+    .big-graph .project-layup.body-culture .icon { background: #00ECFF; }
+    .big-graph .project-layup.health .icon { background: #FF2251; }
+    .big-graph .project-layup.education .icon { background: #00A700; }
+    .big-graph .project-layup.housing .icon { background: #FF02FF; }
+    .big-graph .project-layup.hotel .icon { background: #0000C3; }
+    .big-graph .project-layup.media .icon { background: #292929; }
+
   </style>
 </head>
 <body class="custom-layout-modes ">
@@ -268,31 +309,31 @@
           if(sortBy === 'program')
           {
             y =  props.row  * bigGraphOpts.rowHeight;
-            if($(elem).hasClass('project')))
+            if($(elem).hasClass('project'))
             {
               $(elem).removeClass('project');
               $(elem).addClass('project-layup');
               var elem_p = $($(elem).children('p')[0]);
               var elem_icon = $($(elem).children('div')[0]);
               // 节点交换
-              var elem_icon_clone =elem_icon.clone();
-              elem_icon.remove();
-              elem_icon_clone.after(elem_p);
+              var elem_p_clone =elem_p.clone(true);
+              elem_p.remove();
+              elem_icon.before(elem_p_clone);
             }
           }
           else
           {
             y = (bigGraphOpts.maxRows - props.row - 1) * bigGraphOpts.rowHeight;
-            if($(elem).hasClass('project-layup')))
-            {
+            if($(elem).hasClass('project-layup'))
+              {
               $(elem).removeClass('project-layup');
               $(elem).addClass('project');
               var elem_p = $($(elem).children('p')[0]);
               var elem_icon = $($(elem).children('div')[0]);
               // 节点交换
-              var elem_p_clone =elem_p.clone();
+              var elem_p_clone =elem_p.clone(true);
               elem_p.remove();
-              elem_p_clone.after(elem_icon);
+              elem_icon.after(elem_p_clone);
             }
           }
           instance._pushPosition( $(elem), x, y );
@@ -336,7 +377,7 @@
     
     // -------- dynamically create items ---------------- //
     
-    var i = 1,
+    var i = 120,
         projects = [];
     
     while (i--) {
