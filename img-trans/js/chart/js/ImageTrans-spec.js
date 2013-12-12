@@ -123,6 +123,11 @@ ImageTrans.prototype = {
 			$$D.setStyle(this._container, this._style); //恢复样式
 			this._container = this._img = this._img.onload = this._img.onerror = this._LOAD = null;
 		}
+	},
+	setExistImg: function(img) {
+		if (this._support) {
+			this._img = img;
+		}
 	}
 };
 //变换模式
@@ -251,6 +256,7 @@ ImageTrans.modes = function() {
 		}
 	};
 }();
+
 //变换方法
 ImageTrans.transforms = {
 	//垂直翻转
@@ -305,7 +311,6 @@ ImageTrans.transforms = {
 		this.scale(-Math.abs(this._zoom));
 	}
 };
-
 
 //拖动旋转扩展
 ImageTrans.prototype._initialize = (function() {
@@ -363,41 +368,6 @@ ImageTrans.prototype._initialize = (function() {
 	return function() {
 		var options = arguments[1];
 		if (!options || options.mouseRotate !== false) {
-			//扩展钩子
-			$$A.forEach(methods, function(method, name) {
-				$$CE.addEvent(this, name, method);
-			}, this);
-		}
-		init.apply(this, arguments);
-	}
-})();
-
-//滚轮缩放扩展
-ImageTrans.prototype._initialize = (function() {
-	var init = ImageTrans.prototype._initialize,
-		mousewheel = $$B.firefox ? "DOMMouseScroll" : "mousewheel",
-		methods = {
-			"init": function() {
-				this._mzZoom = $$F.bind(zoom, this);
-			},
-			"initContainer": function() {
-				$$E.addEvent(this._container, mousewheel, this._mzZoom);
-			},
-			"dispose": function() {
-				$$E.removeEvent(this._container, mousewheel, this._mzZoom);
-				this._mzZoom = null;
-			}
-		};
-	//缩放函数
-	function zoom(e) {
-		this.scale((
-			e.wheelDelta ? e.wheelDelta / (-120) : (e.detail || 0) / 3
-		) * Math.abs(this._zoom));
-		e.preventDefault();
-	};
-	return function() {
-		var options = arguments[1];
-		if (!options || options.mouseZoom !== false) {
 			//扩展钩子
 			$$A.forEach(methods, function(method, name) {
 				$$CE.addEvent(this, name, method);

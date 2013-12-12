@@ -1,0 +1,54 @@
+<div class="c-p-pre  c-p-grey &lt;/eq&gt; ">
+<!--去掉-->
+	<a>
+		上一页
+	</a>
+</div>
+					
+-------------------------------------------------------------------------					----------------------------------------------------------------------
+<div class="c-p-next  c-p-grey &lt;/eq&gt;">
+	<a href="http://www.mengsi.cn/index.php?g=Wap&m=Index&a=lists&classid=46&token=ropkml1385450831&p=2">
+		下一页
+	</a>
+	<!--去掉-->
+</div>
+------------------------------------------------------------------------------------------
+.c-p-cur
+{ position:relative; height:30px; vertical-align:top; text-align:center;
+margin-left:5px; }
+------------------------------------------------------------------------------
+.c-p-pre a { display:inline-block; width:70px; height:30px; line-height:30px; background-image:-webkit-gradient(linear,
+left top, left bottom, from(#F9F4FF), to(#EDE5F7)); background-image:-webkit-linear-gradient(#F9F4FF,
+#EDE5F7); background-image:-moz-linear-gradient(#F9F4FF, #EDE5F7); background-image:-ms-linear-gradient(#F9F4FF,
+#EDE5F7); background-image:-o-linear-gradient(#F9F4FF, #EDE5F7); background-image:linear-gradient(#F9F4FF,
+#EDE5F7); border:1px #DED6E7 solid; overflow:hidden; border-radius:15px;
+-webkit-border-radius:15px; border-left:1 #d5d5d5 solid; border-right:1px
+#d5d5d5 solid; }
+
+-------------------------------------------------------------------------------------
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-next a { display:inline-block; width:70px; height:30px; line-height:30px; background-image:-webkit-gradient(linear,
+left top, left bottom, from(#F9F4FF), to(#EDE5F7)); background-image:-webkit-linear-gradient(#F9F4FF,
+#EDE5F7); background-image:-moz-linear-gradient(#F9F4FF, #EDE5F7); background-image:-ms-linear-gradient(#F9F4FF,
+#EDE5F7); background-image:-o-linear-gradient(#F9F4FF, #EDE5F7); background-image:linear-gradient(#F9F4FF,
+#EDE5F7); border:1px #DED6E7 solid; overflow:hidden; border-radius:15px;
+-webkit-border-radius:15px; border-left:1px #d5d5d5 solid; border-right:1
+#d5d5d5 solid; }
+
+---------------------------------------------------------------------------------
+
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-cur .c-p-arrow
+{ display:inline-block; width:88px; line-height:30px; background-image:-webkit-gradient(linear,
+left top, left bottom, from(#F9F4FF), to(#EDE5F7)); background-image:-webkit-linear-gradient(#F9F4FF,
+#EDE5F7); background-image:-moz-linear-gradient(#F9F4FF, #EDE5F7); background-image:-ms-linear-gradient(#F9F4FF,
+#EDE5F7); background-image:-o-linear-gradient(#F9F4FF, #EDE5F7); background-image:linear-gradient(#F9F4FF,
+#EDE5F7); border:1px #DED6E7 solid; border-radius:15px;}
+
+
+
+
+
+没用背景图片，否则还得切一下
+使用的圆角css，15px
+上一页的子元素span去掉
+下一页的子元素span去掉
+其他未动
