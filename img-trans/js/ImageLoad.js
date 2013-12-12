@@ -1,7 +1,7 @@
 (function() {
 
 	var container = $$("idContainer"),
-		src = "1.jpg",
+		src = "1.png",
 		options = {
 			onPreLoad: function() {
 				container.style.backgroundImage = "url('loading.gif')";

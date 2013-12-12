@@ -1,0 +1,234 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>{iMicro:$tpl['wxname']}</title>
+<meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta charset="utf-8">
+<link href="{iMicro::RES}/css/ktv/style.css" rel="stylesheet" type="text/css">
+<link type="text/css" rel="stylesheet" href="{iMicro::RES}/css/ktv/style01.css">
+<script type="text/javascript" charset="utf-8" src="{iMicro::RES}/js/ktv/page_context.js"></script>
+<style type="text/css">
+<!--
+/*pages*/
+#Page_wrapper .c-pnav-con {
+	text-align:center;
+	font-size:14px;
+}
+#Page_wrapper .c-pnav-con ul {
+	list-style:none;
+	display:inline-block;
+}
+#Page_wrapper .c-pnav-con ul li {
+	display:inline-block;
+	padding:5px 15px;
+}
+#Page_wrapper .c-pnav-con ul li:nth-child(2) {
+width:85px;
+}
+#Page_wrapper .c-pnav-con ul li:nth-child(3) {
+margin-left:-110px;
+}
+#Page_wrapper .c-pnav-con ul li:last-child {
+	margin-left:0;
+}
+#Page_wrapper .c-pnav-con .c-p-sec {
+	display:inline-block;
+	margin:10px auto;
+	margin-top:5px;
+	margin-bottom: 10px;
+}
+#Page_wrapper .c-pnav-con .c-p-sec div {
+	display:inline-block;
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-pre {
+	width:80px;
+	background-image: url(/themes/Wap/default/shang.png);
+	height: 24px;
+	line-height: 24px;
+	background-repeat: no-repeat;
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-pre a {
+	display:inline-block;
+	width:70px;
+	overflow:hidden;
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-pre .c-p-p {
+	display:inline-block;
+	width:17px;
+	height:24px;
+	position:relative;
+	overflow:hidden;
+	vertical-align:top;
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-pre .c-p-p em {
+	display:inline;
+	-webkit-transform:rotate(45deg);
+	background-image:-webkit-gradient(linear, left top, left bottom, from(#F9F4FF), to(#EDE5F7));
+	background-image:-webkit-linear-gradient(#F9F4FF, #EDE5F7);
+	background-image:-moz-linear-gradient(#F9F4FF, #EDE5F7);
+	background-image:-ms-linear-gradient(#F9F4FF, #EDE5F7);
+	background-image:-o-linear-gradient(#F9F4FF, #EDE5F7);
+	background-image:linear-gradient(#F9F4FF, #EDE5F7);
+	border:1px #DED6E7 solid;
+	position:absolute;
+	top:4px;
+	left:6px;
+	width:21px;
+	height:21px;
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-next {
+	width:80px;
+	background-image: url(/themes/Wap/default/xia.png);
+	height: 24px;
+	line-height: 24px;
+	background-repeat: no-repeat;
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-next a {
+	display:inline-block;
+	width:70px;
+	overflow:hidden;
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-next .c-p-p {
+	display:inline-block;
+	width:17px;
+	height:24px;
+	position:relative;
+	overflow:hidden;
+	vertical-align:top;
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-next .c-p-p em {
+	display:inline;
+	-webkit-transform:rotate(45deg);
+	background-image:-webkit-gradient(linear, left top, left bottom, from(#F9F4FF), to(#EDE5F7));
+	background-image:-webkit-linear-gradient(#F9F4FF, #EDE5F7);
+	background-image:-moz-linear-gradient(#F9F4FF, #EDE5F7);
+	background-image:-ms-linear-gradient(#F9F4FF, #EDE5F7);
+	background-image:-o-linear-gradient(#F9F4FF, #EDE5F7);
+	background-image:linear-gradient(#F9F4FF, #EDE5F7);
+	border:1px #DED6E7 solid;
+	position:absolute;
+	top:4px;
+	left:-12px;
+	width:21px;
+	height:21px;
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-cur {
+	position:relative;
+	vertical-align:top;
+	text-align:center;
+	margin-left:20px;
+	margin-right:20px;
+	height: 24px;
+	line-height: 24px;
+	width: 53px;
+	background-repeat: no-repeat;
+	background-image: url(/themes/Wap/default/zhong.png);
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-cur .c-p-arrow {
+	display:inline-block;
+	width:28px;
+	text-align: left;
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-cur .c-p-up span:last-child {
+	display:inline-block;
+	font-size:0;
+	border-top:3px solid #666;
+	border-left:3px solid #666;
+	width:6px;
+	height:6px;
+	background-color:transparent;
+	-webkit-transform:rotate(45deg);
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-grey {
+	display:inline-block;
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-grey a {
+	color:#000;
+}
+#Page_wrapper .c-pnav-con .c-p-sec .c-p-select {
+	position:absolute;
+	top:0;
+	left:0;
+	height:24px;
+	width:53px;
+	opacity:0;
+}
+.copyright{
+	text-align:center;
+}
+.copyright a{
+	color: #999;
+	font-size: 10px;
+}
+-->
+</style>
+</head>
+
+<body screen_capture_injected="true">
+<div>
+	<ul class="mainmenu2 radius margin10">
+		
+		<volist name="res" id="vo">
+		<li class="radius_top border-top-none">
+			<div class="menubtn">
+			<if condition="$vo['url']">
+			<a href="{iMicro:$vo.url}">
+			<else />
+			<a href="{iMicro::U('Index/content',array('id'=>$vo['id'],'token'=>$vo
+
+['token']))}">
+			</if>
+				<h2 class="menutitle">{iMicro:$vo.title}</h2>
+				<p class="menudesc">{iMicro:$vo.text}</p>
+				</a> <span class="icon">&nbsp;</span> </div>
+		</li>
+		</volist>
+	</ul>
+	
+</div>
+
+
+<section id="Page_wrapper">
+<div id="pNavDemo" class="c-pnav-con">
+<section class="c-p-sec">
+<div class='c-p-pre  c-p-grey </eq> '><a <eq name="p" value="1"><else/>href="{iMicro::C('site_url')}/index.php?g=Wap&m=Index&a=lists&classid=<php>echo $_GET['classid'];</php>&token={iMicro:$tpl.token}&p=<php>echo $p-1;</php>"</eq>  >上一页</a></div>
+<div class="c-p-cur">
+<div class="c-p-arrow c-p-down"><span>{iMicro:$p}/{iMicro:$page}</span></div>
+	<select class="c-p-select" onchange="dourl('{iMicro::C('site_url')}/index.php?g=Wap&m=Index&a=lists&classid=<php>echo $_GET['classid'];</php>&token={iMicro:$tpl.token}&p='+this.value)">
+		<?php
+			for($i=1;$i<=$page;$i++){
+				if($i==$p){
+					echo '<option value="'.$i.'" selected>第'.$i.'页</option>';
+				}else{
+					echo '<option value="'.$i.'">第'.$i.'页</option>';
+				}
+			}
+		?>
+	</select>
+</div>
+<div class='c-p-next  c-p-grey </eq>'  >
+
+<?php
+	if($p<$page){
+		echo '<a href="'.C('site_url').'/index.php?g=Wap&m=Index&a=lists&classid='.(int)$_GET['classid'].'&token='.$tpl['token'].'&p='.($p+1).'">';
+	}else{
+		echo '<a>';
+	}
+?>
+下一页</a></div>
+</section>
+</div>
+</section>
+</div>
+<eq name="copyright" value="0">
+<div class="copyright"  >
+<a href='http://wap.zhiming.cc' class='href'><php>echo htmlspecialchars_decode(C('copyright'))
+
+</php></a>
+</div>
+</eq>
+<div style="display:none">{iMicro:$tpl.tongji|htmlspecialchars_decode}</div>
+</body>
+</html>
