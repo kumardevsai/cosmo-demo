@@ -170,8 +170,8 @@ margin-left:-110px;
 <div>
 	<ul class="mainmenu2 radius margin10">
 		
-		<volist name="res" id="vo">
-		<li class="radius_top border-top-none">
+		<volist name="res" id="vo" key="i">
+			<li class="radius_top border-top-none">
 			<div class="menubtn">
 			<if condition="$vo['url']">
 			<a href="{iMicro:$vo.url}">
