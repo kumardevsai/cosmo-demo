@@ -15,7 +15,7 @@ function setTabLinks(divId, direction, defaultIndex, clearAStyle) {
 	// 超练级数量
 	var c_chld_length = container.children.length;
 	if (c_chld_length <= 0)
-		return; 
+		return;
 	// 默认标签方向
 	var direct_ = tabDef.defaultDirection;
 	if (checkAvialiableString(direction))
