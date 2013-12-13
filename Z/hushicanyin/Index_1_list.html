@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -15,8 +15,9 @@
 		max-width: auto;
 	}
 	.todayList li{
-		padding-bottom: 0;
-		height: 59px;
+		padding-bottom: 5px;
+		height: 72px;
+		box-sizing:border-box;
 	}
 	.copyright{
 		padding-top: 0;
@@ -55,7 +56,7 @@ oWin.style.display = "none"
 <div class="fixed">
 <a class="popmenu" >{iMicro:$name}</a>
 <a class="ui-btn-left_pre" href="{iMicro::U('Index/index',array('token'=>$tpl['token']))}"></a>
-<a class="ui-btn-right"  id="popmenu" >选择</a>
+<a class="ui-btn-right"  id="popmenu" ></a>
 </div>
 
 
@@ -72,26 +73,25 @@ oWin.style.display = "none"
 </div>
 <div class="Listpage">
 <div class="top46"></div>
-	<div id="todayList">
-		<ul  class="todayList">
-		   <volist name="res" id="so">   
-			<li  class="only3">
-			<if condition="$so['url']">
-			<a href="{iMicro:$so.url}">
-			<else />
-			<a href="{iMicro::U('Index/content',array('id'=>$so['id'],'token'=>$so['token']))}">
-			</if>
+    <div id="todayList">
+<ul  class="todayList">
+   <volist name="res" id="so">   
+<li>
+<if condition="$so['url']">
+<a href="{iMicro:$so.url}">
+<else />
+<a href="{iMicro::U('Index/content',array('id'=>$so['id'],'token'=>$so['token']))}">
+</if>
+<div class="img"><img src="{iMicro:$so.pic}"></div>
+<h2>{iMicro:$so.title}</h2>
+<p class="onlyheight"><php>echo msubstr($so[text],0,26);</php></p>
+<div class="commentNum"></div>
+</a>
+</li>
+ </volist>
 
-			<h2>{iMicro:$so.title}</h2>
-			<p class="onlyheight"><php>echo msubstr($so[text],0,26);</php></p>
-			<div class="commentNum"></div>
-			<span class="icon">&nbsp;</span>
-			</a>
-			</li>
-		 </volist>
-
-		</ul>
-	</div>
+</ul>
+</div>
 <section id="Page_wrapper">
 <div id="pNavDemo" class="c-pnav-con">
 <section class="c-p-sec">
