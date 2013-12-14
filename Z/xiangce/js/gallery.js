@@ -131,18 +131,8 @@ $(function() {
             return false;
         });
         if (index === 0) {
-            $thumbnails.css({
-                top: '-90px'
-            });
-            $title.css({
-                bottom: '-90px'
-            });
-            $pause.hide();
             $.vegas('slideshow', {
                 step: 0
-            });
-            $volume.animate({
-                top: '20px'
             });
         }
     });
@@ -167,47 +157,4 @@ $(function() {
 
         return false;
     });
-    $(document).bind('mousemove', function(e) {
-        timeout_num = 0;
-        showAll();
-    });
-    $('.vegas-overlay').bind('click', function() {
-        if ($pause.css('display') === 'none') {
-            $pointer.click();
-            showAll();
-        }
-    });
-    var timeout_num = 0;
-    setInterval(function() {
-        timeout_num++;
-        if (timeout_num >= 5 && $pause.css('display') === 'none') {
-            hideAll();
-            timeout_num = 0;
-            return;
-        }
-    }, 1000);
-    var showAll = function() {
-        $title.animate({
-            bottom: '0px'
-        });
-        $thumbnails.animate({
-            top: '0px'
-        });
-        $volume.animate({
-            top: '100px'
-        });
-        $title.show(200);
-        $thumbnails.show(200);
-    };
-
-    var hideAll = function() {
-        $title.css({
-            bottom: '-90px'
-        });
-        $volume.animate({
-            top: '20px'
-        });
-        $thumbnails.hide();
-        $title.hide();
-    };
 });
