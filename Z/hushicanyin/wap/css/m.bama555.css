@@ -1,0 +1,429 @@
+body{
+    background: url(../img/bg.png) repeat;
+}
+
+.page-header{
+    height: 48px;
+    min-height: 48px;
+    background: url(../img/headbg.png) repeat-x 0 0;
+    box-shadow: 0 2px 5px;
+}
+.page-header-logo{
+    position: relative;
+    top: 50%;left: 50%;
+    margin-top: -13px;margin-left: -96px;
+    width: 144px;
+    height: 25px;
+    background: url(../img/icons.png) no-repeat 0 0;
+}
+.page-header-title{
+    position: relative;
+    top: 50%;left: 50%;
+    margin-top: -13px;margin-left: -144px;
+    width: 288px;
+    height: 25px;
+    line-height: 25px;
+    font-size: 26px;
+    text-align: center;
+    color: #FFFFFF;
+	font-weight:bold;
+}
+.page-header-tell{
+    position: absolute;
+    right: 0;top: 0;
+    width: 48px;
+    height: 48px;
+    border-left: 1px  inset #d9e1dd;
+}
+.page-header-tell .icon{
+    position: absolute;
+    top: 5px;left: 50%;margin-left: -12px;
+    width: 23px;
+    height: 23px;
+    background: url(../img/icons.png) no-repeat -144px 0;
+    
+}
+.page-header-tell a{
+    font-size: 14px;
+    color: #FFFFFF;
+    position: relative;
+    display: block;
+    text-decoration:none;
+    width: 100%;height: 24px;
+    line-height: 24px;
+    padding-top: 24px;
+    text-align: center;
+    font-size: 10px;
+}
+
+.page-footer{
+    height: 48px;
+    min-height: 48px;
+    background: url(../img/headbg.png) repeat-x 0 -854px;
+    display: table;
+    box-shadow: 0 -2px 5px;
+}
+.nav-footer-button-group{
+    display: table-row;
+    position: relative;
+}
+.nav-footer-button{
+    position: relative;
+    display: table-cell;
+    border-right: 1px inset #646464;
+    min-width: 64px;
+}
+.nav-footer-button .icon{
+    background-image: url(../img/icons.png);
+    position: relative;
+    width: 24px;height: 22px;
+    top: 2px;
+    left: 50%;margin-left: -12px;
+}
+
+.nav-footer-button.index .icon{
+    background-position: 0 -91px;
+}
+.nav-footer-button.qunfa .icon{
+    background-position: -48px -91px;
+}
+.nav-footer-button.guanzhu .icon{
+    background-position: -24px -91px;
+}
+.nav-footer-button.anli .icon{
+    background-position: -72px -91px;
+}
+
+.nav-footer-button a{
+    font-size: 14px;
+    color: #FFFFFF;
+    position: relative;
+    display: block;
+    text-decoration:none;
+    width: 100%;height: 24px;
+    line-height: 24px;
+    padding-top: 24px;
+    margin-top: -22px;
+    text-align: center;
+}
+/*seleted*/
+.nav-footer-button.index.seleted .icon{
+    background-position: 0 -69px;
+}
+.nav-footer-button.qunfa.seleted .icon{
+    background-position: -48px -69px;
+}
+.nav-footer-button.guanzhu.seleted .icon{
+    background-position: -24px -69px;
+}
+.nav-footer-button.anli.seleted .icon{
+    background-position: -72px -69px;
+}
+.nav-footer-button.seleted a{
+    color: #99C54B;
+}
+/*UC专供，我靠*/
+.nav-footer-button a:link{
+    color: #fefefe;
+}
+.nav-footer-button a:visited{
+    color: #FFFFFF;
+}
+.nav-footer-button.seleted a:visited { 
+    color: #99C54B;
+}
+
+.page-topic{
+    height: 268px;
+}
+/*
+.page-topic .tellme{
+    position: relative;
+    top: 8px;
+    width: 285px;height: 37px;
+    background: url(../img/icons.png) no-repeat 0 -32px;
+    left: 50%;margin-left: -143px;
+}*/
+
+.page-topic .tellme{
+    position: relative;
+    display: block;
+    top: 12px;
+    width: 273px;height: 37px;
+    background: url(../img/icons.png) no-repeat 0 -164px;
+    left: 50%;margin-left: -143px;
+    line-height: 30px;
+    color: #FFFFFF;
+    text-align: right;
+    font-size: 20px;
+    padding-right: 12px;
+    text-decoration: none;
+}
+.page-topic .tellme1{
+    position: relative;
+    display: block;
+    top: 36px;
+    width: 273px;height: 37px;
+    background: url(../img/icons.png) no-repeat 0 -205px;
+    left: 50%;margin-left: -143px;
+    line-height: 30px;
+    color: #FFFFFF;
+    text-align: right;
+    font-size: 20px;
+    padding-right: 12px;
+    text-decoration: none;
+}
+
+.page-topic .icon{
+    position: relative;
+    top: 10px;
+}
+
+.page-content {
+    margin-bottom: 36px;
+}
+
+/*首页(微网站)*/
+.index .page-topic{
+    background: url(../img/headbg.png) repeat-x 0 -49px;
+}
+.index .page-topic .icon{
+    width: 310px;height: 207px;
+    left: 50%;margin-left: -155px;
+    background: url(../img/topic.index.png) no-repeat;
+}
+.index .part{
+    margin-top: 28px;
+}
+
+.index .part .title{
+    position: relative;
+    height: 66px;
+    background-color: #E7E7E7;
+    line-height: 66px;
+}
+.index .part h3{
+    padding-left:68px;
+}
+.index .part h4{
+    padding-left:15px;
+}
+
+.index .part .title .icon{
+    position: absolute;
+    width: 65px;
+    height: 60px;
+    left: 5px;
+    top: 50%;
+    margin-top: -30px;
+    background: url(../img/new_incos.png) no-repeat 0 -117px;
+}
+.index .part .title .text{
+    padding-left: 68px;
+    font-size: 18px;
+}
+.index .part  .memo{
+    padding-left: 68px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 8px;
+}
+.index .part  p{
+    padding: 0 0  0 15px;
+    margin: 2px;
+}
+
+.index .part.P1 .title .icon{
+    background-position: -35px -12px;
+}
+.index .part.P2 .title .icon{
+    background-position: -125px -12px;
+}
+.index .part.P3 .title .icon{
+    background-position: -218px -12px;
+}
+.index .part.P4 .title .icon{
+    background-position: -32px -93px;
+}
+.index .part.P5 .title .icon{
+    background-position: -224px -93px;
+}
+.index .part.P6 .title .icon{
+    background-position: -35px -174px;
+}
+.index .part.P7 .title .icon{
+    background-position: -125px -174px;
+}
+.index .part.P8 .title .icon{
+    background-position: -215px -174px;
+}
+.index .part.P9 .title .icon{
+    background-position: -124px -93px;
+}
+
+
+/*微信群发*/
+.qunfa .page-topic{
+    background: url(../img/headbg.png) repeat-x 0 -318px;
+}
+.qunfa .page-topic .icon{
+    width: 300px;height: 164px;
+    top: 20px;
+    left: 50%;margin-left: -155px;
+    background: url(../img/topic.qunfa.png) no-repeat;
+}
+.qunfa .page-topic .tellme{
+    top: 32px;
+}
+.qunfa .ad{
+    background: url(../img/qunfa.ad.jpg) no-repeat 0 0;
+    width: 320px;
+    height: 60px;
+    position: relative;
+    left: 50%;margin-left: -160px;
+    margin-top: 10px;
+}
+
+.qunfa h2{
+    text-align: center
+}
+
+.qunfa .part.P1 ul{
+    padding-left: 18px;
+}
+.qunfa .part.P1 li{
+    list-style: none outside none;
+    line-height: 16px;
+    font-size: 12px;
+    margin: 3px 0;
+}
+.qunfa .part.P1 i{
+    display:inline-block;
+    background: url(../img/icons.png) no-repeat -167px 0;
+    width: 16px;
+    height: 16px;
+    color: #FFF;
+    line-height: 16px;
+    margin-right: 5px;
+    text-align: center;
+}
+
+.qunfa .part.P2 ul{
+    padding:0;
+    margin: 0;
+    width: 100%;
+    overflow:hidden;
+}
+.qunfa .part.P2 li{
+    list-style: none outside none;
+    line-height: 16px;
+    font-size: 12px;
+    margin: 3px;
+    width: 44%;
+    float: left;
+    height: 16px;
+    background-color: #E7E7E7;
+    padding: 10px 5px;
+}
+.qunfa .part.P2 i{
+    display:inline-block;
+    background: url(../img/icons.png) no-repeat -167px 0;
+    width: 16px;
+    height: 16px;
+    color: #FFF;
+    line-height: 16px;
+    margin-right: 1px;
+    text-align: center;
+}
+
+.qunfa .part.P3 img{
+    width: 300px;
+    position: relative;
+    left: 50%;margin-left: -150px;
+}
+.qunfa .part.P3 popImg{
+    width: auto;
+}
+
+/*一键关注*/
+.guanzhu .page-topic{
+    padding: 15px 0 3px 0;
+    background: url(../img/headbg.png) repeat-x 0 -585px;
+    height: 180px;
+}
+.guanzhu .page-topic h2{
+    margin: 0;
+}
+.guanzhu .page-topic .tellme{
+    top: 5px;
+}
+.guanzhu .page-topic ul{
+    position: relative;
+    width: 300px;
+    left: 50%;margin-left: -134px;
+    padding: 0;
+    font-size: 10px;
+    top:10px;
+}
+.guanzhu .page-topic li span{
+    font-weight: bold;
+}
+.guanzhu .page-topic li{
+    width: 130px;
+    list-style: none;
+    float: left;
+    margin-right: 20px;
+}
+.guanzhu .buzhou{
+    width: 300px;
+    position: relative;
+    left: 50%;margin-left: -150px;
+    top: 6px;
+}
+
+/**/
+.anli h2,.anli h3,.anli h4{
+    clear: both;
+}
+.anli h3{
+    margin-top: 30px;
+}
+.anli h4{
+    margin-bottom: 3px;
+}
+.anli hr{
+    margin: 20px 0;
+}
+.anli .page-topic{
+    /*background: url(../img/headbg.png) repeat-x 0 -318px;*/
+}
+.anli .page-topic .icon{
+    width: 320px;height: 151px;
+    top: 20px;
+    left: 50%;margin-left: -155px;
+    background: url(../img/topic.anli.png) no-repeat;
+}
+.anli .page-topic .tellme{
+    top: 36px;
+}
+.anli .anliimg{
+    clear: both;
+    position: relative;
+    width: 300px;
+    left: 50%;margin-left: -150px;
+    margin-top: 18px;
+}
+.anli ul{
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+.anli li{
+    width: 48%;
+    list-style: none;
+    float: left;
+    height: 38px;line-height: 38px;text-align: center;
+    margin: 3px;
+    background-color: #ffffff;
+}

@@ -30,6 +30,44 @@
 	#listhome1{
 		max-width: auto;
 	}
+	#popmenu:after {
+		content: "";
+		width: 0;
+		height: 0;
+		position: absolute;
+		right: 50px;
+		top: 50%;
+		margin-top: -2px;
+		border-width: 5px 5px 0 5px;
+		border-style: solid;
+		border-color: #9D9D9D transparent;
+	}
+	#win{
+		left:50%;
+	}
+	.dropdown:before{
+		right:88px;
+		content: "";
+		width: 0;
+		height: 0;
+		position: absolute;
+		bottom: 100%;
+		right: 88px;
+		border-width: 0 8px 8px 8px;
+		border-style: solid;
+		border-color: rgba(0,0,0,0.1) transparent;
+	}
+	.dropdown:after {
+		content: "";
+		width: 0;
+		height: 0;
+		position: absolute;
+		bottom: 100%;
+		right: 90px;
+		border-width: 0 6px 6px 6px;
+		border-style: solid;
+		border-color: rgba(47, 47, 47, 0.9) transparent;
+	}
 </style>
 </head>
 <script>
@@ -38,11 +76,17 @@ window.onload = function ()
 var oWin = document.getElementById("win");
 var oLay = document.getElementById("overlay");	
 var oBtn = document.getElementById("popmenu");
+var oBtn_ = document.getElementById("popmenu_");
 var oClose = document.getElementById("close");
 oBtn.onclick = function ()
 {
 oLay.style.display = "block";
-oWin.style.display = "block"	
+oWin.style.display = "block";	
+};
+oBtn_.onclick = function ()
+{
+oLay.style.display = "block";
+oWin.style.display = "block";	
 };
 oLay.onclick = function ()
 {
@@ -55,9 +99,9 @@ oWin.style.display = "none"
 <div id="ui-header">
 
 <div class="fixed">
-<a class="popmenu" >{iMicro:$name}</a>
+<a class="popmenu" id="popmenu">{iMicro:$name}</a>
 <a class="ui-btn-left_pre" href="{iMicro::U('Index/index',array('token'=>$tpl['token']))}"></a>
-<a class="ui-btn-right"  id="popmenu" >选择</a>
+<a class="ui-btn-right" id="popmenu_">选择</a>
 </div>
 
 
