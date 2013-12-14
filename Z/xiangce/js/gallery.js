@@ -1,141 +1,213 @@
-$( function() {
+$(function() {
     var pictures = [],
-        $pointer = $( '#pointer' ),
-        $thumbnails = $( '#thumbnails' ),
-        $title = $( '#title' ),
-        $pause = $( '#pause' ),
-        $flash = $( '#flash' ),
-        $volume = $( '#volume' );
+        $pointer = $('#pointer'),
+        $thumbnails = $('#thumbnails'),
+        $title = $('#title'),
+        $pause = $('#pause'),
+        $flash = $('#flash'),
+        $volume = $('#volume');
 
     // Buzz audio library
 
-    buzz.defaults.formats = [ 'ogg', 'mp3' ];
+    buzz.defaults.formats = ['ogg', 'mp3'];
 
-    var trafficSound = new buzz.sound( 'sounds/traffic' ),
-        clickSound = new buzz.sound( 'sounds/click' ),
-        focusSound = new buzz.sound( 'sounds/focus' ),
-        rewindSound = new buzz.sound( 'sounds/rewind' ),
-        cameraSounds = new buzz.group( clickSound, focusSound, rewindSound );
+    var trafficSound = new buzz.sound('sounds/traffic'),
+        clickSound = new buzz.sound('sounds/click'),
+        focusSound = new buzz.sound('sounds/focus'),
+        rewindSound = new buzz.sound('sounds/rewind'),
+        cameraSounds = new buzz.group(clickSound, focusSound, rewindSound);
 
-    if ( !buzz.isSupported() ) {
-        $volume.hide();    
+    if (!buzz.isSupported()) {
+        $volume.hide();
     }
-    
-    trafficSound.loop().play().fadeIn( 5000 );
-/*һ���ز���www.16sucai.com*/
+
+    trafficSound.loop().play().fadeIn(5000);
+    /*Ò»Á÷ËØ²ÄÍøwww.16sucai.com*/
     // jScrollPane
 
-    $thumbnails.find( 'ul' ).width( function() {
+    $thumbnails.find('ul').width(function() {
         var totalWidth = 0;
-        $( this ).find( 'li' ).each( function() {
-            totalWidth += $( this ).outerWidth( true );
+        $(this).find('li').each(function() {
+            totalWidth += $(this).outerWidth(true);
         });
         return totalWidth;
     });
 
     $thumbnails.jScrollPane();
 
-    var jScrollPaneApi = $thumbnails.data( 'jsp' );
+    var jScrollPaneApi = $thumbnails.data('jsp');
 
-    $( window ).bind( 'resize', function() {
+    $(window).bind('resize', function() {
         jScrollPaneApi.reinitialise();
     });
 
     // Vegas Background
 
-    $thumbnails.find( 'a' ).each( function() {
+    $thumbnails.find('a').each(function() {
         pictures.push({
-            src: $( this ).attr( 'href' ),    
-            title: $( this ).find( 'img' ).attr( 'title' ),
-            valign: $( this ).find( 'img' ).data( 'valign' )
+            src: $(this).attr('href'),
+            title: $(this).find('img').attr('title'),
+            valign: $(this).find('img').data('valign')
         });
     })
 
-    $.vegas( 'slideshow', { 
+    $.vegas('slideshow', {
         backgrounds: pictures,
         delay: 4000
-     })( 'overlay' );
-    
-    $( 'body' ).bind( 'vegasload', function( e, img ) {
-        var src = $( img ).attr( 'src' ),
-            idx = $( 'a[href="' + src + '"]' ).parent( 'li' ).index();
+    })('overlay');
 
+    $('body').bind('vegasload', function(e, img) {
+        var src = $(img).attr('src'),
+            idx = $('a[href="' + src + '"]').parent('li').index();
         focusSound.play();
-    
-        $title.fadeOut( function() {
-            $( this ).find( 'h1' ).text( pictures[ idx ].title );
-            $( this ).fadeIn();
+
+        $title.fadeOut(function() {
+            $(this).find('h1').text(pictures[idx].title);
+            $(this).fadeIn();
         });
+        $flash.show().fadeOut(1000);
 
-        $flash.show().fadeOut( 1000 );
+        var pointerPosition = $thumbnails.find('li').eq(idx).position().left;
 
-        var pointerPosition = $thumbnails.find( 'li' ).eq( idx ).position().left;
-            
         $pointer.animate({
             left: pointerPosition
-        }, 500, 'easeInOutBack' );
+        }, 500, 'easeInOutBack');
 
-        if ( ( pointerPosition > $thumbnails.width() || pointerPosition < jScrollPaneApi.getContentPositionX() ) && !$thumbnails.is( ':hover' ) ) {
-            jScrollPaneApi.scrollToX( pointerPosition, true );
+        if ((pointerPosition > $thumbnails.width() || pointerPosition < jScrollPaneApi.getContentPositionX()) && !$thumbnails.is(':hover')) {
+            jScrollPaneApi.scrollToX(pointerPosition, true);
         }
 
-        $pointer.click( function() {
-            $thumbnails.find( 'a' ).eq( idx ).click()
+        $pointer.click(function() {
+            $thumbnails.find('a').eq(idx).click()
         });
     });
 
     // Volume button
 
-    $volume.click( function() {
-        if ( $( this ).hasClass( 'all' ) ) {
+    $volume.click(function() {
+        if ($(this).hasClass('all')) {
             cameraSounds.unmute();
             trafficSound.mute();
-        
-            $( this ).removeClass( 'all' ).addClass( 'some' );
-        } else if ( $( this ).hasClass( 'some' ) ) {
+
+            $(this).removeClass('all').addClass('some');
+        } else if ($(this).hasClass('some')) {
             cameraSounds.mute();
             trafficSound.mute();
-        
-            $( this ).removeClass( 'some' ).addClass( 'none' );
+
+            $(this).removeClass('some').addClass('none');
         } else {
             cameraSounds.unmute();
             trafficSound.unmute();
-        
-            $( this ).removeClass( 'none' ).addClass( 'all' );
+
+            $(this).removeClass('none').addClass('all');
         }
         return false;
     });
 
     // Photograph
 
-    $thumbnails.find( 'a' ).click( function() {
-        $pause.show();
-        $pointer.hide();
-    
-        $volume.animate( { top: '20px' });
-        $thumbnails.animate( { top: '-90px' });
-        $title.animate( { bottom: '-90px' });    
+    $thumbnails.find('a').each(function(index, item) {
+        $(this).click(function() {
+            $pause.show();
+            $pointer.hide();
 
-        var idx = $( this ).parent( 'li' ).index();
-        $.vegas( 'slideshow', { step: idx } )( 'pause' );
+            $volume.animate({
+                top: '20px'
+            });
+            $thumbnails.animate({
+                top: '-90px'
+            });
+            $title.animate({
+                bottom: '-90px'
+            });
 
-        rewindSound.play();
-    
-        return false;
+            var idx = $(this).parent('li').index();
+            $.vegas('slideshow', {
+                step: idx
+            })('pause');
+
+            rewindSound.play();
+
+            return false;
+        });
+        if (index === 0) {
+            $thumbnails.css({
+                top: '-90px'
+            });
+            $title.css({
+                bottom: '-90px'
+            });
+            $pause.hide();
+            $.vegas('slideshow', {
+                step: 0
+            });
+            $volume.animate({
+                top: '20px'
+            });
+        }
     });
 
-    $pause.click( function() {
+    $pause.click(function() {
         $pause.hide();
         $pointer.show();
-    
-        $volume.animate( { top:'100px' });
-        $title.animate( { bottom:'0px' });
-        $thumbnails.animate( { top:'0px' });
 
-        $.vegas( 'slideshow' );
+        $volume.animate({
+            top: '100px'
+        });
+        $title.animate({
+            bottom: '0px'
+        });
+        $thumbnails.animate({
+            top: '0px'
+        });
+
+        $.vegas('slideshow');
 
         clickSound.play();
 
         return false;
     });
+    $(document).bind('mousemove', function(e) {
+        timeout_num = 0;
+        showAll();
+    });
+    $('.vegas-overlay').bind('click', function() {
+        if ($pause.css('display') === 'none') {
+            $pointer.click();
+            showAll();
+        }
+    });
+    var timeout_num = 0;
+    setInterval(function() {
+        timeout_num++;
+        if (timeout_num >= 5 && $pause.css('display') === 'none') {
+            hideAll();
+            timeout_num = 0;
+            return;
+        }
+    }, 1000);
+    var showAll = function() {
+        $title.animate({
+            bottom: '0px'
+        });
+        $thumbnails.animate({
+            top: '0px'
+        });
+        $volume.animate({
+            top: '100px'
+        });
+        $title.show(200);
+        $thumbnails.show(200);
+    };
+
+    var hideAll = function() {
+        $title.css({
+            bottom: '-90px'
+        });
+        $volume.animate({
+            top: '20px'
+        });
+        $thumbnails.hide();
+        $title.hide();
+    };
 });
