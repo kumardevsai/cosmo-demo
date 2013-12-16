@@ -6,8 +6,8 @@
  */
 
 //容器对象
-var ImageTrans = function(container, options) {
-	this._initialize(container, options);
+var ImageTrans = function(container, exsitImg, options) {
+	this._initialize(container, exsitImg, options);
 	this._initMode();
 	if (this._support) {
 		this._initContainer();
@@ -18,11 +18,11 @@ var ImageTrans = function(container, options) {
 };
 ImageTrans.prototype = {
 	//初始化程序
-	_initialize: function(container, options) {
+	_initialize: function(container, exsitImg, options) {
 		var container = this._container = $$(container);
 		this._clientWidth = container.clientWidth; //变换区域宽度
 		this._clientHeight = container.clientHeight; //变换区域高度
-		this._img = new Image(); //图片对象
+		this._img = exsitImg;
 		this._style = {}; //备份样式
 		this._x = this._y = 1; //水平/垂直变换参数
 		this._radian = 0; //旋转变换参数
@@ -90,7 +90,8 @@ ImageTrans.prototype = {
 		if (position != "relative" && position != "absolute") {
 			style.position = "relative";
 		}
-		style.overflow = "hidden";
+		style.height = this._clientHeight + 'px';
+		style.width = this._clientWidth + 'px';
 		$$CE.fireEvent(this, "initContainer");
 	},
 	//加载图片
@@ -123,11 +124,6 @@ ImageTrans.prototype = {
 			$$D.setStyle(this._container, this._style); //恢复样式
 			this._container = this._img = this._img.onload = this._img.onerror = this._LOAD = null;
 		}
-	},
-	setExistImg: function(img) {
-		if (this._support) {
-			this._img = img;
-		}
 	}
 };
 //变换模式
@@ -141,10 +137,8 @@ ImageTrans.modes = function() {
 			padding: 0,
 			margin: 0,
 			width: "auto",
-			height: "auto", //重置样式
-			visibility: "hidden" //加载前隐藏
+			height: "auto"
 		});
-		container.appendChild(img);
 	}
 	//获取变换参数函数
 	function getMatrix(radian, x, y) {
