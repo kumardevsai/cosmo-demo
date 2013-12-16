@@ -10,12 +10,6 @@
 <meta charset="utf-8">
 <link href="{lanrain::RES}/css/yl/news.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="{lanrain::RES}/css/flash/css/plugmenu.css">
-<style type="text/css">
-	.todayList li{
-		height: 54px;
-		line-height: 54px;
-	}
-</style>
 </head>
 <script>
 window.onload = function ()
@@ -23,17 +17,12 @@ window.onload = function ()
 var oWin = document.getElementById("win");
 var oLay = document.getElementById("overlay");	
 var oBtn = document.getElementById("popmenu");
-var oBtn_ = document.getElementById("popmenu_");
 var oClose = document.getElementById("close");
 oBtn.onclick = function ()
 {
 oLay.style.display = "block";
 oWin.style.display = "block"	
 };
-oBtn_.onclick = function() {
-				oLay.style.display = "block";
-				oWin.style.display = "block";
-			};
 oLay.onclick = function ()
 {
 oLay.style.display = "none";
@@ -69,12 +58,10 @@ oWin.style.display = "none"
 <else />
 <a href="{lanrain::U('Index/content',array('id'=>$so['id'],'token'=>$so['token']))}">
 </if>
-<h2 class="menutitle">
-	{lanrain:$so.title}
-</h2>
-<span class="icon">
-	&nbsp;
-</span>
+<div class="img"><eq name="so.showpic" value="1"><img src="{lanrain:$so.pic}"></eq></div>
+<h2>{lanrain:$so.title}</h2>
+<p class="onlyheight">{lanrain:$so.text}</p>
+<div class="commentNum"></div>
 </a>
 </li>
  </volist>
