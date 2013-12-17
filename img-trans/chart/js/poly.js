@@ -37,7 +37,7 @@ function checkIndicatorMapArea(mapAreaArray) {
 		if (arr_.pop() < Math.PI / 2)
 			isLt = true;
 		if (isLt === true && isGt === true) {
-			document.getElementById('indicator').value = a.area.getAttribute('title');
+			indicator.renderElement.innerHTML = a.area.getAttribute('title');
 			break;
 		}
 	}
@@ -77,11 +77,13 @@ function rotateIndicatorMapArea(radian) {
 // 指示器
 var indicator = {
 	// 角度数据
-	mapArea: []
+	mapArea: [],
+	renderElement: null
 };
 
 // 初始化表盘显示
-function initChart(img) {
+function initChart(img, containerId, renderElement) {
+	indicator.renderElement = renderElement;
 	var imgtrans = new ImageTrans(containerId, img, {});
 	indicator.mapArea = getImageMapRadians(img);
 	checkIndicatorMapArea(indicator.mapArea);

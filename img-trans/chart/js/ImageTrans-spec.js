@@ -20,8 +20,12 @@ ImageTrans.prototype = {
 	//初始化程序
 	_initialize: function(container, exsitImg, options) {
 		var container = this._container = $$(container);
+		/**
 		this._clientWidth = container.clientWidth; //变换区域宽度
 		this._clientHeight = container.clientHeight; //变换区域高度
+		**/
+		this._clientWidth = exsitImg.clientWidth; //变换区域宽度
+		this._clientHeight = exsitImg.clientHeight; //变换区域高度
 		this._img = exsitImg;
 		this._style = {}; //备份样式
 		this._x = this._y = 1; //水平/垂直变换参数
