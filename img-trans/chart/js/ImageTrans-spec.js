@@ -265,6 +265,7 @@ ImageTrans.transforms = {
 	},
 	//根据弧度旋转
 	rotate: function(radian) {
+		checkIndicatorMapArea(rotateIndicatorMapArea(radian - this._radian));
 		this._radian = radian;
 	},
 	//向左转90度
