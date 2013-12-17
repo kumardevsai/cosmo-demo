@@ -34,17 +34,15 @@ var sFtv = new Array(
 	"0504 青年节",
 	"0512 护士节",
 	"0601 儿童节",
-	"0701 建党节 香港回归纪念",
+	"0701 建党节",
 	"0801 建军节",
 	"0808 父亲节",
 	"0910 教师节",
 	"1001*国庆节",
-	"1006 老人节",
-	"1225 圣诞节")
+	"1006 老人节")
 //农历节日 *表示放假日
 var lFtv = new Array(
-	"0101*春节、弥勒佛圣诞!",
-	"0106 定光佛圣诞",
+	"0101*春节",
 	"0115 元宵节",
 	"0505 端午节",
 	"0707 七夕情人节",
@@ -53,8 +51,7 @@ var lFtv = new Array(
 	"0100*除夕")
 //某月的第几个星期几
 var wFtv = new Array(
-	"0520 母亲节",
-	"0716 合作节")
+	"0520 母亲节")
 /*****************************************************************************
 日期计算
 *****************************************************************************/
@@ -234,9 +231,6 @@ var wFtv = new Array(
 					}
 				}
 			}
-			//黑色星期五
-		if ((this.firstWeek + 12) % 7 == 5)
-			this[12].solarFestival += '黑色星期五 '
 			//今日
 		if (y == tY && m == tM) this[tD - 1].isToday = true;
 	}
@@ -369,7 +363,7 @@ function mOvr(v) {
 	//lYear,lMonth,lDay,isLeap,
 	//cYear,cMonth,cDay
 	if (sObj.innerHTML != '') {
-		sObj.style.cursor = 's-resize';
+		sObj.style.cursor = 'default';
 		if (cld[d].solarTerms == '' && cld[d].solarFestival == '' && cld[d].lunarFestival == '')
 			festival = '';
 		else
