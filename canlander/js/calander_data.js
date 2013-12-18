@@ -394,6 +394,16 @@ function mOut() {
 		dStyle.visibility = "hidden";
 	} else cnt++;
 }
+
+// 鼠标点击
+function mClick(v){
+	var s, festival;
+	var sObj = eval('SD' + v);
+	var d = sObj.innerHTML - 1;
+	if (sObj.innerHTML != '') {
+		alert(cld[d].sYear + ' 年 ' + cld[d].sMonth + ' 月 ' + cld[d].sDay + ' 日');
+	}
+}
 //取得位置
 function mEvn() {
 	x = event.x;
@@ -446,7 +456,7 @@ function initial() {
 	CLD.SY.selectedIndex = tY - 1900;
 	CLD.SM.selectedIndex = tM;
 	drawCld(tY, tM);
-	CLD.TZ.selectedIndex = getCookie("TZ");
+	CLD.TZ.selectedIndex = getCookie("TZ") ? getCookie("TZ") : 39;
 	changeTZ();
 	tick();
 }
