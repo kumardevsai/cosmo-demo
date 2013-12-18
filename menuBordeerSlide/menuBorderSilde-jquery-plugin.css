@@ -1,0 +1,54 @@
+﻿.top-ul {
+	z-index: 1;
+	position: absolute;
+	top: 300px;
+	background: #333;
+	width: 100%;
+	left: 0px;
+	opacity: 0.9;
+}
+
+.top-ul #top-left-ul {
+	float: left;
+	left: 400px;
+	position: relative;
+}
+
+.top-ul ul {
+	font-family: "微软雅黑", "宋体", Arial;
+	margin-top: 0px;
+	list-style-type: none;
+}
+
+.top-ul #top-left-ul ul {
+	direction: rtl;
+}
+
+.top-ul ul li {
+	float: left;
+	width: 100px;
+}
+
+.top-ul ul li a {
+	display: block;
+	height: 35px;
+	padding: 6px 10px 0 10px;
+	text-decoration: none;
+	color: #ddd;
+	line-height: 35px;
+	text-align: center;
+}
+
+.top-ul ul li a:hover {
+	background: #5EB2E5;
+	color: #FFFFFF;
+}
+
+#slide_border {
+	position: absolute;
+	background: #fff;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+}
