@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>jQuery 3D Float</title>
+	<script type="text/javascript" charset="utf-8" src="jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" charset="utf-8" src="jquery-float3d.js"></script>
+	<script type="text/javascript" charset="utf-8" src="randomRectangles.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		window.onload = function()
+		{
+			var rec = $("#f_0").randomRectangles();
+			if(rec.getStatus() === 'complete')
+				$("#f_0").float3d();
+		}
+	</script>
+</head>
+<body>
+  <div style="width:100%;height:800px;" id="f_0">
+  </div>
+</body>
+</html>
