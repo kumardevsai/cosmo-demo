@@ -1,7 +1,7 @@
 // 脑图节点定义 TODO 左右子节点集应该独立设置  leafChildMindNodes and rightChildMindNodes
 function MindNode(text, id, R, x, y, side, isRoot) {
     this.text = text ? text : '';
-    this.id = id ? id : '';
+    this.id = id ? id : MindConfigration.getGeneratorMindNodeId();
     // 父节点
     this.parentMindNode = null;
     // 子节点
@@ -221,13 +221,18 @@ MindNode.prototype.connectChildMindNodes = function() {
     }
 };
 
+// 将自己移除
+MindNode.prototype.remove = function() {
+
+};
+
 // 脑图连接线定义
 function MindConnection(text, id) {
     // 左侧脑图节点
     this.leftMindNode = null;
     // 右侧脑图节点
     this.rightMindNode = null;
-    this.id = id ? id : '';
+    this.id = id ? id : MindConfigration.getGeneratorMindConnectionId();
     this.text = text ? text : '';
     // 绘制面板
     this.mindPaper = null;
@@ -356,13 +361,35 @@ var MindConfigration = {
         // 节点间垂直间距
         verticalMargin: 60,
         // 节点间水平间距
-        horizonMargin: 100
+        horizonMargin: 100,
+        // 节点id前缀
+        prefix_node_id: 'mind_node_',
+        // 连接线默认前缀
+        prefix_connection_id: 'mind_con_'
     },
-    // 根据脑图根节点计算子节点
-    childrenPosition: function(parentNode, children_length) {
-        var p_centerPoint = parentNode.centerPoint;
+    draw: {
+        add_leaf_redraw: true,
+        remove_leaf_redraw: true
     }
 };
+
+// 获取节点
+MindConfigration.getGeneratorMindNodeId = (function() {
+    var id = -1;
+    return function() {
+        id++;
+        return MindConfigration.mindNode.prefix_node_id + id;
+    };
+}());
+
+// 获取连接线id
+MindConfigration.getGeneratorMindConnectionId = (function() {
+    var id = -1;
+    return function() {
+        id++;
+        return MindConfigration.mindNode.prefix_connection_id + id;
+    };
+}());
 
 // 加载脑图xml文件 TODO可以做其他处理
 function getMindDocStruct(filepath) {
