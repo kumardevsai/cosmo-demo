@@ -14,24 +14,34 @@ window.onload = function() {
     // 遍历脑图节点
     for (var i = 0, ii = mindPaper.mindNodes.length; i < ii; i++) {
         // 设置脑图节点样式
-        mindPaper.mindNodes[i].element.attr({
-            fill: '#000000',
-            "fill-opacity": 0,
-            "stroke-width": 2,
-            cursor: "move"
-        });
+        setMindNodeStyle(mindPaper.mindNodes[i]);
         // 获取脑图节点的元素
-        var element = mindPaper.mindNodes[i].element;
-        // 设置元素的事件拖动
-        element.drag(move, dragger, up);
-        // 设置鼠标点击事件
-        element.click(eleClick);
+        bindMindNodeEvents(mindPaper.mindNodes[i]);
+
     }
     // 绘制连接线
     mindPaper.connectChildMindNodes().drawChildMindNodesConnection();
 
     // 按钮事件绑定
     bindBtnsEvent();
+};
+
+function setMindNodeStyle(mindNode) {
+    var element = mindNode.element;
+    element.attr({
+        fill: '#000000',
+        "fill-opacity": 0,
+        "stroke-width": 1,
+        cursor: "move"
+    });
+};
+
+function bindMindNodeEvents(mindNode) {
+    var element = mindNode.element;
+    // 设置元素的事件拖动
+    element.drag(move, dragger, up);
+    // 设置鼠标点击事件
+    element.click(eleClick);
 };
 
 // 元素拖动方法
@@ -52,6 +62,7 @@ var move = function(dx, dy) {
         cy: this.oy + dy
     };
     this.attr(att);
+    this.ownMindNode.centerPoint = new MindPoint(att.cx, att.cy);
     // 重新绘制连接线
     for (var i = mindPaper.mindConnections.length; i--;) {
         mindPaper.raphael.connection(mindPaper.mindConnections[i].element);
@@ -105,22 +116,37 @@ var bindBtnsEvent = function() {
 
 // 添加节点
 var addMindNode = function() {
-    var currentSelected = mindPaper.currentSelected;
-    if (!currentSelected) {
-        alert('请选择父节点!');
+    if (!checkSelectedMindNode('add'))
         return;
-    }
     var newMindNode = new MindNode();
-    currentSelected.addLeafNode(newMindNode);
+    mindPaper.currentSelected.addLeafNode(newMindNode);
     newMindNode.draw();
-    var mindConnection = new MindConnection().connect(currentSelected, newMindNode).bindMindPaper(mindPaper).draw();
+    var mindConnection = new MindConnection().connect(mindPaper.currentSelected, newMindNode).bindMindPaper(mindPaper).draw();
+    setMindNodeStyle(newMindNode);
+    bindMindNodeEvents(newMindNode);
 };
 
 // 删除节点
-var delMindeNode = function() {};
+var delMindeNode = function() {
+    if (!checkSelectedMindNode('delete'))
+        return;
+    mindPaper.currentSelected.remove();
+};
 
 // 清空面板
 var clearMindPaper = function() {};
 
 // 清空根节点分支
 var clearMindPaperBrach = function() {};
+
+var checkSelectedMindNode = function(action) {
+    var currentSelected = mindPaper.currentSelected;
+    if (!currentSelected) {
+        if (action === "delete")
+            alert('请选择节点!');
+        else if (action === 'add')
+            alert('请选择父节点!');
+        return false;
+    }
+    return true;
+};

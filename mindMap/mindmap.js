@@ -21,11 +21,13 @@ function MindNode(text, id, R, x, y, side, isRoot) {
     // 绘制在页面的显示元素
     this.element = null;
     // 左子节点或者右子节点，默认左
-    this.side = side ? side : 'left';
+    this.side = side ? side : '';
     // 是否为最初根节点
     this.isRoot = isRoot ? isRoot : false;
     // 是否被选中
     this.selected = false;
+    // 连接线
+    this.connections = [];
 };
 
 // 脑图节点绘制
@@ -223,7 +225,13 @@ MindNode.prototype.connectChildMindNodes = function() {
 
 // 将自己移除
 MindNode.prototype.remove = function() {
-
+    if (this.parentMindNode) {
+        this.parentMindNode.childMindNodes.del(this.parentMindNode.childMindNodes.BinarySearch(this));
+        this.mindPaper.mindNodes.del(this.mindPaper.mindNodes.BinarySearch(this));
+    }
+    for (var i = 0; i < this.connections.length; i++)
+        this.connections[i].remove();
+    this.element.remove();
 };
 
 // 脑图连接线定义
@@ -246,6 +254,8 @@ function MindConnection(text, id) {
 MindConnection.prototype.connect = function(leftMindNode, rightMindNode) {
     this.leftMindNode = leftMindNode;
     this.rightMindNode = rightMindNode;
+    leftMindNode.connections.push(this);
+    rightMindNode.connections.push(this);
     return this;
 };
 
@@ -271,6 +281,14 @@ MindConnection.prototype.draw = function() {
     // 已经绘制到页面
     this.isDrawed = true;
     return this;
+};
+
+// 删除
+MindConnection.prototype.remove = function() {
+    this.mindPaper.mindConnections.del(this.mindPaper.mindConnections.BinarySearch(this));
+    this.leftMindNode.connections.del(this.leftMindNode.connections.BinarySearch(this));
+    this.rightMindNode.connections.del(this.rightMindNode.connections.BinarySearch(this));
+    this.element.line.remove();
 };
 
 // 文本节点定义
@@ -439,4 +457,27 @@ function getMindNodeByXmlNode(node) {
 // 获取绘图面板的中心点
 function getViewPoint(mindPaper) {
     return new MindPoint(mindPaper.width / 2, mindPaper.height / 2);
+};
+
+Array.prototype.del = function(n) {
+    if (n < 0)
+        return this;
+    else
+        return this.slice(0, n).concat(this.slice(n + 1, this.length));
+};
+
+Array.prototype.BinarySearch = function(des) {
+    var low = 0;　　
+    var high = this.length - 1;　　
+    while (low <= high) {　　
+        var middle = (low + high) / 2;　　
+        if (des == this[middle]) {　　
+            return middle;　　
+        } else if (des < this[middle]) {　　
+            high = middle - 1;　　
+        } else {　　
+            low = middle + 1;　　
+        }　　
+    }　　
+    return -1;
 };
