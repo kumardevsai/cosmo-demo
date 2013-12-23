@@ -139,9 +139,7 @@ ImageTrans.modes = function() {
 			position: "absolute",
 			border: 0,
 			padding: 0,
-			margin: 0,
-			width: "auto",
-			height: "auto"
+			margin: 0
 		});
 	}
 	//获取变换参数函数
@@ -269,7 +267,8 @@ ImageTrans.transforms = {
 	},
 	//根据弧度旋转
 	rotate: function(radian) {
-		checkIndicatorMapArea(rotateIndicatorMapArea(radian - this._radian));
+	    if(checkIndicatorMapArea)
+		    checkIndicatorMapArea(rotateIndicatorMapArea(radian - this._radian));
 		this._radian = radian;
 	},
 	//向左转90度

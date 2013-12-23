@@ -155,7 +155,7 @@ function GetCNDate() {
 
 (function(){
 	var today = getaFormatDate(null, true);
-	document.write("<table border='0' style='font-size: 8pt; font-family:Tahoma' cellspacing='0' width='90' bordercolor='#cccccc'  height='110' cellpadding='0'");
+	document.write("<table border='0' style='font-size: 8pt; font-family:Tahoma;border:1px solid #0099ff;' cellspacing='0' width='90'  height='110' cellpadding='0'");
 	document.write("<tr><td align='center' style='border: 1 solid #0099ff;padding-top:4px'><b><font color=#3366cc>" + today.year + "年" + today.month + "月</font><br><span style='font-family: Arial Black;font-size:18pt;color:#FF0000'>" + today.day + "</span><br><br><span style='FONT-SIZE: 10.5pt;color:#000000'>");
 	document.write(today.week() + "</span><br>" + "<hr width='60' ></b><font color=#666666>");
 	var lunar_ymd = GetCNDate();
