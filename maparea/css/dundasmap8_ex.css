@@ -1,0 +1,8 @@
+.tip-div{
+	background-image: url('/resource/project/reports/suppot_proc/地图热区展示/images/Twitter-icon-2.png');
+	position: absolute;
+	width:20px;
+	height: 20px;
+	z-index:4000;
+	background-size: 100% 100%;
+}
