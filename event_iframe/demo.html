@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+	<head>
+		<title>
+			test
+		</title>
+		<meta charset='utf-8'>
+		<script type="text/javascript">
+			if(window.attachEvent)
+				window.attachEvent('onload' , init);
+			else if(window.addEventListener)
+				window.addEventListener('load' , init);
+			function init(){
+				var moveDiv = document.getElementById('moveDiv');
+				if(window.attachEvent)
+				{
+					moveDiv.attachEvent('onmousedown' , function(){
+						document.body.attachEvent('onmousemove' , showInput);
+					});
+				}
+				else if(window.addEventListener)
+				{
+					moveDiv.addEventListener('mousedown' , function(){
+						document.body.addEventListener('mousemove' , showInput);
+					});
+				}
+			};
+			function showInput(e){
+				e = event ? event : e ; 
+				var showInput = document.getElementById('showInput');
+				showInput.value = e.clientX ; 
+			};
+		</script>
+		<style type="text/css">
+			.inner-iframe{
+				position: absolute;
+				height: 400px;
+				width: 400px;
+				border: 1px solid #000000;
+				overflow: hidden;
+			}
+			.move-div{
+				height:100px;
+				width: 100px;
+				background-color: #666666;
+				position: absolute;
+				z-index:2000;
+				top:100px;
+				left:100px;
+			}
+			#showInput{
+				left:420px;
+				position: absolute;
+			}
+		</style>
+	</head>
+	<body>
+		<iframe src="1.html" class="inner-iframe"></iframe>
+		<div class='move-div' id="moveDiv"></div>
+		<input type='text' id='showInput'>
+	</body>
+</html>

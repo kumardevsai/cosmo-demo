@@ -267,8 +267,8 @@ ImageTrans.transforms = {
 	},
 	//根据弧度旋转
 	rotate: function(radian) {
-	    if(checkIndicatorMapArea)
-		    checkIndicatorMapArea(rotateIndicatorMapArea(radian - this._radian));
+		if (checkIndicatorMapArea)
+			checkIndicatorMapArea(rotateIndicatorMapArea(radian - this._radian));
 		this._radian = radian;
 	},
 	//向左转90度
@@ -337,6 +337,13 @@ ImageTrans.prototype._initialize = (function() {
 		this._mrRadian = Math.atan2(e.clientY - this._mrY, e.clientX - this._mrX) - this._radian;
 		$$E.addEvent(document, "mousemove", this._mrMOVE);
 		$$E.addEvent(document, "mouseup", this._mrSTOP);
+		if (!$$B.ie) {
+			var iframes = document.getElementsByTagName('iframe');
+			for (var i = 0; i < iframes.length; i++) {
+				$$E.addEvent(iframes[i].contentWindow.document, "mousemove", this._mrMOVE);
+				$$E.addEvent(iframes[i].contentWindow.document, "mouseup", this._mrSTOP);
+			}
+		}
 		if ($$B.ie) {
 			var container = this._container;
 			$$E.addEvent(container, "losecapture", this._mrSTOP);
@@ -355,6 +362,13 @@ ImageTrans.prototype._initialize = (function() {
 	function stop() {
 		$$E.removeEvent(document, "mousemove", this._mrMOVE);
 		$$E.removeEvent(document, "mouseup", this._mrSTOP);
+		if (!$$B.ie) {
+			var iframes = document.getElementsByTagName('iframe');
+			for (var i = 0; i < iframes.length; i++) {
+				$$E.removeEvent(iframes[i].contentWindow.document, "mousemove", this._mrMOVE);
+				$$E.removeEvent(iframes[i].contentWindow.document, "mouseup", this._mrSTOP);
+			}
+		}
 		if ($$B.ie) {
 			var container = this._container;
 			$$E.removeEvent(container, "losecapture", this._mrSTOP);
