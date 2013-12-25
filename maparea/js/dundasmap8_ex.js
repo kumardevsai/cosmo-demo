@@ -1,4 +1,27 @@
+var dundasInit = (function() {
+	var iframeInterval = setInterval(function() {
+		var mapIframe;
+		if (document.all)
+			mapIframe = document.frames[mapIframeId] ? document.frames[mapIframeId].window : undefined;
+		else
+			mapIframe = document.getElementsByName(mapIframeId) ? document.getElementsByName(mapIframeId)[0].contentWindow : undefined;
+		if (mapIframe) {
+			var dundasInterval = setInterval(function() {
+				if (mapIframe.DundasMap && mapIframe.ctl03Manager) {
+					dundasSupport(mapIframe.ctl03Manager, document.getElementById(mapIframeId), mapIframe);
+					if (document.all)
+						trigerImageBuffer(mapIframe.ctl03Manager);
+					clearInterval(dundasInterval);
+				}
+			}, 10);
+			clearInterval(iframeInterval);
+		}
+	}, 10);
+}());
+
 function caculateMapAreaPosition(img, imageMap, viewport, divIframe) {
+	if (img.tipDivVisiable === true)
+		return;
 	var contentFillerDiv = img.parentNode;
 	var p_left = parseInt(contentFillerDiv.style.left);
 	var p_top = parseInt(contentFillerDiv.style.top);
@@ -24,36 +47,11 @@ function caculateMapAreaPosition(img, imageMap, viewport, divIframe) {
 			y: c_top
 		});
 	}
+	img.tipDivVisiable = true;
 };
 
-
-
-if (window.attachEvent)
-	window.attachEvent('onload', dundasInit);
-else if (window.addEventListener)
-	window.addEventListener('load', dundasInit);
-
-function dundasInit() {
-	var iframeInterval = setInterval(function() {
-		var mapIframe;
-		if (document.all)
-			mapIframe = document.frames[mapIframeId].window;
-		else
-			mapIframe = document.getElementsByName(mapIframeId)[0].contentWindow;
-		if (mapIframe) {
-			var dundasInterval = setInterval(function() {
-				if (mapIframe.DundasMap) {
-					dundasSupport(mapIframe.ctl03Manager, document.getElementById(mapIframeId));
-					clearInterval(dundasInterval);
-				}
-			}, 100);
-			clearInterval(iframeInterval);
-		}
-	}, 100);
-};
-
-function dundasSupport(ctl03Manager, divIframe) {
-	ctl03Manager.addImageMap = function(image) {
+function dundasSupport(ctlManager, divIframe, iframeWindow) {
+	ctlManager.addImageMap = function(image) {
 		if (image.imageMapText != null) {
 			var imageMap = document.createElement("MAP");
 			imageMap.id = image.name + "Map";
@@ -66,8 +64,8 @@ function dundasSupport(ctl03Manager, divIframe) {
 			caculateMapAreaPosition(image, imageMap, window.parent.document.body, divIframe);
 		}
 	};
-	ctl03Manager.onMouseMove = function(e) {
-		e = e || window.event;
+	ctlManager.onMouseMove = function(e) {
+		e = e || window.event || iframeWindow.event;
 		var thisManager = null;
 		if (window.__thisManager) {
 			thisManager = window.__thisManager;
@@ -83,8 +81,8 @@ function dundasSupport(ctl03Manager, divIframe) {
 		}
 		return true;
 	};
-	ctl03Manager.onMouseUp = function(e) {
-		e = e || window.event;
+	ctlManager.onMouseUp = function(e) {
+		e = e || window.event || iframeWindow.event;
 		var thisManager = null;
 		if (window.__thisManager) {
 			thisManager = window.__thisManager;
@@ -102,7 +100,7 @@ function dundasSupport(ctl03Manager, divIframe) {
 		thisManager.mouseDownX = null;
 		thisManager.mouseDownY = null;
 		resetExDivsPosition();
-	}
+	};
 };
 
 var mapIframeId = 'iframe0';
@@ -136,3 +134,12 @@ function resetExDivsPosition() {
 
 DundasMapEx.MapManagerEx.exConfig.offsetX = -4;
 DundasMapEx.MapManagerEx.exConfig.offsetY = -20;
+
+function trigerImageBuffer(ctlManager) {
+	var contentFiller = ctlManager.contentFiller;
+	for (var i = 0; i < contentFiller.children.length; i++) {
+		var img = contentFiller.children[i];
+		if (img.tagName.toLowerCase() === 'img')
+			img.mousemove();
+	}
+};

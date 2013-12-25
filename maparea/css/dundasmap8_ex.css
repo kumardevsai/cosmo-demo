@@ -1,8 +1,11 @@
 .tip-div{
-	background-image: url('/resource/project/reports/suppot_proc/地图热区展示/images/Twitter-icon-2.png');
+	background-image: url('../images/Twitter-icon-2.png');
 	position: absolute;
 	width:20px;
 	height: 20px;
 	z-index:4000;
 	background-size: 100% 100%;
+	_background-size: cover;
+	filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/Twitter-icon-2.png',sizingMethod='scale')";
+	-ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/Twitter-icon-2.png',sizingMethod='scale')";
 }
