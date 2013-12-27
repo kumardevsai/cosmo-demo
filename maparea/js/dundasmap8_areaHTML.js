@@ -437,7 +437,7 @@
                  this.viewport.appendChild(imageMap);
                  image.useMap = "#" + imageMap.id;
                  // 创建热区显示图片
-                 this.areaImagesDef.caculateExElesPosition(image, imageMap);
+                 this.areaHTMLDef.caculateAreaElesPosition(image, imageMap);
              }
          }
          this.determineGridSectionCounts = function() {
@@ -461,8 +461,8 @@
                  for (var i = 0; i < this.gridSectionsXCount; i++) {
                      this.gridSections[i] = new Array(this.gridSectionsYCount);
                  }
-                 // 地图重绘删除热区图片
-                 this.areaImagesDef.destroyExEles();
+                 // 地图重绘删除热区显示元素
+                 this.areaHTMLDef.destroyAreaEles();
              }
          }
          this.resetCachedSections = function() {
@@ -1101,65 +1101,105 @@
                  this.scrollContent(clickedButton, this.navigationPanelScrollStep * 100 / this.getZoom());
              }
          }
-         this.areaImagesDef = (function() {
-             var exEles = [];
+         this.areaHTMLDef = (function() {
 
-             var exEle_prefix = 'exEle';
+             // 热区显示元素
+             var areaEles = [];
 
-             var exEle_id_arr = [];
+             // 元素id前缀
+             var areaEle_prefix = 'exEle';
 
+             // 元素id数组
+             var areaEle_id_arr = [];
+
+             // 获取热区显示元素的偏移
+             function getAreaPosition(str) {
+                 var x = -4;
+                 var y = -4;
+                 if (str) {
+                     var arr = str.split(";");
+                     for (var i = 0; i < arr.length; i++) {
+                         var mo = arr[i].split(":");
+                         if (mo[0] === 'moveLeft')
+                             x = mo[1] ? parseInt(mo[1]) : x;
+                         else if (mo[0] === 'moveTop')
+                             y = mo[1] ? parseInt(mo[1]) : y;
+                     }
+                 }
+                 return {
+                     x: x,
+                     y: y
+                 };
+             };
+
+             // 生成id
              function generateExEleId(imgId) {
-                 var p = exEle_prefix + "_" + imgId;
-                 var num = exEle_id_arr[p] ? exEle_id_arr[p] : 0;
-                 exEle_id_arr[p] = num + 1;
+                 var p = areaEle_prefix + "_" + imgId;
+                 var num = areaEle_id_arr[p] ? areaEle_id_arr[p] : 0;
+                 areaEle_id_arr[p] = num + 1;
                  if (num)
                      return p + "_" + num;
                  else
                      return p + '_0';
              };
 
-             function caculateExElesPosition(img, imageMap) {
+             // 计算热区显示元素的位置
+             function caculateAreaElesPosition(img, imageMap) {
+                 if (img.areaElementVisiable === true)
+                     return;
+                 // 获取contentFiller
                  var contentFillerDiv = img.parentNode;
                  var img_left = parseInt(img.style.left);
                  var img_top = parseInt(img.style.top);
 
+                 // 获取热区
                  var mapAreas = imageMap.children;
                  for (var i = 0; i < mapAreas.length; i++) {
                      var area = mapAreas[i];
-                     var imageurl = area.getAttribute("imageurl");
-                     if (imageurl === null)
+                     // 获取要显示的内容
+                     var areaHTML = area.getAttribute("areaHTML");
+                     if (areaHTML === null)
                          continue;
-                     var tipElement = document.createElement('img');
-                     tipElement.src = imageurl;
-                     tipElement.style.cssText = area.getAttribute("imagestyle");
-                     img.parentNode.appendChild(tipElement);
+                     // 创建容器
+                     var areaElement = document.createElement('div');
+                     areaElement.innerHTML = areaHTML;
+                     // 获取偏移
+                     var areaPosition = getAreaPosition(area.getAttribute("areaPosition"));
+                     // 显示到页面
+                     contentFillerDiv.appendChild(areaElement);
 
+                     // 获取热区位置
                      var coords = area.getAttribute("coords");
                      var arr = coords.split(",");
-                     var c_left = img_left + parseInt(arr[0]) - 4;
-                     var c_top = img_top + parseInt(arr[1]) - parseInt(tipElement.style.height) - 4;
+                     var c_left = img_left + parseInt(arr[0]) + areaPosition.x;
+                     var c_top = img_top + parseInt(arr[1]) + areaPosition.y;
 
-                     tipElement.style.left = c_left + 'px';
-                     tipElement.style.top = c_top + 'px';
-                     tipElement.style.display = 'block';
-                     tipElement.id = generateExEleId(img.id);
-                     exEles.push({
-                         ele: tipElement
+                     areaElement.style.left = c_left + 'px';
+                     areaElement.style.top = c_top + 'px';
+                     areaElement.style.position = 'absolute';
+                     areaElement.style.backgroundColor = 'transparent';
+                     areaElement.style.zIndex = img.style.zIndex ? parseInt(img.style.zIndex) + 1 : '';
+                     areaElement.id = generateExEleId(img.id);
+                     areaEles.push({
+                         ele: areaElement
                      });
                  }
-                 img.tipElementVisiable = true;
+                 // 兼容ie，热区元素是否已经显示
+                 img.areaElementVisiable = true;
              };
 
-             function destroyExEles() {
-                 for (var i = 0; i < exEles.length; i++) {
-                     exEles[i].ele.parentNode.removeChild(exEles[i].ele);
+             // 销毁热区显示元素
+             function destroyAreaEles() {
+                 for (var i = 0; i < areaEles.length; i++) {
+                     areaEles[i].ele.parentNode.removeChild(areaEles[i].ele);
                  }
-                 exEles = [];
-                 exEle_id_arr = [];
+                 areaEles = [];
+                 areaEle_id_arr = [];
              };
+             // 返回方法
              return {
-                 caculateExElesPosition: caculateExElesPosition,
-                 destroyExEles: destroyExEles
+                 caculateAreaElesPosition: caculateAreaElesPosition,
+                 destroyAreaEles: destroyAreaEles
              };
          })();
      },
