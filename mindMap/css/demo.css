@@ -1,0 +1,39 @@
+body , html
+{	
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+.nav-bar{
+	height:30px;
+	line-height: 30px;
+	vertical-align: middle;
+	position:fixed;
+	top : 5px;
+	left : 5px;
+	z-index: 3000;
+}
+
+.nav-btn{
+	height: 26px;
+	line-height: 26px;
+	margin-left: 0px;
+	margin-right: 5px;
+}
+
+.draw-panel{
+	width: 5000px;
+	height: 5000px;
+	position:absolute;
+	border: none;
+	background-image: url(../images/backgroundPaper.png);
+}
+
+.nav-status{
+	float : right;
+	z-index: 3000;
+	font-size: 12px;
+}

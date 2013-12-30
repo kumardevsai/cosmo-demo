@@ -140,3 +140,17 @@ function AttachEvent(target, eventName, handler, argsObject) {
 	else //FF   
 		target.addEventListener(eventName, eventHandler, false);
 }
+
+function DetachEvent(target, eventName, handler, argsObject) {
+	var eventHandler = handler;
+	if (argsObject) {
+		eventHander = function(e) {
+			handler.call(argsObject, e);
+		}
+	}
+	eventName = eventName.replace('on', '');
+	if (window.attachEvent) //IE   
+		target.detachEvent("on" + eventName, eventHandler);
+	else //FF   
+		target.removeEventListener(eventName, eventHandler, false);
+}

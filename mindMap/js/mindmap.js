@@ -134,9 +134,8 @@ MindNode.prototype.getLeafPosition = function(leaf, reGet) {
 MindNode.prototype.reGetLeafPosition = function(leaf) {
     if (leaf.side === 'right')
         return this.getRightChildLeafPosition(leaf);
-    else if (leaf.side === 'left')
+    else
         return this.getLeftChildLeafPosition(leaf);
-    return null;
 };
 
 // 根据节点获取它在父节点左侧的相对位置
@@ -234,6 +233,18 @@ MindNode.prototype.remove = function() {
     this.element.remove();
 };
 
+MindNode.prototype.redraw = function(repos) {
+    for (var i = 0; i < this.childMindNodes.length; i++) {
+        var node = this.childMindNodes[i];
+        node.centerPoint = this.getLeafPosition(node, true);
+        node.element.attr({
+            cx: node.centerPoint.x,
+            cy: node.centerPoint.y
+        });
+    }
+    this.mindPaper.redrawConnections();
+};
+
 // 脑图连接线定义
 function MindConnection(text, id) {
     // 左侧脑图节点
@@ -305,8 +316,8 @@ function MindPoint(x, y) {
 // 脑图绘制面板定义
 function MindPaper(bindElement, id, width, height) {
     this.id = id ? id : '';
-    this.width = width ? width : document.body.clientWidth;
-    this.height = height ? height : document.body.clientHeight;
+    this.width = width ? width : bindElement.clientWidth;
+    this.height = height ? height : bindElement.clientHeight;
     // 图形库对象
     this.raphael = null;
     // 绑定的元素
@@ -373,6 +384,13 @@ MindPaper.prototype.setCurrentSelected = function(mindNode) {
         this.currentSelected = mindNode;
 };
 
+// 重新绘制连接线
+MindPaper.prototype.redrawConnections = function() {
+    for (var i = this.mindConnections.length; i--;) {
+        this.raphael.connection(this.mindConnections[i].element);
+    }
+};
+
 var MindConfigration = {
     // 节点位置
     mindNode: {
@@ -384,10 +402,6 @@ var MindConfigration = {
         prefix_node_id: 'mind_node_',
         // 连接线默认前缀
         prefix_connection_id: 'mind_con_'
-    },
-    draw: {
-        add_leaf_redraw: true,
-        remove_leaf_redraw: true
     }
 };
 
