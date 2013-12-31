@@ -40,6 +40,21 @@ function bindMindNodeEvents(mindNode) {
     element.drag(move, dragger, function() {
         up(mindNode.element);
     });
+    element.mousedown(function(e) {
+        contextmenuonmousedown(e);
+        if (e.button === 2) {
+            eleClickAnimate(element);
+            setCurrentSelected(mindNode);
+        }
+    });
+    element.mouseup(function(e) {
+        contextmenuonmouseup(e);
+        if (e.button === 2) {
+            if (mindPaper.currentSelected && mindPaper.currentSelected !== mindNode)
+                up(mindNode.element);
+            preventDefault_stopPropagation(e);
+        }
+    });
     // 设置鼠标点击事件
     element.click(eleClick);
 };
@@ -48,6 +63,8 @@ function bindMindNodeEvents(mindNode) {
 var dragger = function() {
     var e = window.event ? window.event : arguments.callee.caller.arguments[0];
     preventDefault_stopPropagation(e);
+    if (e.button === 2)
+        return;
     this.ox = this.type == "rect" ? this.attr("x") : this.attr("cx");
     this.oy = this.type == "rect" ? this.attr("y") : this.attr("cy");
     this.animate({
@@ -58,6 +75,8 @@ var dragger = function() {
 var move = function(dx, dy) {
     var e = window.event ? window.event : arguments.callee.caller.arguments[0];
     preventDefault_stopPropagation(e);
+    if (e.button === 2)
+        return;
     var att = this.type == "rect" ? {
         x: this.ox + dx,
         y: this.oy + dy
@@ -82,13 +101,16 @@ var move = function(dx, dy) {
 var eleClick = function(e, x, y) {
     preventDefault_stopPropagation(e);
     eleClickAnimate(this);
-    // 恢复前一个选中节点的样式
-    if (mindPaper.currentSelected && mindPaper.currentSelected !== this.ownMindNode)
-        up(mindPaper.currentSelected.element);
-    // 设置当前被选中节点的样式
-    mindPaper.setCurrentSelected(this.ownMindNode);
+    setCurrentSelected(this.ownMindNode);
 };
 
+function setCurrentSelected(mindNode) {
+    // 恢复前一个选中节点的样式
+    if (mindPaper.currentSelected && mindPaper.currentSelected !== mindNode)
+        up(mindNode.element);
+    // 设置当前被选中节点的样式
+    mindPaper.setCurrentSelected(mindNode);
+};
 // 鼠标点击节点设置样式
 var eleClickAnimate = function(ele) {
     ele.animate({

@@ -40,3 +40,13 @@ var panelUnSelect = function(e) {
 
 AttachEvent(panel, 'mousedown', panelMouseDown, false);
 AttachEvent(panel, 'click', panelUnSelect, false);
+
+var one = new MouseMenu("one");
+one.addLink("添加", "", "javascript:DelCtl();", "_self", "添加节点");
+one.addLink("删除", "", "javascript:HideMenuAll()", "_self", "删除节点");
+one.addLink("删除分支", "", "javascript:HideMenuAll()", "_self", "删除所有节点");
+
+/**
+var two = new MouseMenu("two");
+two.addLink('清空面板', "", "_self", "只保留根节点");
+**/

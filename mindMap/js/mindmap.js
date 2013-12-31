@@ -7,7 +7,7 @@ function MindNode(text, id, R, x, y, side, isRoot) {
     // 子节点
     this.childMindNodes = [];
     // 直径
-    this.R = R ? R : 20;
+    this.R = R ? R : 40;
     // 绑定的绘制面板元素
     this.mindPaper = null;
     // 中心点

@@ -1,0 +1,166 @@
+﻿
+/* begin 菜单样式 */
+.menutable
+{
+	border-right: #307ce8 1px solid;
+	border-top: #94bcf3 1px solid;
+	font-size: 12px;
+	z-index: 100;
+	border-left: #307ce8 5px solid;
+	border-bottom: #307ce8 1px solid;
+	position: absolute;
+	background-color: #ffffff;
+	width:107px;
+	font-weight:normal; 
+	font-style:normal;
+}
+.menutrin
+{
+	cursor: pointer;
+	color:#ffffff;
+	background-color: #1a71e6;
+	visibility:visible;
+	word-spacing:normal;
+	letter-spacing:normal;
+	text-decoration:none;
+	position:relative;
+}
+
+.menutrout
+{
+	cursor: pointer;
+	color: black;
+	border: 0px;
+	visibility:visible;
+	word-spacing:normal;
+	letter-spacing:normal;
+	text-decoration:none;
+	position:relative;
+}
+.menutdtxt
+{
+	width:25px;
+	height: 25px;
+	border: 0px;
+	font-size:12px;
+	padding:0px;
+	background-color:White;
+	color:Black;
+	text-decoration:none;
+	word-spacing:normal;
+	letter-spacing:normal;
+	
+	position:relative;
+	visibility:visible;
+	background-color:white;
+	cursor: pointer;
+}
+.menutd0
+{
+	width: 28px;
+	height: 25px;
+	text-align: center;
+	border: 0px;
+	padding:0px;
+	
+	position:relative;
+	visibility:visible;
+	word-spacing:normal;
+	letter-spacing:normal;
+	text-decoration:none;
+	color:black;
+	background-color: #ffffff;
+	cursor: pointer;
+}
+.menutd1
+{
+	width: 46px;
+	height: 25px;
+	font-family: Webdings;
+	text-align: right;
+	border: 0px;
+	padding:0px;
+	
+	position:relative;
+	visibility:visible;
+	word-spacing:normal;
+	letter-spacing:normal;
+	text-decoration:none;
+	color:black;
+	cursor: pointer;
+}
+.linktd1
+{
+	height: 25px;
+	border: 0px;
+	padding:0px;
+	
+	position:relative;
+	visibility:visible;
+	word-spacing:normal;
+	letter-spacing:normal;
+	text-decoration:none;
+	color:black;
+	background-color:#ffffff;
+	cursor: pointer;
+}
+.menutd2
+{
+	height: 25px;
+	border: 0px;
+	padding:0px;
+	
+	position:relative;
+	visibility:visible;
+    word-spacing:normal;
+	letter-spacing:normal;
+	text-decoration:none;
+	color:black;
+	background-color:#ffffff;
+	cursor: pointer;
+}
+.menuhr
+{
+	border-right: #307ce8 1px inset;
+	border-top: #307ce8 1px inset;
+	border-left: #307ce8 1px inset;
+	border-bottom: #307ce8 1px inset;
+	border: 0px;
+}
+
+.menua
+{
+	height: 0px;
+	width: 0px;
+	color: Black;
+	border: 0px;
+	padding:0px;
+	margin:0px;
+	position:relative;
+}
+/* end 菜单样式 */
+
+/* 拖动组件时显示位置div样式 */
+.tip
+{
+	background-color: #FFFFE1;
+	border: 1px solid #000000;
+	width: auto;
+	padding: 1px;
+	font-size: 12px;
+	position: absolute;
+	top: -100px;
+	white-space: nowrap;
+	color:#000;
+}
+
+BODY 
+{ 
+	font-size: 12px;
+	margin: 0px;
+	font-family: Arial;
+} 
+
+
+
+
