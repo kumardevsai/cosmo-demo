@@ -1,28 +1,22 @@
-// 画板对象 包含面板元素
-var mindPaper;
-window.onload = function() {
-    // 绑定面板到指定的div上
-    mindPaper = new MindPaper(document.getElementById('draw_panel'), 'mindPaper0');
-    // 获取面板元素
-    r = mindPaper.draw().raphael;
-    // 测试xml文件位置
-    var filepath = 'data/demo.xml';
-    // 获取脑图根节点对象
-    var mindNodeRoot = getMindDocStruct(filepath);
-    // 根节点绑定面板并绘制
-    mindNodeRoot.bindMindPaper(mindPaper).draw();
-    // 遍历脑图节点
-    for (var i = 0, ii = mindPaper.mindNodes.length; i < ii; i++) {
-        // 设置脑图节点样式
-        setMindNodeStyle(mindPaper.mindNodes[i]);
-        // 获取脑图节点的元素
-        bindMindNodeEvents(mindPaper.mindNodes[i]);
-    }
-    // 绘制连接线
-    mindPaper.connectChildMindNodes().drawChildMindNodesConnection();
-    // 按钮事件绑定
-    bindBtnsEvent();
-};
+// 获取面板元素
+r = mindPaper.draw().raphael;
+// 测试xml文件位置
+var filepath = 'data/demo.xml';
+// 获取脑图根节点对象
+var mindNodeRoot = getMindDocStruct(filepath);
+// 根节点绑定面板并绘制
+mindNodeRoot.bindMindPaper(mindPaper).draw();
+// 遍历脑图节点
+for (var i = 0, ii = mindPaper.mindNodes.length; i < ii; i++) {
+    // 设置脑图节点样式
+    setMindNodeStyle(mindPaper.mindNodes[i]);
+    // 获取脑图节点的元素
+    bindMindNodeEvents(mindPaper.mindNodes[i]);
+}
+// 绘制连接线
+mindPaper.connectChildMindNodes().drawChildMindNodesConnection();
+// 按钮事件绑定
+bindBtnsEvent();
 
 function setMindNodeStyle(mindNode) {
     var element = mindNode.element;
