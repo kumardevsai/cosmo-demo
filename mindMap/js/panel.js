@@ -29,8 +29,8 @@
 			AttachEvent(this.element, 'mousedown', this.onMouseDown, false);
 		},
 		size: function(_width, _height) {
-			var _height = _width ? _width : this.container.offsetHeight;
-			var _width = _height ? _height : this.container.offsetWidth;
+			var _width = _width ? _width : this.container.offsetWidth;
+			var _height = _height ? _height : this.container.offsetHeight;
 			this.element.style.left = -(this.element.offsetWidth - _width) / 2 + 'px';
 			this.element.style.top = -(this.element.offsetHeight - _height) / 2 + 'px';
 		},
@@ -42,7 +42,7 @@
 		},
 		onMouseUp: function(e) {
 			if (that.mindPaper && that.mindPaper.currentSelected)
-				Drawing.up(that.mindPaper.currentSelected.element);
+				up(that.mindPaper.currentSelected.element);
 			that.mindPaper.currentSelected = null;
 			DetachEvent(that.element, 'mousemove', that.onMove, false);
 		},

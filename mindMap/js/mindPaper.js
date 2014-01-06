@@ -1,16 +1,13 @@
 (function() {
 	var MindPaper = window.MindPaper = function(options) {
 		var id = '',
-			bindElement = document.body,
-			width = bindElement.offsetWidth,
-			height = bindElement.offsetHeight;
+			bindElement = document.body;
 		if (options) {
 			id = options.id ? options.id : id;
 			bindElement = options.bindElement ? options.bindElement : bindElement;
-			width = options.width ? options.width : width;
-			height = options.height ? options.height : height;
 		}
-
+		var width = bindElement.offsetWidth,
+			height = bindElement.offsetHeight;
 		this.id = id;
 		this.width = width;
 		this.height = height;

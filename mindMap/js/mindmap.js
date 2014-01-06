@@ -61,7 +61,10 @@ function getMindNodeByXmlNode(node) {
         isRoot = isRoot.nodeValue;
     mindNode.isRoot = isRoot;
     if (x && y)
-        mindNode.centerPoint = new MindPoint(x.nodeValue, y.nodeValue);
+        mindNode.centerPoint = new MindPoint({
+            x: x.nodeValue,
+            y: y.nodeValue
+        });
     if (side)
         mindNode.side = side.nodeValue;
     mindNode.text = text.nodeValue;
@@ -77,7 +80,10 @@ function getMindNodeByXmlNode(node) {
 
 // 获取绘图面板的中心点
 function getViewPoint(mindPaper) {
-    return new MindPoint(mindPaper.width / 2, mindPaper.height / 2);
+    return new MindPoint({
+        x: mindPaper.width / 2,
+        y: mindPaper.height / 2
+    });
 };
 
 Array.prototype.del = function(n) {

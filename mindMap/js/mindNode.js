@@ -1,8 +1,8 @@
 (function() {
 	var MindNode = window.MindNode = function(options) {
 		var text = '',
-			R = 40,
-			side = 'left',
+			R = 20,
+			side = '',
 			isRoot = false,
 			id = MindConfigration.getGeneratorMindNodeId(),
 			x, y;
@@ -11,7 +11,7 @@
 			R = options.R ? options.R : R;
 			side = options.side ? options.side : side;
 			isRoot = options.isRoot ? options.isRoot : isRoot;
-			id = options.id; 
+			id = options.id;
 			x = options.x;
 			y = options.y;
 		}
@@ -29,7 +29,9 @@
 		// 中心点
 		this.centerPoint = null;
 		if (x !== undefined && y !== undefined)
-			this.centerPoint = new MindPoint(x, y);
+			this.centerPoint = new MindPoint({
+				x : x, y : y
+			});
 		else
 			this.centerPoint = new MindPoint();
 		// 是否已经绘制
@@ -144,7 +146,10 @@
 			var leafIndex = this.getLeftLeafIndex(leaf);
 			var y = this.getLeafRelativeY(leafIndex, left_length);
 			var x = this.centerPoint.x - MindConfigration.mindNode.horizonMargin;
-			return new MindPoint(x, y);
+			return new MindPoint({
+				x: x,
+				y: y
+			});
 		},
 		getRightChildLeafPosition: function(leaf) {
 			var rightChldNodes = this.getRightLeaves();
@@ -152,7 +157,10 @@
 			var leafIndex = this.getRightLeafIndex(leaf);
 			var y = this.getLeafRelativeY(leafIndex, right_length);
 			var x = this.centerPoint.x + MindConfigration.mindNode.horizonMargin;
-			return new MindPoint(x, y);
+			return new MindPoint({
+				x: x,
+				y: y
+			});
 		},
 		getLeafRelativeY: function(leafIndex, leaf_length) {
 			var top = this.centerPoint.y - (leaf_length - 1) * MindConfigration.mindNode.verticalMargin / 2;
@@ -201,7 +209,7 @@
 		connectChildMindNodes: function() {
 			var chls = this.childMindNodes;
 			for (var i = 0; i < chls.length; i++) {
-				new MindConnection('', '').bindMindPaper(this.mindPaper).connect(this, chls[i]);
+				new MindConnection().bindMindPaper(this.mindPaper).connect(this, chls[i]);
 				if (chls[i].childMindNodes && chls[i].childMindNodes.length > 0)
 					chls[i].connectChildMindNodes();
 			}

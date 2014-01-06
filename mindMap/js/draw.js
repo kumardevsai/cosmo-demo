@@ -80,7 +80,10 @@ function move(dx, dy) {
     };
     this.attr(att);
     var mindNode = this.ownMindNode;
-    mindNode.centerPoint = new MindPoint(att.cx, att.cy);
+    mindNode.centerPoint = new MindPoint({
+        x: att.cx,
+        y: att.cy
+    });
     if (mindNode.childMindNodes.length > 0) {
         mindNode.redraw(false);
         mindNode.mindPaper.redrawConnections();
