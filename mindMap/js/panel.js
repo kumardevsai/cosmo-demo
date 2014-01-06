@@ -10,7 +10,10 @@
 			element = document.getElementById(panelId) ? document.getElementById(panelId) : element;
 			container = options.container ? options.container : container;
 			mindPaper = options.mindPaper ? options.mindPaper : mindPaper;
-			moveCallback = options.moveCallback ? options.moveCallback : new Function();
+			for (var i in callbacks) {
+				if (options[i] && typeof options[i] === 'function')
+					callbacks[i] = options[i];
+			}
 		}
 		if (element === null)
 			return;
@@ -21,12 +24,19 @@
 		this.container = container;
 		this.init();
 	};
-	var deltaX, deltaY, that, moveCallback;
+	var deltaX, deltaY, that;
+	var callbacks = {
+		moveCallback: new Function(),
+		initCallback: new Function(),
+		mousedownCallback: new Function(),
+		mouseupCallback: new Function()
+	};
 	Panel.prototype = {
 		init: function() {
 			that = this;
 			this.size();
 			AttachEvent(this.element, 'mousedown', this.onMouseDown, false);
+			callbacks.initCallback(this);
 		},
 		size: function(_width, _height) {
 			var _width = _width ? _width : this.container.offsetWidth;
@@ -55,8 +65,7 @@
 			var _y = e.clientY - deltaY
 			that.element.style.left = _x + 'px';
 			that.element.style.top = _y + 'px';
-			if (moveCallback)
-				moveCallback(_x, _y, e);
+			callbacks.moveCallback(that, e);
 		}
 	};
 	Panel.create = function(options) {

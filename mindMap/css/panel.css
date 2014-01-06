@@ -36,4 +36,7 @@ body , html
 	float : right;
 	z-index: 3000;
 	font-size: 12px;
+	position: fixed;
+	right: 5px;
+	top:5px;
 }

@@ -87,13 +87,15 @@
 			id : 'mingPaper0', 
 			bindElement : document.getElementById('draw_panel')
 		});
+		function changePositionStatus(panel , e){
+			document.getElementById('panelX').innerHTML = panel.element.style.left ; 
+			document.getElementById('panelY').innerHTML = panel.element.style.top ; 
+		};
 		var panel = Panel.create({
 			panelId : 'draw_panel',
 			container : document.body,
-			moveCallback : function(x , y){
-				document.getElementById('panelX').innerHTML = x ; 
-				document.getElementById('panelY').innerHTML = y ; 
-			}
+			moveCallback : changePositionStatus, 
+			initCallback : changePositionStatus
 		});
 		
 		var one = new MouseMenu("one");
