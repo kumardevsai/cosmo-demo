@@ -54,7 +54,7 @@ function bindMindNodeEvents(mindNode) {
 };
 
 // 元素拖动方法
-var dragger = function() {
+function dragger() {
     var e = window.event ? window.event : arguments.callee.caller.arguments[0];
     preventDefault_stopPropagation(e);
     if (e.button === 2)
@@ -66,7 +66,7 @@ var dragger = function() {
     }, 200);
 };
 // 移动重绘
-var move = function(dx, dy) {
+function move(dx, dy) {
     var e = window.event ? window.event : arguments.callee.caller.arguments[0];
     preventDefault_stopPropagation(e);
     if (e.button === 2)
@@ -92,7 +92,7 @@ var move = function(dx, dy) {
 };
 
 // 元素点击
-var eleClick = function(e, x, y) {
+function eleClick(e, x, y) {
     preventDefault_stopPropagation(e);
     eleClickAnimate(this);
     setCurrentSelected(this.ownMindNode);
@@ -106,7 +106,7 @@ function setCurrentSelected(mindNode) {
     mindPaper.setCurrentSelected(mindNode);
 };
 // 鼠标点击节点设置样式
-var eleClickAnimate = function(ele) {
+function eleClickAnimate(ele) {
     ele.animate({
         "fill-opacity": .2,
         "stroke": 'blue',
@@ -115,7 +115,7 @@ var eleClickAnimate = function(ele) {
 };
 
 // 鼠标抬起恢复节点样式
-var up = function(ele) {
+function up(ele) {
     ele = ele ? ele : this;
     if (ele instanceof MouseEvent)
         ele = this;
@@ -127,7 +127,7 @@ var up = function(ele) {
 };
 
 // 绑定按钮事件
-var bindBtnsEvent = function() {
+function bindBtnsEvent() {
     var add_btn = document.getElementById('add_mindNode');
     var del_btn = document.getElementById('del_mindNode');
     var clear_btn = document.getElementById('clear');
@@ -139,7 +139,7 @@ var bindBtnsEvent = function() {
 };
 
 // 添加节点
-var addMindNode = function() {
+function addMindNode() {
     if (!checkSelectedMindNode('add'))
         return;
     var newMindNode = new MindNode();
@@ -152,19 +152,19 @@ var addMindNode = function() {
 };
 
 // 删除节点
-var delMindeNode = function() {
+function delMindeNode() {
     if (!checkSelectedMindNode('delete'))
         return;
     mindPaper.currentSelected.remove();
 };
 
 // 清空面板
-var clearMindPaper = function() {};
+function clearMindPaper() {};
 
 // 清空根节点分支
 var clearMindPaperBrach = function() {};
 
-var checkSelectedMindNode = function(action) {
+function checkSelectedMindNode(action) {
     var currentSelected = mindPaper.currentSelected;
     if (!currentSelected) {
         if (action === "delete")
@@ -176,7 +176,7 @@ var checkSelectedMindNode = function(action) {
     return true;
 };
 
-var preventDefault_stopPropagation = function(e) {
+function preventDefault_stopPropagation(e) {
     if (e.preventDefault)
         e.preventDefault();
     else

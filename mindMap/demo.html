@@ -1,66 +1,112 @@
-<!doctype html>
-<html>
-	<head>
-		<title>
-			mindMap demo request xml
-		</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<meta http-equiv="Expires" CONTENT="0">
-		<meta http-equiv="Cache-Control" CONTENT="no-cache">
-		<meta http-equiv="Cache-Control" CONTENT="no-store">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
-		<meta name="apple-mobile-web-app-capable" content="yes">
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-		<meta name="format-detection" content="telephone=no">
-		<meta charset='utf-8'>
-		<link rel="stylesheet" type="text/css" href="css/panel.css">
-		<link rel="stylesheet" type="text/css" href="css/contextmenu.css">
-	</head>
-	<body>
-		<div class='nav-bar'>
-			<input class='nav-btn' type=button id='add_mindNode' value=' 娣诲姞鑺傜偣 '>
-			<input class='nav-btn' type=button id='del_mindNode' value=' 鍒犻櫎鑺傜偣 '>
-			<input class='nav-btn' type=button id='clear' value=' 娓呯┖闈㈡澘 '>
-			<input class='nav-btn' type=button id='clear_branch' value='娓呯┖鍒嗘敮'> 
-		</div>
-		<div class='nav-status'>
-			<label id='panelX'></label>
-			<label id='panelY'></label>
-		</div>
-		<div id='draw_panel' class='draw-panel'></div>
-	</body>
-	<script type="text/javascript" src='js/util.js'></script>
-	<script type="text/javascript" src='js/contextmenu.js'></script>
-	<script type="text/javascript" src='js/raphael.js'></script>
-	<script type="text/javascript" src='js/raphael.connection.js'></script>
-	<script type="text/javascript" src='js/mindmap.js'></script>
-	<script type="text/javascript" src='js/mindPaper.js'></script>
-	<script type="text/javascript" src='js/request.js'></script>
-	<script type="text/javascript" src='js/panel.js' ></script>
-	<script type="text/javascript">
-		AttachEvent(window , 'load' , function(){
-			var mindPaper = MindPaper.create({
-				id : 'mingPaper0', 
-				bindElement : document.getElementById('draw_panel')
-			});
-			var panel = Panel.create({
-				panelId : 'draw_panel',
-				container : document.body,
-				moveCallback : function(x , y){
-					document.getElementById('panelX').innerHTML = x ; 
-					document.getElementById('panelY').innerHTML = y ; 
-				}
-			});
-			
-			var one = new MouseMenu("one");
-			one.addLink("添加", "", "javascript:DelCtl();", "_self", "添加节点");
-			one.addLink("删除", "", "javascript:HideMenuAll()", "_self", "删除节点");
-			one.addLink("删除分支", "", "javascript:HideMenuAll()", "_self", "删除所有节点");
+<!doctype html>
 
-			/**
-			var two = new MouseMenu("two");
-			two.addLink('清空面板', "", "_self", "只保留根节点");
-			**/
-		} , false);
-	</script>
+<html>
+
+	<head>
+
+		<title>
+
+			mindMap demo request xml
+
+		</title>
+
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+		<meta http-equiv="Expires" CONTENT="0">
+
+		<meta http-equiv="Cache-Control" CONTENT="no-cache">
+
+		<meta http-equiv="Cache-Control" CONTENT="no-store">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="format-detection" content="telephone=no">
+
+		<meta charset='utf-8'>
+
+		<link rel="stylesheet" type="text/css" href="css/panel.css">
+
+		<link rel="stylesheet" type="text/css" href="css/contextmenu.css">
+
+	</head>
+
+	<body>
+
+		<div class='nav-bar'>
+
+			<input class='nav-btn' type=button id='add_mindNode' value=' 新建节点 '>
+
+			<input class='nav-btn' type=button id='del_mindNode' value=' 删除节点 '>
+
+			<input class='nav-btn' type=button id='clear' value=' 清空分支 '>
+
+			<input class='nav-btn' type=button id='clear_branch' value=' 清空面板 '> 
+
+		</div>
+
+		<div class='nav-status'>
+
+			<label id='panelX'></label>
+
+			<label id='panelY'></label>
+
+		</div>
+
+		<div id='draw_panel' class='draw-panel'></div>
+
+	</body>
+
+	<script type="text/javascript" src='js/util.js'></script>
+
+	<script type="text/javascript" src='js/contextmenu.js'></script>
+
+	<script type="text/javascript" src='js/raphael.js'></script>
+
+	<script type="text/javascript" src='js/raphael.connection.js'></script>
+
+	<script type="text/javascript" src='js/mindMap.js'></script>
+
+	<script type="text/javascript" src='js/mindPaper.js'></script>
+
+	<script type="text/javascript" src='js/mindNode.js'></script>
+
+	<script type="text/javascript" src='js/mindConnection.js'></script>
+
+	<script type="text/javascript" src='js/mindText.js'></script>
+
+	<script type="text/javascript" src='js/mindPoint.js'></script>
+
+	<script type="text/javascript" src='js/panel.js' ></script>
+
+	<script type="text/javascript">
+		var mindPaper = window.mindPaper = MindPaper.create({
+			id : 'mingPaper0', 
+			bindElement : document.getElementById('draw_panel')
+		});
+		var panel = Panel.create({
+			panelId : 'draw_panel',
+			container : document.body,
+			moveCallback : function(x , y){
+				document.getElementById('panelX').innerHTML = x ; 
+				document.getElementById('panelY').innerHTML = y ; 
+			}
+		});
+		
+		var one = new MouseMenu("one");
+		one.addLink("添加", "", "javascript:DelCtl();", "_self", "添加节点");
+		one.addLink("删除", "", "javascript:HideMenuAll()", "_self", "删除节点");
+		one.addLink("删除分支", "", "javascript:HideMenuAll()", "_self", "删除所有节点");
+
+		/**
+		var two = new MouseMenu("two");
+		two.addLink('清空面板', "", "_self", "只保留根节点");
+		**/
+	</script>
+
+	<script type="text/javascript" src='js/draw.js'></script>
+
 </html>
