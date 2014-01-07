@@ -38,7 +38,7 @@ function getMindDocStruct(filepath) {
     if (responseXml) {
         var xmlDoc = LoadXml(responseXml);
         if (xmlDoc !== null) {
-            var root = xmlDoc.children[0];
+            var root = xmlDoc.childNodes[0];
             return getMindNodeByXmlNode(root);
         }
     }
@@ -47,33 +47,40 @@ function getMindDocStruct(filepath) {
 
 // 根据xml节点获取脑图节点
 function getMindNodeByXmlNode(node) {
+    function getAttributeValue(att) {
+        if (node.attributes) {
+            if (document.all)
+                return node.attributes.getNamedItem(att);
+            else
+                return node.attributes[att];
+        }
+    };
     var mindNode = new MindNode();
-    var text = node.attributes['text'];
-    var x = node.attributes['x'];
-    var y = node.attributes['y'];
-    var side = node.attributes['side'];
-    var isRoot = node.attributes['isRoot'];
+    var text = getAttributeValue('text');
+    var x = getAttributeValue('x');
+    var y = getAttributeValue('y');
+    var side = getAttributeValue('side');
+    var isRoot = getAttributeValue('isRoot');
     if (isRoot === undefined) {
         if (node.parentNode === null || (node.parentNode && node.parentNode.nodeName === 'root'))
             isRoot = true;
         else
             isRoot = false;
-    } else
-        isRoot = isRoot.nodeValue;
+    }
     mindNode.isRoot = isRoot;
     if (x && y)
         mindNode.centerPoint = new MindPoint({
-            x: x.nodeValue,
-            y: y.nodeValue
+            x: x,
+            y: y
         });
     if (side)
-        mindNode.side = side.nodeValue;
-    mindNode.text = text.nodeValue;
-    if (node.children.length > 0) {
-        var nodes = node.children[0];
-        for (var i = 0; i < nodes.children.length; i++) {
+        mindNode.side = side;
+    mindNode.text = text;
+    if (node.childNodes.length > 0) {
+        var nodes = node.childNodes[0];
+        for (var i = 0; i < nodes.childNodes.length; i++) {
             // 遍历子节点
-            mindNode.addLeafNode(getMindNodeByXmlNode(nodes.children[i]));
+            mindNode.addLeafNode(getMindNodeByXmlNode(nodes.childNodes[i]));
         }
     }
     return mindNode;

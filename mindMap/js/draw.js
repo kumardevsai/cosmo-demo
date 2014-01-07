@@ -161,7 +161,7 @@ function delMindeNode() {
 function clearMindPaper() {};
 
 // 清空根节点分支
-var clearMindPaperBrach = function() {};
+function clearMindPaperBrach() {};
 
 function checkSelectedMindNode(action) {
     var currentSelected = mindPaper.currentSelected;

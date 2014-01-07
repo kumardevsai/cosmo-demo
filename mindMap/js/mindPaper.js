@@ -52,7 +52,8 @@
 		},
 		connectChildMindNodes: function() {
 			var root = this.rootMindNode;
-			root.connectChildMindNodes();
+			if (root)
+				root.connectChildMindNodes();
 			return this;
 		},
 		drawChildMindNodesConnection: function() {
