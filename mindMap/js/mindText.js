@@ -1,3 +1,4 @@
+'use strict';
 (function() {
 	var MindText = window.MindText = function(options) {
 		var text = '';

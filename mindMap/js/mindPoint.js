@@ -1,3 +1,4 @@
+'use strict';
 (function() {
 	var MindPoint = window.MindPoint = function(options) {
 		var x = null,

@@ -1,3 +1,4 @@
+'use strict';
 (function() {
 	var MindConnection = window.MindConnection = function(options) {
 		var id = MindConfigration.getGeneratorMindConnectionId(),

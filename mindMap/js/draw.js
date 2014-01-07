@@ -1,5 +1,6 @@
+'use strict';
 // 获取面板元素
-r = mindPaper.draw().raphael;
+var r = mindPaper.draw().raphael;
 // 测试xml文件位置
 var filepath = 'data/demo.xml';
 // 获取脑图根节点对象
@@ -31,19 +32,19 @@ function setMindNodeStyle(mindNode) {
 function bindMindNodeEvents(mindNode) {
     var element = mindNode.element;
     // 设置元素的事件拖动
-    element.drag(move, dragger, function() {
+    element.drag(move, dragger, function(e) {
         up(mindNode.element);
     });
     element.mousedown(function(e) {
         contextmenuonmousedown(e);
-        if (e.button === 2) {
+        if (e.which === 3) {
             eleClickAnimate(element);
             setCurrentSelected(mindNode);
         }
     });
     element.mouseup(function(e) {
         contextmenuonmouseup(e);
-        if (e.button === 2) {
+        if (e.which === 3) {
             if (mindPaper.currentSelected && mindPaper.currentSelected !== mindNode)
                 up(mindNode.element);
             preventDefault_stopPropagation(e);
@@ -57,8 +58,10 @@ function bindMindNodeEvents(mindNode) {
 function dragger() {
     var e = window.event ? window.event : arguments.callee.caller.arguments[0];
     preventDefault_stopPropagation(e);
-    if (e.button === 2)
+    /**
+    if (e.which !== 1)
         return;
+    **/
     this.ox = this.type == "rect" ? this.attr("x") : this.attr("cx");
     this.oy = this.type == "rect" ? this.attr("y") : this.attr("cy");
     this.animate({
@@ -68,9 +71,9 @@ function dragger() {
 // 移动重绘
 function move(dx, dy) {
     var e = window.event ? window.event : arguments.callee.caller.arguments[0];
-    preventDefault_stopPropagation(e);
-    if (e.button === 2)
+    if (e.which !== 1)
         return;
+    preventDefault_stopPropagation(e);
     var att = this.type == "rect" ? {
         x: this.ox + dx,
         y: this.oy + dy
@@ -85,8 +88,7 @@ function move(dx, dy) {
         y: att.cy
     });
     if (mindNode.childMindNodes.length > 0) {
-        mindNode.redraw(false);
-        mindNode.mindPaper.redrawConnections();
+        mindNode.redraw();
     } else {
         mindNode.mindPaper.redrawConnections();
     }
@@ -104,7 +106,7 @@ function eleClick(e, x, y) {
 function setCurrentSelected(mindNode) {
     // 恢复前一个选中节点的样式
     if (mindPaper.currentSelected && mindPaper.currentSelected !== mindNode)
-        up(mindNode.element);
+        up(mindPaper.currentSelected.element);
     // 设置当前被选中节点的样式
     mindPaper.setCurrentSelected(mindNode);
 };
@@ -131,13 +133,7 @@ function up(ele) {
 
 // 绑定按钮事件
 function bindBtnsEvent() {
-    var add_btn = document.getElementById('add_mindNode');
-    var del_btn = document.getElementById('del_mindNode');
-    var clear_btn = document.getElementById('clear');
     var clearBranch_btn = document.getElementById('clear_branch');
-    AttachEvent(add_btn, 'click', addMindNode, false);
-    AttachEvent(del_btn, 'click', delMindeNode, false);
-    AttachEvent(clear_btn, 'click', clearMindPaper, false);
     AttachEvent(clearBranch_btn, 'click', clearMindPaperBrach, false);
 };
 

@@ -1,3 +1,4 @@
+'use strict';
 (function() {
 	var Panel = window.Panel = function(options) {
 		var panelId = '',

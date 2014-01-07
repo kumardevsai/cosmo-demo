@@ -1,3 +1,4 @@
+'use strict';
 (function() {
 	var MindNode = window.MindNode = function(options) {
 		var text = '',
@@ -30,7 +31,8 @@
 		this.centerPoint = null;
 		if (x !== undefined && y !== undefined)
 			this.centerPoint = new MindPoint({
-				x : x, y : y
+				x: x,
+				y: y
 			});
 		else
 			this.centerPoint = new MindPoint();
@@ -223,7 +225,11 @@
 				this.connections[i].remove();
 			this.element.remove();
 		},
-		redraw: function(repos) {
+		redraw: function() {
+			this.redrawChildren(this);
+			this.mindPaper.redrawConnections();
+		},
+		redrawChildren: function() {
 			for (var i = 0; i < this.childMindNodes.length; i++) {
 				var node = this.childMindNodes[i];
 				node.centerPoint = this.getLeafPosition(node, true);
@@ -231,8 +237,9 @@
 					cx: node.centerPoint.x,
 					cy: node.centerPoint.y
 				});
+				if (node.childMindNodes.length > 0)
+					node.redrawChildren();
 			}
-			this.mindPaper.redrawConnections();
 		}
 	};
 	MindNode.create = function(options) {

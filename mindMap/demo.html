@@ -38,12 +38,6 @@
 
 		<div class='nav-bar'>
 
-			<input class='nav-btn' type=button id='add_mindNode' value=' 新建节点 '>
-
-			<input class='nav-btn' type=button id='del_mindNode' value=' 删除节点 '>
-
-			<input class='nav-btn' type=button id='clear' value=' 清空分支 '>
-
 			<input class='nav-btn' type=button id='clear_branch' value=' 清空面板 '> 
 
 		</div>
@@ -99,10 +93,10 @@
 		});
 		
 		var one = new MouseMenu("one");
-		one.addLink("添加", "", "javascript:DelCtl();", "_self", "添加节点");
-		one.addLink("删除", "", "javascript:HideMenuAll()", "_self", "删除节点");
-		one.addLink("删除分支", "", "javascript:HideMenuAll()", "_self", "删除所有节点");
-
+		one.addLink("添加", "", "javascript:addMindNode();HideMenuAll();", "_self", "添加节点");
+		one.addLink("删除", "", "javascript:delMindeNode();HideMenuAll();", "_self", "删除节点");
+		one.addLink("删除分支", "", "javascript:clearMindPaper();HideMenuAll();", "_self", "删除所有节点");
+		one.addLink("<font color='gray'>取消</font>", "", "javascript:HideMenuAll()", "_self", "取消操作");
 		/**
 		var two = new MouseMenu("two");
 		two.addLink('清空面板', "", "_self", "只保留根节点");

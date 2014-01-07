@@ -1,3 +1,4 @@
+'use strict';
 (function() {
 	var MindPaper = window.MindPaper = function(options) {
 		var id = '',
