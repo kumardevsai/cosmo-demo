@@ -1101,6 +1101,10 @@
                  this.scrollContent(clickedButton, this.navigationPanelScrollStep * 100 / this.getZoom());
              }
          }
+         /*
+          * @author huanghy
+          * @returns {Object} 包含外部调用方法
+          */
          this.areaHTMLDef = (function() {
 
              // 热区显示元素
@@ -1112,7 +1116,11 @@
              // 元素id数组
              var areaEle_id_arr = [];
 
-             // 获取热区显示元素的偏移
+             /*
+              * 获取热区显示元素的偏移
+              * @param {String} str 热区位置定义字串
+              * @returns {Object} 位置对象
+              */
              function getAreaPosition(str) {
                  var x = -4;
                  var y = -4;
@@ -1132,7 +1140,11 @@
                  };
              };
 
-             // 生成id
+             /*
+              * 生成id 未使用
+              * @param {String} 地图生成图片的id
+              * @returns {String} 热区显示元素的id
+              */
              function generateExEleId(imgId) {
                  var p = areaEle_prefix + "_" + imgId;
                  var num = areaEle_id_arr[p] ? areaEle_id_arr[p] : 0;
@@ -1143,7 +1155,11 @@
                      return p + '_0';
              };
 
-             // 计算热区显示元素的位置
+             /*
+              * 计算热区显示元素的位置
+              * @param {HTMLImageElement} img 热区图片
+              * @param {HTMLMapElement} imageMap 图片热区
+              */
              function caculateAreaElesPosition(img, imageMap) {
                  if (img.areaElementVisiable === true)
                      return;
@@ -1188,7 +1204,9 @@
                  img.areaElementVisiable = true;
              };
 
-             // 销毁热区显示元素
+             /*
+              * 销毁热区显示元素
+              */
              function destroyAreaEles() {
                  for (var i = 0; i < areaEles.length; i++) {
                      areaEles[i].ele.parentNode.removeChild(areaEles[i].ele);
@@ -1196,7 +1214,7 @@
                  areaEles = [];
                  areaEle_id_arr = [];
              };
-             // 返回方法
+             // 返回可调用方法
              return {
                  caculateAreaElesPosition: caculateAreaElesPosition,
                  destroyAreaEles: destroyAreaEles
