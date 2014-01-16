@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<html>
+<head>
+  <title>Video.js | HTML5 Video Player</title>
+  <meta charset='utf-8'>
+  <script type="text/javascript" src='js/swfobject.js'></script>
+</head>
+<body>
+  <span id="player1"></span>
+  <script type="text/javascript">
+    var s1 = new SWFObject("media/flvplayer.swf", "single", "400", "190", "9");
+    s1.addParam("allowfullscreen", "true");
+    s1.addVariable("autostart", "true");
+    s1.addVariable("repeat", "true");
+    //s1.addVariable("image", "preview.jpg");
+    
+    s1.addVariable("file", "a.flv");
+    
+    s1.addVariable("clicktext", "开始");
+    s1.write("player1");
+    s1.addVariable("width", "100");
+    s1.addVariable("height", "100");
+  </script>
+</body>
+</html>
