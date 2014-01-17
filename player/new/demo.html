@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<html>
+<head>
+  <title>swf flv</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8"/>
+  <meta charset='utf-8'>
+  <script type="text/javascript" src='js/swfobject.js'></script>
+</head>
+<body>
+  <span id="player1"></span>
+  <script type="text/javascript">
+    new swfobject.embedSWF('../media/flvplayer.swf', document.getElementById("player1"), 400, 200, 9, false, {
+      file: '../media/hd.mp4'
+    }, {
+      autostart: false
+    }, {
+      id: 'swf_' + 1
+    });
+  </script>
+</body>
+</html>
