@@ -5,7 +5,7 @@ window.onload = function() {
         stroke: "#666",
         "stroke-width": 1,
         "stroke-linejoin": "round" , 
-        "s":'ss'
+        opacity : .5
     };
     var aus = {};
     aus.tas = R.path(mapArea2SvgPath(pp)).attr(attr);

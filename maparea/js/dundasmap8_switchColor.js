@@ -1232,7 +1232,8 @@ var DundasMap = {
                 fill: "#FFFFFF",
                 stroke: "DarkGray",
                 "stroke-width": .7,
-                "stroke-linejoin": "round"
+                "stroke-linejoin": "round",
+                opacity : .5
             };
             var aus = [];
 
