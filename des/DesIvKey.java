@@ -10,6 +10,12 @@ import javax.crypto.spec.IvParameterSpec;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import java.util.Date;
+
 public class DesIvKey{
 
 	private final static String DES = "DES";
@@ -137,12 +143,40 @@ public class DesIvKey{
 		return str;
 	};
 	public static void main(String[] args){
-		String iv = "qwerasdf";
+		String iv = "uiophjkl";
 		String key = "qwerasdf";
+		// 加密用户名
 		String data = "admin";
-		DesIvKey des = new DesIvKey(data , key , iv);
+		StringBuffer s = new StringBuffer();
+		s.append("               ");
+		s.append(data);
+		for(int i = 0 ; i < 17 - data.length() ; i ++)
+		{
+			s.append(" ");
+		}
+		Date d = new Date();
+		// 历史毫秒
+		Long ts = d.getTime();
+		s.append(ts.toString());
+		for(int i = 0; i < 32 - ts.toString().length() ; i ++)
+		{
+			s.append(" ");
+		}
+		// 初始化对象
+		DesIvKey des = new DesIvKey(s.toString() , key , iv);
 		String str = des.generateDes();
-		System.out.println(str);
+		System.out.println(str.replace("+" , "%2B"));
 		System.out.println(des.deDes(str));
+		File f = new File("data.text");
+		FileWriter fw;
+		try{
+			fw = new FileWriter(f);
+			fw.write(str.replace("+" , "%2B"));
+			fw.close();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
