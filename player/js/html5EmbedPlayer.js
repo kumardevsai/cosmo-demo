@@ -1,9 +1,9 @@
 function html5EmbedPlayer(container, options, callback) {
 	var has = Object.hasOwnPrototype();
 	var opts = {
-		pluginspage: 'http://www.macromedia.com/go/getflashplayer',
+		pluginspage: 'http://www.adobe.com/go/getflashplayer',
 		codebase: 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0',
-		classid: 'clsid27CDB6E-AE6D-11cf-96B8-444553540000',
+		classid: 'clsid:27CDB6E-AE6D-11cf-96B8-444553540000',
 		style: '',
 		width: '100%',
 		height: '100%',

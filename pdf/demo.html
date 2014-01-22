@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<html>
+	<head>
+		<title>
+			demo 4 PDF
+		</title>
+		<meta charset='utf-8'>
+		<link rel="stylesheet" type="text/css" href="css/demo.css">
+	</head>
+	<body>
+		<div class="tbar_cls">
+			<table class="tb_cls" cellpadding=0  cellspacing=0>
+				<tr>
+					<td>
+						<input id='print_pdf' value="打印" type="button">
+						<input id='print_pdf_all' value="打印全部" type="button">
+						<!--<input id='print_pdf_allFit' value="合适大小打印" type="button">-->
+						<input id='print_pdf_getVersions' value="版本信息" type="button">
+						<input id='print_pdf_goBackwardStack' value="上一视图" type="button">
+						<input id='print_pdf_goForwardStack' value="下一视图" type="button">
+						<input id="print_pdf_gotoFirstPage" value="第一页" type="button">
+						<input id="print_pdf_gotoPreviousPage" value="上一页" type="button">
+						<input id="print_pdf_gotoNextPage" value="下一页" type="button">
+						<!--没起作用-->
+						<!--<input id="print_pdf_setCurrentHighlight" value="高亮" type="button">-->
+						<input id="print_pdf_setShowScrollBars" value="隐藏滚动条" type="button" sts='on'>
+						<input id="print_pdf_setShowToolBar" value="显示工具栏" type="button" sts='off'>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<object classid="clsid:CA8A9780-280D-11CF-A24D-444553540000" width="100%" height="100%" class="pdf_cls" id="pdf_one">
+	      	<param name="SRC" value="files/概念分享.pdf"> 
+			<embed id="pdf" width="100%" height="100%" src="files/概念分享.pdf" type="application/pdf"/>
+		</object>
+	</body>
+	<script type="text/javascript" src='js/demo.js'></script>
+</html>

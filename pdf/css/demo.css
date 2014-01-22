@@ -1,0 +1,29 @@
+html , body{
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+.tbar_cls{
+	position: fixed;
+	top:0;
+	left:0;
+	width: 100%;
+	height: 24px;
+	background-color:#666;
+}
+.tb_cls{
+	margin-left:2px;
+	border-collapse: collapse;
+}
+.tb_cls td{
+	border: 0px solid #FFFFFF;
+}
+.pdf_cls{
+	position: absolute;
+	top:24px;
+	left:0;
+	margin: 0;
+	padding: 0;
+}
