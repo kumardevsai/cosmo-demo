@@ -10,7 +10,7 @@
 /**
 	var WordApp = new ActiveXObject("wps.Application");
 **/
-var WordApp = new ActiveXObject("wps.Application");
+var WordApp = new ActiveXObject("Word.Application");
 WordApp.Application.Visible = true;
 
 var myDoc = WordApp.Documents.Add();
