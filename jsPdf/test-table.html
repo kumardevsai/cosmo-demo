@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type"> 
+		<title>test table</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<style type="text/css">
+			.tb{
+				border-collapse: collapse;
+			}
+			.tb td{
+				height: 20px;
+				width: 40px;
+				border: 1px solid #000;
+			}
+			.txt{
+				width: 640px;
+				height: 320px;
+				border: 1px solid #000;
+				margin-top:10px;
+			}
+		</style>
+	</head>
+	<body>
+		<table cellpadding=0 cellspacing=0 class='tb'>
+			<tr>
+				<td>
+					column1
+				</td>
+				<td>
+					column2
+				</td>
+				<td>
+					column3
+				</td>
+			</tr>
+			<tr>
+				<td>
+					1
+				</td>
+				<td>
+					2
+				</td>
+				<td>
+					3
+				</td>
+			</tr>
+			<tr>
+				<td>
+					4
+				</td>
+				<td>
+					5
+				</td>
+				<td>
+					6
+				</td>
+			</tr>
+			<tr>
+				<td>
+					7
+				</td>
+				<td>
+					8
+				</td>
+				<td>
+					9
+				</td>
+			</tr>
+		</table>
+		<input type='button' id="btn" value='显示表格'>
+		<input type='button' id='btn1' value='显示单元格'>
+		<br>
+		<br>
+		<font color=red>注*:先点击显示单元格，可能缓存</font>
+	</body>
+	<script type="text/javascript" src="jquery.min.js"></script>
+	<script type="text/javascript" src="jspdf.js"></script>
+	<script type="text/javascript" src="./libs/FileSaver.js/FileSaver.js"></script>
+	<script type="text/javascript" src="./libs/Blob.js/Blob.js"></script>
+	<script type="text/javascript" src="./libs/Blob.js/BlobBuilder.js"></script>
+
+	<script type="text/javascript" src="./libs/Deflate/deflate.js"></script>
+	<script type="text/javascript" src="./libs/Deflate/adler32cs.js"></script>
+
+	<script type="text/javascript" src="./jspdf.plugin.addimage.js"></script>
+	<script type="text/javascript" src="./jspdf.plugin.from_html.js"></script>
+	<script type="text/javascript" src="./jspdf.plugin.ie_below_9_shim.js"></script>
+	<script type="text/javascript" src="./jspdf.plugin.sillysvgrenderer.js"></script>
+	<script type="text/javascript" src="./jspdf.plugin.split_text_to_size.js"></script>
+	<script type="text/javascript" src="./jspdf.plugin.standard_fonts_metrics.js"></script>
+	<script type="text/javascript" src="./jspdf.plugin.cell.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#btn').click(renderPdf);
+			$('#btn1').click(renderPdf_cell);
+		});
+		function renderPdf(){
+			var doc = new jsPDF();
+			doc.table([{
+				col1 : 1, 
+				col2 : 2,
+				col3 : 3
+			},{
+				col1 : 4, 
+				col2 : 5,
+				col3 : 6
+			},{
+				col1 : 7, 
+				col2 : 8,
+				col3 : 9
+			}],[{name : 'col1',prompt : 'column1'} , {name :'col2',prompt : 'column2'} , {name : 'col3',prompt : 'column3'}],{
+				autoSize : true,
+				printHeaders : true,
+				autoStretch : true
+			});
+			doc.output('dataurlnewwindow');
+		};
+		function renderPdf_cell(){
+			var doc = new jsPDF();
+			doc.cell(20 , 20 , 40 , 20 , 'this is a cell 40 x 20' , 1);
+			doc.output('dataurlnewwindow');
+		};
+	</script>
+</html>

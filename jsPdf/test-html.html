@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type"> 
+		<title>test html</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<style type="text/css">
+			.txt{
+				width: 640px;
+				height: 320px;
+				border: 1px solid #000;
+				margin-top:10px;
+			}
+			.d{
+				width: 200px;
+				height: 200px;
+				border: 1px solid #000;
+			}
+			.tb{
+				border-collapse: collapse;
+			}
+			.tb td{
+				height: 20px;
+				width: 40px;
+				border: 1px solid #000;
+			}
+		</style>
+	</head>
+	<body>
+		<div id='output'>
+			<h1>h1</h1>
+			<h2>h2</h2>
+			<h3>h3</h3>
+			<h4>h4</h4>
+			<strong>strong</strong><br>
+			<em>em</em><br>
+			<small>small</small><br>
+			<font size=20>font 20</font><br>
+			<font size=20 color=red>font 20 red</font>
+			<div class='d'>this is a div , width 200px height 200px , border 1px solid #000</div>
+			<label>label:table</label>
+			<table cellpadding=0 cellspacing=0 class='tb'>
+			<tr>
+				<td>
+					column1
+				</td>
+				<td>
+					column2
+				</td>
+				<td>
+					column3
+				</td>
+			</tr>
+		</table>
+		<a href="www.baidu.com">www.baidu.com</a>
+		<ul>
+			<li>
+				ul > li
+			</li>
+		</ul>
+		<ol>
+			<li>
+				ol > li
+			</li>
+		</ol>
+		<textarea rows="3" cols="20">
+			textarea
+		</textarea><br>
+		<select>
+			<option>option1</option>
+			<option>option2</option>
+		</select>
+		<fieldset>
+			<legend>fieldset > legend</legend>
+		</fieldset>
+		<p>
+			p
+		</p>
+		</div>
+		<input type='button' id="btn" value='弹出'>
+	</body>
+	<script type="text/javascript" src="jquery.min.js"></script>
+	<script type="text/javascript" src="jspdf.js"></script>
+	<script type="text/javascript" src="./libs/FileSaver.js/FileSaver.js"></script>
+	<script type="text/javascript" src="./libs/Blob.js/Blob.js"></script>
+	<script type="text/javascript" src="./libs/Blob.js/BlobBuilder.js"></script>
+
+	<script type="text/javascript" src="./libs/Deflate/deflate.js"></script>
+	<script type="text/javascript" src="./libs/Deflate/adler32cs.js"></script>
+
+	<script type="text/javascript" src="./jspdf.plugin.addimage.js"></script>
+	<script type="text/javascript" src="./jspdf.plugin.from_html.js"></script>
+	<script type="text/javascript" src="./jspdf.plugin.ie_below_9_shim.js"></script>
+	<script type="text/javascript" src="./jspdf.plugin.sillysvgrenderer.js"></script>
+	<script type="text/javascript" src="./jspdf.plugin.split_text_to_size.js"></script>
+	<script type="text/javascript" src="./jspdf.plugin.standard_fonts_metrics.js"></script>
+	<script type="text/javascript" src="./jspdf.plugin.cell.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#btn').click(renderPdf);
+		});
+
+		function renderPdf(){
+			var doc = new jsPDF();
+			// All units are in the set measurement for the document
+			// This can be changed to "pt" (points), "mm" (Default), "cm", "in"
+			doc.fromHTML($('#output').get(0), 15, 15, {
+				'width': 170,
+				'elementHandlers':{}
+			});
+			doc.output('dataurlnewwindow');
+		};
+	</script>
+</html>
