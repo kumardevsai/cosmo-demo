@@ -11,7 +11,11 @@
 	var WordApp = new ActiveXObject("wps.Application");
 **/
 var WordApp = new ActiveXObject("Word.Application");
-WordApp.Application.Visible = true;
+/**
+	文档界面是否可见
+	WordApp.Application.visible = true // 可见
+**/
+WordApp.Application.Visible = false;
 
 var myDoc = WordApp.Documents.Add();
 
@@ -85,7 +89,14 @@ WordApp.Selection.TypeParagraph();
 WordApp.Selection.InsertDateTime('MMMM dd, yyyy HH mm ss', false);
 
 function save() {
-	myDoc.SaveAs("d:\\插入文字.doc"); //保存word
-	myDoc.close();
+	var filename = document.getElementById('filename').value;
+	var name = filename ? filename : '插入文字-word';
+	myDoc.SaveAs("d:\\" + name + ".doc"); //保存word
+	/**
+		文档界面可见时，关闭文档
+		myDoc.close();
+	**/
 	WordApp.Application.Quit();
+
+	alert('保存成功!');
 };

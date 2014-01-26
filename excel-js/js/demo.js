@@ -12,7 +12,11 @@ var ExcelApp;
 	ExcelApp = new ActiveXObject('et.Application');
 **/
 ExcelApp = new ActiveXObject('Excel.Application');
-ExcelApp.visible = true;
+/**
+	文档界面是否可见
+	ExcelApp.visible = true // 可见
+**/
+ExcelApp.visible = false;
 var xlBook = ExcelApp.Workbooks.Add;
 sheetOne = xlBook.Worksheets(1);
 sheetOne.name = '张颖';
@@ -96,13 +100,13 @@ sheetOne.cells(3, 2).Interior.ColorIndex = 2;
 sheetOne.cells(3, 2).Formula = '销售代表';
 
 sheetOne.cells(4, 2).Interior.ColorIndex = 2;
-sheetOne.cells(4, 2).Formula = '分机：';
+sheetOne.cells(4, 2).Formula = '5467';
 
 sheetOne.cells(5, 2).Interior.ColorIndex = 2;
-sheetOne.cells(5, 2).Formula = '5467';
+sheetOne.cells(5, 2).Formula = '复兴门 245 号';
 
 sheetOne.cells(6, 2).Interior.ColorIndex = 2;
-sheetOne.cells(6, 2).Formula = '复兴门 245 号';
+sheetOne.cells(6, 2).Formula = '100098';
 
 sheetOne.cells(2, 4).Interior.ColorIndex = 2;
 sheetOne.cells(2, 4).Formula = '张颖';
@@ -131,7 +135,14 @@ sheetOne.cells(6, 4).Formula = '1968-12-8';
 ExcelApp.Selection.BorderAround(7, 3, 1);
 
 function save() {
-	sheetOne.SaveAs("d:\\插入表格-excel.xls"); //保存word
-	xlBook.close();
+	var filename = document.getElementById('filename').value;
+	var name = filename ? filename : '插入表格-excel';
+	sheetOne.SaveAs("d:\\" + name + ".xls"); //保存
+	/**
+		文档界面可见时，关闭文档
+		xlBook.close();
+	**/
 	ExcelApp.Application.Quit();
+
+	alert('保存成功!');
 };

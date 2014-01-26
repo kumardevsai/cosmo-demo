@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<html>
+  <head>
+    <title>test excel</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <style type="text/css">
+      *{
+        margin: 0;
+        padding: 0;
+      }
+      body{
+        font-size: 12px;
+      }
+      table{
+        border-collapse: collapse;
+      }
+      table td{
+        border:1px solid #e4e4e4;
+        padding: 5px 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <form>
+      <input type='file' name='excel_' id='excel_'>  
+    </form>
+    起始:<input type='text' id='start' value='1,1'><br>
+    结束:<input type='text' id='end' value='20,20'><br>
+    <input type='button' onclick=read() value='读取'>
+    <div id='content'></div>
+  </body>
+  <script type="text/javascript" src='js/demo-range.js'></script>
+</html>

@@ -4,7 +4,11 @@
 var WordApp = new ActiveXObject("Word.Application");
 var wdCharacter = 1
 var wdOrientLandscape = 1
-WordApp.Application.Visible = true;
+/**
+	文档界面是否可见
+	WordApp.Application.visible = true // 可见
+**/
+WordApp.Application.Visible = false;
 var myDoc = WordApp.Documents.Add();
 /**
 	打开文档
@@ -50,7 +54,12 @@ for (i = 0; i < 7; i++) {
 }
 
 function save() {
-	myDoc.SaveAs("d:\\" + String(Math.random()).substring(2) + ".doc"); //保存word
-	myDoc.close();
+	var filename = document.getElementById('filename').value;
+	var name = filename ? filename : '插入文字-word';
+	myDoc.SaveAs("d:\\" + name + ".doc"); //保存word
+	/**
+		文档界面可见时，关闭文档
+		myDoc.close();
+	**/
 	WordApp.Application.Quit();
 };
