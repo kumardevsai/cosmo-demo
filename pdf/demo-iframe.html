@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<html>
+	<head>
+		<title>
+			demo 4 PDF 嵌入
+		</title>
+		<meta charset='utf-8'>
+		<link rel="stylesheet" type="text/css" href="css/demo.css">
+	</head>
+	<body>
+		<div class="tbar_cls">
+			<table class="tb_cls" cellpadding=0  cellspacing=0>
+				<tr>
+					<td>
+						<input id='print_pdf' value="打印" type="button">
+						<input id='print_pdf_all' value="打印全部" type="button">
+						<!--<input id='print_pdf_allFit' value="合适大小打印" type="button">-->
+						<input id='print_pdf_getVersions' value="版本信息" type="button">
+						<input id='print_pdf_goBackwardStack' value="上一视图" type="button">
+						<input id='print_pdf_goForwardStack' value="下一视图" type="button">
+						<input id="print_pdf_gotoFirstPage" value="第一页" type="button">
+						<input id="print_pdf_gotoPreviousPage" value="上一页" type="button">
+						<input id="print_pdf_gotoNextPage" value="下一页" type="button">
+						<!--没起作用-->
+						<!--<input id="print_pdf_setCurrentHighlight" value="高亮" type="button">-->
+						<input id="print_pdf_setShowScrollBars" value="隐藏滚动条" type="button" sts='on'>
+						<input id="print_pdf_setShowToolBar" value="显示工具栏" type="button" sts='off'>
+						<input type='file' id='pdf_file'>
+						<input type='button' id='pdf_view' value='预览'> 
+					</td>
+				</tr>
+			</table>
+		</div>
+		<iframe border=none id='pdf_iframe' frameborder=0 scrolling=no src='demo-pdf.html' style='border:1px solid #e4e4e4;padding:0;margin:0;top:24px;position:absolute;left:0;width:100%;bottom:0;_height:expression(document.body.offsetHeight - 24 + "px");'></iframe>
+	</body>
+	<script type="text/javascript" src='js/demo-iframe.js'></script>
+</html>
