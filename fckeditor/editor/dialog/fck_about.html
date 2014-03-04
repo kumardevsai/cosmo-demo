@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!--
+ * Copyright (C) 2008-2010 Cosmosource
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>About</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="robots" content="noindex, nofollow" />
+	<script src="common/fck_dialog_common.js" type="text/javascript"></script>
+	<script type="text/javascript">
+
+var oEditor = window.parent.InnerDialogLoaded() ;
+var FCKLang	= oEditor.FCKLang ;
+
+window.parent.AddTab( 'About', FCKLang.DlgAboutAboutTab ) ;
+//window.parent.AddTab( 'BrowserInfo', FCKLang.DlgAboutBrowserInfoTab ) ;
+
+// Function called when a dialog tag is selected.
+function OnDialogTabChange( tabCode )
+{
+	ShowE('divAbout', ( tabCode == 'About' ) ) ;
+	//ShowE('divInfo'	, ( tabCode == 'BrowserInfo' ) ) ;
+}
+
+function SendEMail()
+{
+	var eMail = 'mailto:' ;
+	eMail += 'info' ;
+	eMail += '@' ;
+	eMail += 'cosmosource' ;
+	eMail += '.' ;
+	eMail += 'com' ;
+
+	window.location = eMail ;
+}
+
+window.onload = function()
+{
+	// Translate the dialog box texts.
+	oEditor.FCKLanguageManager.TranslatePage(document) ;
+
+	window.parent.SetAutoSize( true ) ;
+}
+
+	</script>
+</head>
+<body style="overflow: hidden">
+	<div id="divAbout">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%" style="height: 100%">
+			<tr>
+				<td colspan="2">
+                    &nbsp;<table width="80" border="0" cellspacing="0" cellpadding="5" bgcolor="#ffffff" align="right">
+						<tr>
+							<td align="center" nowrap="nowrap" style="border-right: #000000 1px solid; border-top: #000000 1px solid;
+								border-left: #000000 1px solid; border-bottom: #000000 1px solid">
+								<span fcklang="DlgAboutVersion">版本</span>
+								<br />
+								<b></b><strong>4.0</strong><br />
+								Bubuild 3861bd</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr style="height: 100%">
+				<td align="center" valign="middle">
+				    <img src="../images/logo_d.gif" />
+					<span style="font-size: 14px" dir="ltr">
+						<b><a href="http://www.cosmosource.com" target="_blank" title="Visit the Cosmosource web site">
+                            Cosmosource</a></b> </span>
+					<div style="padding-top:15px">
+                        &nbsp;</div>
+				</td>
+				<td align="center" nowrap="nowrap" valign="middle">
+					<div>
+						<div style="margin-bottom:5px" dir="ltr"></div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td width="100%" nowrap="nowrap">
+					<span fcklang="DlgAboutInfo">For further information go to</span> <a href="http://www.cosmosource.com"
+						target="_blank">http://www.cosmosource.com/</a>.
+				</td>
+				<td align="center">
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="divLicense" style="display: none">
+			<p>
+				
+			</p>
+			<ul>
+			</ul>
+	</div>
+	<div id="divInfo" style="display: none" dir="ltr">
+		<table align="center" width="80%" border="0">
+			<tr>
+				<td>
+					<script type="text/javascript">
+<!--
+document.write( '<b>User Agent<\/b><br />' + window.navigator.userAgent + '<br /><br />' ) ;
+document.write( '<b>Browser<\/b><br />' + window.navigator.appName + ' ' + window.navigator.appVersion + '<br /><br />' ) ;
+document.write( '<b>Platform<\/b><br />' + window.navigator.platform + '<br /><br />' ) ;
+
+var sUserLang = '?' ;
+
+if ( window.navigator.language )
+	sUserLang = window.navigator.language.toLowerCase() ;
+else if ( window.navigator.userLanguage )
+	sUserLang = window.navigator.userLanguage.toLowerCase() ;
+
+document.write( '<b>User Language<\/b><br />' + sUserLang ) ;
+//-->
+					</script>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

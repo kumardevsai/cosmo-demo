@@ -1,0 +1,41 @@
+<html>
+<head>
+<title>文本编辑器</title>
+<script language="javascript" src="fckeditor.js" type="text/javascript"></script>
+</head>
+<body >
+<script type="text/javascript">
+	var oFCKeditor = new FCKeditor('content2');
+	oFCKeditor.BasePath='';//指定FCKeditor根路径，也就是fckeditor.js所在的路径
+	oFCKeditor.Height='600';
+	oFCKeditor.ToolbarSet="None";
+	oFCKeditor.Config.ToolbarLocation="Hidden";
+	//oFCKeditor.Value=window.dialogArguments;
+	oFCKeditor.Value='<table height="370" border="1" cellpadding="1" cellspacing="1" width="751"><tbody><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table>';
+	oFCKeditor.Create();
+	function OnSubmit()
+	{
+		var oEditor=FCKeditorAPI.GetInstance('content2');
+		document.all('hdContent').value = oEditor.GetXHTML(true);
+		return true;
+	}
+</script>
+<center>
+<input type="button" name="btn_ok" value=" 确定 " onclick="btn_ok_onclick()" ID="Button1">&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" name="btn_cancel" value=" 取消 " onclick="window.close();" ID="Button2">
+</center>
+</body>
+</html>
+<script type="text/javascript">
+/* 模式对话框设置大小 */
+dialogWidth = "800px";
+dialogHeight = "300px";
+
+/* 确定传回数据 */
+function btn_ok_onclick()
+{
+	var oEditor=FCKeditorAPI.GetInstance('content2');
+	window.returnValue = oEditor.GetXHTML(true);
+	window.close();
+}
+</script>
