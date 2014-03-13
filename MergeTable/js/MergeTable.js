@@ -373,10 +373,206 @@ MergeTable.restrict = {
 				return;
 			}
 		},
-		deleteRow: function() {},
-		deleteCol: function() {},
-		addColLeft: function() {},
-		addColRight: function() {},
+		deleteRow: function() {
+			if (MergeTable.restrict.persist.checkSelectionOne()) {
+				var arr = MergeTable.restrict.persist.range.start.split(MergeTable.restrict.options.separator);
+				var y = parseInt(arr[0]);
+				var x = parseInt(arr[1]);
+				var cell = MergeTable.restrict.persist.storage[y][x];
+				for (var m = 0; m < MergeTable.restrict.persist.storage[y].length; m++) {
+					var mergeCell = MergeTable.restrict.persist.storage[y][m];
+					if (mergeCell) {
+						if (mergeCell.rowSpan > 1) {
+							var nextRow = null;
+							for (var i = 1; i < mergeCell.rowSpan; i++) {
+								if (!nextRow)
+									nextRow = mergeCell.parentNode.nextSibling;
+								else
+									nextRow = nextRow.nextSibling;
+								var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
+								if (m === 0) {
+									nextRow.insertBefore(insertCell, nextRow.firstChild);
+								} else {
+									var l = 0;
+									var preCell = MergeTable.restrict.persist.storage[y + i][m - 1];
+									while (!preCell) {
+										l++;
+										if (m - 1 - l < 0) {
+											preCell = nextRow.firstChild;
+										} else
+											preCell = MergeTable.restrict.persist.storage[y + i][m - 1 - l];
+									}
+									nextRow.insertBefore(insertCell, preCell.nextSibling);
+									AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
+									AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
+									AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
+								}
+								MergeTable.restrict.persist.storage[y + i][m] = insertCell;
+							}
+						}
+						if (mergeCell.colSpan > 1) {
+							var nextRow = null;
+							for (var i = 1; i < mergeCell.rowSpan; i++) {
+								if (!nextRow)
+									nextRow = mergeCell.parentNode.nextSibling;
+								else
+									nextRow = nextRow.nextSibling;
+								for (var j = 0; j < mergeCell.colSpan - 1; j++) {
+									var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
+									nextRow.insertBefore(insertCell, MergeTable.restrict.persist.storage[y + i][m + j].nextSibling);
+									MergeTable.restrict.persist.storage[y + i][m + j + 1] = insertCell;
+									AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
+									AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
+									AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
+								}
+							}
+						}
+					} else {
+						var preRowIndex = y - 1;
+						if (preRowIndex !== -1) {
+							while (!MergeTable.restrict.persist.storage[preRowIndex][m]) {
+								preRowIndex--;
+								if (preRowIndex === -1)
+									break;
+							}
+						}
+						if (preRowIndex !== -1) {
+							if (MergeTable.restrict.persist.storage[preRowIndex][m]) {
+								if (MergeTable.restrict.persist.storage[preRowIndex][m].rowSpan > 1) {
+									MergeTable.restrict.persist.storage[preRowIndex][m].rowSpan--;
+									if (MergeTable.restrict.persist.storage[preRowIndex][m].colSpan > 1) {
+										m += MergeTable.restrict.persist.storage[preRowIndex][m].colSpan - 1;
+									}
+								} else {
+									if (m > 0) {
+										if (MergeTable.restrict.persist.storage[y][m - 1]) {
+											// 需要考虑到赋值之后发生自增的情况
+											m += MergeTable.restrict.persist.storage[y][m - 1].colSpan - 1 - 1;
+										} else {
+											var preRowIndex_ = y - 1;
+											if (preRowIndex_ !== -1) {
+												while (!MergeTable.restrict.persist.storage[preRowIndex_][m - 1]) {
+													preRowIndex_--;
+													if (preRowIndex_ === -1)
+														break;
+												}
+											}
+											if (MergeTable.restrict.persist.storage[preRowIndex_][m - 1]) {
+												MergeTable.restrict.persist.storage[preRowIndex_][m - 1].rowSpan--;
+												m += MergeTable.restrict.persist.storage[preRowIndex_][m - 1].colSpan - 2;
+											}
+										}
+									}
+								}
+							}
+						} else
+							m += MergeTable.restrict.persist.storage[y][m - 1].colSpan - 1;
+					}
+				}
+				MergeTable.restrict.persist.storage.splice(y, 1);
+				MergeTable.restrict.persist.start = null;
+				MergeTable.restrict.persist.selection = [];
+				cell.parentNode.parentNode.removeChild(cell.parentNode);
+			} else {
+				alert(MergeTable.restrict.options.oneSelectedMsg);
+				return;
+			}
+		},
+		deleteCol: function() {
+			if (MergeTable.restrict.persist.checkSelectionOne()) {
+				var arr = MergeTable.restrict.persist.range.start.split(MergeTable.restrict.options.separator);
+				var x = parseInt(arr[1]);
+
+				for (var i = 0; i < MergeTable.restrict.persist.storage.length; i++) {
+					var mergeCell = MergeTable.restrict.persist.storage[i][x];
+					if (mergeCell) {
+						if (mergeCell.colSpan > 1) {
+							var currentCell = null;
+							for (var m = 1; m < mergeCell.colSpan; m++) {
+								var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
+								if (!currentCell)
+									currentCell = mergeCell.nextSibling;
+								if (currentCell)
+									mergeCell.parentNode.insertBefore(insertCell, currentCell);
+								else
+									mergeCell.parentNode.appendChild(insertCell);
+								currentCell = insertCell;
+								MergeTable.restrict.persist.storage[i][x + mergeCell.colSpan - m] = insertCell;
+								AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
+								AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
+								AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
+							}
+						}
+						// TODO 以下算法有问题
+						if (mergeCell.rowSpan > 1) {
+							var totalRows = 0;
+							for (var n = 1; n < mergeCell.rowSpan; n++) {
+								if (mergeCell.colSpan > 1) {
+									for (var m = 1; m < mergeCell.colSpan; m++) {
+										var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
+										totalRows++;
+										var nextRowCell = MergeTable.restrict.persist.storage[i + n][x + mergeCell.colSpan];
+										if (nextRowCell) {
+											nextRowCell.parentNode.insertBefore(insertCell, nextRowCell);
+											if (nextRowCell.rowSpan > 1) {
+												var nextTr = null;
+												var len;
+												if (totalRows + nextRowCell.rowSpan > mergeCell.rowSpan)
+													len = nextRowCell.rowSpan - (totalRows + nextRowCell.rowSpan - mergeCell.rowSpan);
+												else
+													len = nextRowCell.rowSpan;
+												for (var l = 1; l < len; l++) {
+													var insertCell_ = document.createElement(mergeCell.tagName.toLowerCase());
+													if (!nextTr)
+														nextTr = nextRowCell.parentNode.nextSibling;
+													else
+														nextTr = nextTr.nextSibling;
+													var nextRowCell_ = MergeTable.restrict.persist.storage[i + n + l][x + mergeCell.colSpan + nextRowCell.colSpan];
+													if (nextRowCell_) {
+														nextTr.insertBefore(insertCell_, nextRowCell_);
+													} else {
+														nextTr.appendChild(insertCell_);
+													}
+													MergeTable.restrict.persist.storage[i + n + l][x + m] = insertCell_;
+												}
+												totalRows += nextRowCell.rowSpan;
+											}
+										}
+										MergeTable.restrict.persist.storage[i + n][x + m] = insertCell;
+										AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
+										AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
+										AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
+									}
+								}
+							}
+						}
+						MergeTable.restrict.persist.storage[i].splice(x, 1);
+						mergeCell.parentNode.removeChild(mergeCell);
+					} else {
+						MergeTable.restrict.persist.storage[i].splice(x, 1);
+					}
+				}
+			} else {
+				alert(MergeTable.restrict.options.oneSelectedMsg);
+				return;
+			}
+		},
+		addColLeft: function() {
+			if (MergeTable.restrict.persist.checkSelectionOne()) {
+
+			} else {
+				alert(MergeTable.restrict.options.oneSelectedMsg);
+				return;
+			}
+		},
+		addColRight: function() {
+			if (MergeTable.restrict.persist.checkSelectionOne()) {
+
+			} else {
+				alert(MergeTable.restrict.options.oneSelectedMsg);
+				return;
+			}
+		},
 		// TODO 删除此方法
 		checkSplitH: function() {
 			var arr = MergeTable.restrict.persist.range.start.split(MergeTable.restrict.options.separator);
