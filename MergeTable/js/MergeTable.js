@@ -1,7 +1,16 @@
+/**
+	TODO
+	1.获取元素的前置节点及后置节点不准确{previousSibling,nextSibling and previousElementSibling,nextElementSibling}
+**/
 "use strict";
 
 var MergeTable = window.MergeTable = function() {};
 
+MergeTable.util = {
+	nextSibling: function(ele) {
+		return ele.nextElementSibling || ele.nextSibling;
+	}
+};
 MergeTable.restrict = {
 	style: {
 		bg: {
@@ -125,21 +134,21 @@ MergeTable.restrict = {
 				if (i >= 0) {
 					var beforeCell = MergeTable.restrict.persist.storage[nextRowIndex][i];
 					if (beforeCell) {
-						if (beforeCell.nextSibling)
-							beforeCell.parentNode.insertBefore(insertCell, beforeCell.nextSibling);
+						if (MergeTable.util.nextSibling(beforeCell))
+							beforeCell.parentNode.insertBefore(insertCell, MergeTable.util.nextSibling(beforeCell));
 						else
 							beforeCell.parentNode.appendChild(insertCell);
 					} else {
-						cell.parentNode.nextSibling.insertBefore(insertCell, cell.parentNode.nextSibling.firstChild);
+						MergeTable.util.nextSibling(cell.parentNode).insertBefore(insertCell, MergeTable.util.nextSibling(cell.parentNode).firstChild);
 					}
 				} else if (i === -1) {
 					var nextTr;
 					var rowSpan1_ = rowSpan1;
 					while (rowSpan1_ >= 1) {
 						if (!nextTr)
-							nextTr = cell.parentNode.nextSibling;
+							nextTr = MergeTable.util.nextSibling(cell.parentNode);
 						else
-							nextTr = nextTr.nextSibling;
+							nextTr = MergeTable.util.nextSibling(nextTr);
 						rowSpan1_--;
 					}
 					nextTr.insertBefore(insertCell, nextTr.firstChild);
@@ -177,7 +186,7 @@ MergeTable.restrict = {
 				insertCell.colSpan = colSpan2;
 				insertCell.rowSpan = rowSpan_;
 				// appendChild?
-				cell.parentNode.insertBefore(insertCell, cell.nextSibling);
+				cell.parentNode.insertBefore(insertCell, MergeTable.util.nextSibling(cell));
 				AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
 				AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
 				AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
@@ -246,10 +255,22 @@ MergeTable.restrict = {
 							var preRowIndex_ = preRowIndex;
 							while (!MergeTable.restrict.persist.storage[preRowIndex_][i])
 								preRowIndex_--;
-							MergeTable.restrict.persist.storage[preRowIndex_][i].rowSpan++;
-							if (MergeTable.restrict.persist.storage[preRowIndex_][i].colSpan > 1) {
-								for (var k = 1; k < MergeTable.restrict.persist.storage[preRowIndex_][i].colSpan; k++) {
-									insertStorage[0][i + k] = null;
+							if (MergeTable.restrict.persist.storage[preRowIndex_][i].rowSpan + preRowIndex_ > y) {
+								MergeTable.restrict.persist.storage[preRowIndex_][i].rowSpan++;
+								if (MergeTable.restrict.persist.storage[preRowIndex_][i].colSpan > 1) {
+									for (var k = 1; k < MergeTable.restrict.persist.storage[preRowIndex_][i].colSpan; k++) {
+										insertStorage[0][i + k] = null;
+									}
+									i += MergeTable.restrict.persist.storage[preRowIndex_][i].colSpan - 1;
+								}
+							} else {
+								for (var k = 0; k < MergeTable.restrict.persist.storage[preRowIndex_][i].colSpan; k++) {
+									var insertCell = document.createElement(cell.tagName.toLowerCase());
+									insertRow.appendChild(insertCell);
+									insertStorage[0][i + k] = insertCell;
+									AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
+									AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
+									AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
 								}
 								i += MergeTable.restrict.persist.storage[preRowIndex_][i].colSpan - 1;
 							}
@@ -276,16 +297,16 @@ MergeTable.restrict = {
 				var insertStorage = [];
 				insertStorage[0] = [];
 				var insertRow = document.createElement(cell.parentNode.tagName.toLowerCase());
-				if (!cell.parentNode.nextSibling)
+				if (!MergeTable.util.nextSibling(cell.parentNode))
 					cell.parentNode.parentNode.appendChild(insertRow);
 				else {
 					var index_ = y + cell.rowSpan;
 					var nextSiblingTr;
 					while (index_ !== y) {
 						if (!nextSiblingTr)
-							nextSiblingTr = cell.parentNode.nextSibling;
+							nextSiblingTr = MergeTable.util.nextSibling(cell.parentNode);
 						else
-							nextSiblingTr = nextSiblingTr.nextSibling;
+							nextSiblingTr = MergeTable.util.nextSibling(nextSiblingTr);
 						index_--;
 					}
 					cell.parentNode.parentNode.insertBefore(insertRow, nextSiblingTr);
@@ -386,9 +407,9 @@ MergeTable.restrict = {
 							var nextRow = null;
 							for (var i = 1; i < mergeCell.rowSpan; i++) {
 								if (!nextRow)
-									nextRow = mergeCell.parentNode.nextSibling;
+									nextRow = MergeTable.util.nextSibling(mergeCell.parentNode);
 								else
-									nextRow = nextRow.nextSibling;
+									nextRow = MergeTable.util.nextSibling(nextRow);
 								var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
 								if (m === 0) {
 									nextRow.insertBefore(insertCell, nextRow.firstChild);
@@ -402,11 +423,11 @@ MergeTable.restrict = {
 										} else
 											preCell = MergeTable.restrict.persist.storage[y + i][m - 1 - l];
 									}
-									nextRow.insertBefore(insertCell, preCell.nextSibling);
-									AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
-									AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
-									AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
+									nextRow.insertBefore(insertCell, MergeTable.util.nextSibling(preCell));
 								}
+								AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
+								AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
+								AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
 								MergeTable.restrict.persist.storage[y + i][m] = insertCell;
 							}
 						}
@@ -414,12 +435,12 @@ MergeTable.restrict = {
 							var nextRow = null;
 							for (var i = 1; i < mergeCell.rowSpan; i++) {
 								if (!nextRow)
-									nextRow = mergeCell.parentNode.nextSibling;
+									nextRow = MergeTable.util.nextSibling(mergeCell.parentNode);
 								else
-									nextRow = nextRow.nextSibling;
+									nextRow = MergeTable.util.nextSibling(nextRow);
 								for (var j = 0; j < mergeCell.colSpan - 1; j++) {
 									var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
-									nextRow.insertBefore(insertCell, MergeTable.restrict.persist.storage[y + i][m + j].nextSibling);
+									nextRow.insertBefore(insertCell, MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[y + i][m + j]));
 									MergeTable.restrict.persist.storage[y + i][m + j + 1] = insertCell;
 									AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
 									AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
@@ -465,8 +486,9 @@ MergeTable.restrict = {
 									}
 								}
 							}
-						} else
-							m += MergeTable.restrict.persist.storage[y][m - 1].colSpan - 1;
+						} else { // 需要考虑到赋值之后发生自增的情况
+							m += MergeTable.restrict.persist.storage[y][m - 1].colSpan - 1 - 1;
+						}
 					}
 				}
 				MergeTable.restrict.persist.storage.splice(y, 1);
@@ -491,7 +513,7 @@ MergeTable.restrict = {
 							for (var m = 1; m < mergeCell.colSpan; m++) {
 								var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
 								if (!currentCell)
-									currentCell = mergeCell.nextSibling;
+									currentCell = MergeTable.util.nextSibling(mergeCell);
 								if (currentCell)
 									mergeCell.parentNode.insertBefore(insertCell, currentCell);
 								else
@@ -503,42 +525,36 @@ MergeTable.restrict = {
 								AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
 							}
 						}
-						// TODO 以下算法有问题
 						if (mergeCell.rowSpan > 1) {
-							var totalRows = 0;
-							for (var n = 1; n < mergeCell.rowSpan; n++) {
-								if (mergeCell.colSpan > 1) {
-									for (var m = 1; m < mergeCell.colSpan; m++) {
-										var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
-										totalRows++;
-										var nextRowCell = MergeTable.restrict.persist.storage[i + n][x + mergeCell.colSpan];
-										if (nextRowCell) {
-											nextRowCell.parentNode.insertBefore(insertCell, nextRowCell);
-											if (nextRowCell.rowSpan > 1) {
-												var nextTr = null;
-												var len;
-												if (totalRows + nextRowCell.rowSpan > mergeCell.rowSpan)
-													len = nextRowCell.rowSpan - (totalRows + nextRowCell.rowSpan - mergeCell.rowSpan);
-												else
-													len = nextRowCell.rowSpan;
-												for (var l = 1; l < len; l++) {
-													var insertCell_ = document.createElement(mergeCell.tagName.toLowerCase());
-													if (!nextTr)
-														nextTr = nextRowCell.parentNode.nextSibling;
-													else
-														nextTr = nextTr.nextSibling;
-													var nextRowCell_ = MergeTable.restrict.persist.storage[i + n + l][x + mergeCell.colSpan + nextRowCell.colSpan];
-													if (nextRowCell_) {
-														nextTr.insertBefore(insertCell_, nextRowCell_);
-													} else {
-														nextTr.appendChild(insertCell_);
-													}
-													MergeTable.restrict.persist.storage[i + n + l][x + m] = insertCell_;
-												}
-												totalRows += nextRowCell.rowSpan;
+							if (mergeCell.colSpan > 1) {
+								var nextRow = null;
+								for (var n = 1; n < mergeCell.rowSpan; n++) {
+									if (!nextRow)
+										nextRow = MergeTable.util.nextSibling(mergeCell.parentNode);
+									else
+										nextRow = MergeTable.util.nextSibling(nextRow);
+									for (var j = 0; j < mergeCell.colSpan - 1; j++) {
+										var x_ = x;
+										if (x_ >= 0) {
+											while (!MergeTable.restrict.persist.storage[i + n][x_ - 1]) {
+												x_--;
+												if (x_ - 1 < 0)
+													break;
 											}
 										}
-										MergeTable.restrict.persist.storage[i + n][x + m] = insertCell;
+										var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
+										if (MergeTable.restrict.persist.storage[i + n][x_ - 1]) {
+											if (MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + n][x_ - 1])) {
+												nextRow.insertBefore(insertCell, MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + n][x_ - 1]));
+												MergeTable.restrict.persist.storage[i + n][x + mergeCell.colSpan - 1 - j] = insertCell;
+											} else {
+												nextRow.appendChild(insertCell);
+												MergeTable.restrict.persist.storage[i + n][x + mergeCell.colSpan - 1] = insertCell;
+											}
+										} else {
+											nextRow.insertBefore(insertCell, nextRow.firstElementChild || nextRow.firstChild);
+											MergeTable.restrict.persist.storage[i + n][x + mergeCell.colSpan - j - 1] = insertCell;
+										}
 										AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
 										AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
 										AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
@@ -549,7 +565,34 @@ MergeTable.restrict = {
 						MergeTable.restrict.persist.storage[i].splice(x, 1);
 						mergeCell.parentNode.removeChild(mergeCell);
 					} else {
-						MergeTable.restrict.persist.storage[i].splice(x, 1);
+						var flag = false;
+						var x_ = x;
+						if (x_ >= 0) {
+							while (!MergeTable.restrict.persist.storage[i][x_]) {
+								x_--;
+								if (x_ < 0)
+									break;
+							}
+						}
+						if (x_ >= 0) {
+							var rowSpan_ = MergeTable.restrict.persist.storage[i][x_].rowSpan;
+							if (MergeTable.restrict.persist.storage[i][x_].colSpan + x_ >= x) {
+								if (MergeTable.restrict.persist.storage[i][x_].colSpan > 1) {
+									MergeTable.restrict.persist.storage[i][x_].colSpan--;
+									if (rowSpan_ > 1) {
+										for (var b = 1; b < rowSpan_; b++) {
+											MergeTable.restrict.persist.storage[i + b].splice(x, 1);
+										}
+										i += rowSpan_ - 1;
+									} else {
+										flag = true;
+									}
+									MergeTable.restrict.persist.storage[i - rowSpan_ + 1].splice(x, 1);
+								}
+							}
+						}
+						if (flag === false)
+							MergeTable.restrict.persist.storage[i].splice(x, 1);
 					}
 				}
 			} else {
