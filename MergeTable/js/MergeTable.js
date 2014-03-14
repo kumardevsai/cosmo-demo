@@ -6,35 +6,58 @@
 
 var MergeTable = window.MergeTable = function() {};
 
+// 辅助工具
 MergeTable.util = {
+	// 获取右侧相邻的节点
 	nextSibling: function(ele) {
 		return ele.nextElementSibling || ele.nextSibling;
 	}
 };
+// 静态方法
 MergeTable.restrict = {
+	// 样式
 	style: {
+		// 背景
 		bg: {
+			// 错误  
 			wrong: "red",
+			// 正确
 			right: "green",
+			// 点击单元格显示的颜色
 			normal: "yellow"
 		}
 	},
+	// 选择项参数
 	options: {
+		// 分隔符
 		separator: "_",
+		// 合并单元格提示信息
 		mergeMsg: "请选择有效的单元格进行合并!",
+		// 合并单元格时是否保存被销毁的单元格的内容
 		retainMergeText: true,
+		// 单元格垂直拆分提示信息
 		splitVMsg: "当前单元格无法进行垂直拆分!",
+		// 单元格水平拆分提示信息
 		splitHMsg: "当前单元格无法进行水平拆分!",
+		// 只能选择一个单元格提示信息
 		oneSelectedMsg: "只能选择一个单元格!"
 	},
+	// 单元格操作
 	operation: {
+		// 合并单元格
 		merge: function() {
+			// 单元格是否可以合并
 			if (MergeTable.restrict.operation.checkMerge()) {
+				// 被选中的单元格
 				var selection2Array = [];
+				// 遍历被选择的单元格的下标数组
 				for (var i = 0; i < MergeTable.restrict.persist.selection.length; i++) {
+					// 拆分单元格下标
 					var y = MergeTable.restrict.persist.selection[i].split(MergeTable.restrict.options.separator)[0];
+					// 建立数组
 					if (!selection2Array[y])
 						selection2Array[y] = [];
+					// 插入单元格下标值
 					selection2Array[y].push(MergeTable.restrict.persist.selection[i]);
 				}
 				var selection2ArrayStack = [];
