@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+	<head>
+		<title>
+			test
+		</title>
+		<meta charset='utf-8'>
+		<style type="text/css">
+			body{ padding-top:200px; padding-left: 200px; } #inner_result{ height:100%;
+			width:100%; border:none; }
+		</style>
+	</head>
+	<body>
+	</body>
+	<script type="text/javascript">
+		var option = {
+			"product": "embed",
+			"challenge": "4882197c64a0dcce9f6ca32ea13e08b5h8",
+			"ypos": "19",
+			"apiserver": "http://api.geetest.com/",
+			"sliceurl": "pictures/gt/fb94a30b/c584f480.jpg",
+			"link": "http://lhb.265g.com/2013/",
+			"imgserver": "http://static.geetest.com/",
+			"geetestid": "482708a0f54c0bff54c6dafe3629d7bc",
+			"id": "a4882197c64a0dcce9f6ca32ea13e08b5",
+			"imgurl": "pictures/gt/fb94a30b.jpg"
+		};
+		if (window.attachEvent) window.attachEvent('onload',
+		function() {
+			i = window.GeeTestOptions_[0];
+			alert(getResponse_(162));
+		});
+		else if (window.addEventListener) window.addEventListener('load',
+		function() {
+			getResult(option);
+		},
+		false);
+		var i;
+		var base;
+		var b_ = function() {
+			for (var b, c = 0,
+			d = i.challenge.slice(32), e = d.replace(/\D/g, ""), f = [], g = /\d{3}/g; null !== (b = g.exec(e));) f[c] = parseInt(b[0], 10),
+			c++;
+			for (base = f.slice( - 1)[0], c = 0; 18 > c; c++) f[c] = (f[c] - base) / 19;
+			return f = f.slice(0, 18)
+		};
+		var getResponse_ = function(a) {
+			for (var b, c = a - 0 + base,
+			d = i.challenge.slice(0, 32), e = [[], [], [], [], []], g = {},
+			h = 0, j = 0, k = d.length; k > j; j++) b = d.charAt(j),
+			g[b] || (g[b] = 1, e[h] = e[h].concat(b), h++, h = 5 == h ? 0 : h);
+			for (var l, m, n = c,
+			o = 4,
+			p = "",
+			q = [1, 2, 5, 10, 50]; n > 0;) l = parseInt(Math.random() * o, 10),
+			n - q[l] >= 0 ? (m = parseInt(Math.random() * e[l].length, 10), p = p.concat(e[l][m]), n -= q[l]) : (e.splice(l, 1), q.splice(l, 1), o -= 1);
+			return p
+		};
+
+		function getResult(option) {
+			window.GeeTestOptions_ = [option];
+			i = window.GeeTestOptions_[0];
+			b_();
+			setIframe();
+		};
+
+		function setIframe(count) {
+			if (!count) count = 1;
+			var userresponse = getResponse_(count);
+			var url = 'http://api.geetest.com/ajax.php?challenge=' + i.challenge + '&userresponse=' + userresponse + '&passtime=4727&imgload=22';
+			var inner_result = document.getElementById('inner_result');
+			if (inner_result) inner_result.parentNode.removeChild(inner_result);
+			var inner_result = document.createElement('iframe');
+			inner_result.id = 'inner_result';
+			inner_result.src = url;
+			inner_result.onload = function() {
+				setTimeout(function() {
+					if (count >= 260) return;
+					console.log(count);
+					count++;
+					setIframe(count);
+				},
+				1000);
+			};
+			document.body.appendChild(inner_result);
+		};
+	</script>
+
+</html>

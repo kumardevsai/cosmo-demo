@@ -714,7 +714,7 @@ MergeTable.restrict = {
 												if (MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + k][x_1]))
 													nextRow.insertBefore(insertCell, MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + k][x_1]));
 												else
-													nextRow.appendChild(insertBefore);
+													nextRow.appendChild(insertCell);
 											} else {
 												if (nextRow.firstElementChild || nextRow.firstChild)
 													nextRow.insertBefore(insertCell, nextRow.firstElementChild || nextRow.firstChild);
@@ -871,7 +871,7 @@ MergeTable.restrict = {
 										if (MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + k][x_1]))
 											nextRow.insertBefore(insertCell, MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + k][x_1]));
 										else
-											nextRow.appendChild(insertBefore);
+											nextRow.appendChild(insertCell);
 									} else {
 										if (nextRow.firstElementChild || nextRow.firstChild)
 											nextRow.insertBefore(insertCell, nextRow.firstElementChild || nextRow.firstChild);
