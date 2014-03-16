@@ -599,7 +599,7 @@ MergeTable.restrict = {
 						}
 						if (x_ >= 0) {
 							var rowSpan_ = MergeTable.restrict.persist.storage[i][x_].rowSpan;
-							if (MergeTable.restrict.persist.storage[i][x_].colSpan + x_ >= x) {
+							if (MergeTable.restrict.persist.storage[i][x_].colSpan + x_ > x) {
 								if (MergeTable.restrict.persist.storage[i][x_].colSpan > 1) {
 									MergeTable.restrict.persist.storage[i][x_].colSpan--;
 									if (rowSpan_ > 1) {
@@ -625,7 +625,186 @@ MergeTable.restrict = {
 		},
 		addColLeft: function() {
 			if (MergeTable.restrict.persist.checkSelectionOne()) {
+				var arr = MergeTable.restrict.persist.range.start.split(MergeTable.restrict.options.separator);
+				var y = parseInt(arr[0]);
+				var x = parseInt(arr[1]);
+				var cell = MergeTable.restrict.persist.storage[y][x];
+				if (x === 0) {
+					var nextRow = null;
+					for (var i = 0; i < MergeTable.restrict.persist.storage.length; i++) {
+						if (i === 0)
+							nextRow = MergeTable.restrict.persist.storage[i][0].parentNode;
+						else
+							nextRow = MergeTable.util.nextSibling(nextRow);
+						var insertCell = document.createElement(cell.tagName.toLowerCase());
+						if (nextRow.firstElementChild || nextRow.firstChild)
+							nextRow.insertBefore(insertCell, nextRow.firstElementChild || nextRow.firstChild);
+						else
+							nextRow.appendChild(insertCell);
+						MergeTable.restrict.persist.storage[i].splice(0, 0, insertCell);
+						AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
+						AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
+						AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
+					}
+				} else {
+					var p_x = x - 1;
+					if (p_x >= 0) {
+						while (!MergeTable.restrict.persist.storage[y][p_x]) {
+							p_x--;
+							if (p_x < 0)
+								break;
+						}
+					}
+					if (MergeTable.restrict.persist.storage[y][p_x]) {
+						x = p_x;
+						cell = MergeTable.restrict.persist.storage[y][p_x];
+						var x_ = null;
+						for (var i = 0; i < MergeTable.restrict.persist.storage.length; i++) {
 
+							var isColMerge = false;
+							var mergeCell = MergeTable.restrict.persist.storage[i][x];
+							if (x_ === null)
+								x_ = x + cell.colSpan;
+							if (mergeCell) {
+								if (mergeCell.colSpan + x < x_) {
+									for (var j = 0; j < MergeTable.restrict.persist.storage[i].length; j++) {
+										if (MergeTable.restrict.persist.storage[i][j] && MergeTable.restrict.persist.storage[i][j].colSpan + j >= x_) {
+											mergeCell = MergeTable.restrict.persist.storage[i][j];
+											x = j;
+											break;
+										}
+									}
+									if (mergeCell.colSpan + x > x_)
+										isColMerge = true;
+									else
+										isColMerge = false;
+								} else if (mergeCell.colSpan + x > x_) {
+									isColMerge = true;
+								}
+								if (isColMerge === false) {
+									var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
+									AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
+									AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
+									AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
+									if (MergeTable.util.nextSibling(mergeCell))
+										mergeCell.parentNode.insertBefore(insertCell, MergeTable.util.nextSibling(mergeCell));
+									else
+										mergeCell.parentNode.appendChild(insertCell);
+									MergeTable.restrict.persist.storage[i].splice(x_, 0, insertCell);
+									if (mergeCell.rowSpan > 1) {
+										var nextRow = null;
+										for (var k = 1; k < mergeCell.rowSpan; k++) {
+											var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
+											AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
+											AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
+											AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
+											if (!nextRow)
+												nextRow = MergeTable.util.nextSibling(mergeCell.parentNode);
+											else
+												nextRow = MergeTable.util.nextSibling(nextRow);
+											var x_1 = x_ - 1;
+											if (x_1 >= 0) {
+												while (!MergeTable.restrict.persist.storage[i + k][x_1]) {
+													x_1--;
+													if (x_1 < 0)
+														break;
+												}
+											}
+											if (MergeTable.restrict.persist.storage[i + k][x_1]) {
+												if (MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + k][x_1]))
+													nextRow.insertBefore(insertCell, MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + k][x_1]));
+												else
+													nextRow.appendChild(insertBefore);
+											} else {
+												if (nextRow.firstElementChild || nextRow.firstChild)
+													nextRow.insertBefore(insertCell, nextRow.firstElementChild || nextRow.firstChild);
+												else
+													nextRow.appendChild(insertCell);
+											}
+											MergeTable.restrict.persist.storage[i + k].splice(x_, 0, insertCell);
+										}
+										i += mergeCell.rowSpan - 1;
+									}
+								} else {
+									MergeTable.restrict.persist.storage[i].splice(x_, 0, null);
+									if (mergeCell.rowSpan > 1) {
+										var nextRow = null;
+										for (var k = 1; k < mergeCell.rowSpan; k++) {
+											MergeTable.restrict.persist.storage[i + k].splice(x_, 0, null);
+										}
+										i += mergeCell.rowSpan - 1;
+									}
+									mergeCell.colSpan++;
+								}
+							} else {
+								var xx_ = x;
+								if (xx_ >= 0) {
+									while (!MergeTable.restrict.persist.storage[i][xx_]) {
+										xx_--;
+										if (xx_ < 0)
+											break;
+									}
+								}
+								if (MergeTable.restrict.persist.storage[i][xx_]) {
+									if (xx_ === p_x) {
+										var nextRow = null;
+										for (var o = 0; o < MergeTable.restrict.persist.storage[i][xx_].rowSpan; o++) {
+											if (o === 0)
+												nextRow = MergeTable.restrict.persist.storage[i][xx_].parentNode;
+											else {
+												if (nextRow)
+													nextRow = MergeTable.util.nextSibling(nextRow);
+											}
+											var insertCell = document.createElement(MergeTable.restrict.persist.storage[i][xx_].tagName.toLowerCase());
+											AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
+											AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
+											AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
+											if (o === 0) {
+												if (MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + o][xx_]))
+													nextRow.insertBefore(insertCell, MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + o][xx_]));
+												else
+													nextRow.appendChild(insertCell);
+											} else {
+												var preX = xx_;
+												if (preX > 0) {
+													while (!MergeTable.restrict.persist.storage[i + o][preX]) {
+														preX--;
+														if (preX < 0)
+															break;
+													}
+												}
+												if (MergeTable.restrict.persist.storage[i + o][preX]) {
+													if (MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + o][preX]))
+														nextRow.insertBefore(insertCell, MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + o][preX]));
+													else
+														nextRow.appendChild(insertCell);
+												} else {
+													if (nextRow.firstElementChild || nextRow.firstChild)
+														nextRow.insertBefore(insertCell, nextRow.nextElementSibling || nextRow.firstChild);
+													else
+														nextRow.appendChild(insertCell);
+												}
+											}
+											MergeTable.restrict.persist.storage[i + o].splice(xx_ + MergeTable.restrict.persist.storage[i][xx_].colSpan, 0, insertCell);
+										}
+										i += MergeTable.restrict.persist.storage[i][xx_].rowSpan - 1;
+									} else {
+										MergeTable.restrict.persist.storage[i].splice(x_, 0, null);
+										if (MergeTable.restrict.persist.storage[i][xx_].rowSpan > 1) {
+											for (var k = 1; k < MergeTable.restrict.persist.storage[i][xx_].rowSpan; k++) {
+												MergeTable.restrict.persist.storage[i + k].splice(x_, 0, null);
+											}
+										}
+										MergeTable.restrict.persist.storage[i][xx_].colSpan++;
+										i += MergeTable.restrict.persist.storage[i][xx_].rowSpan - 1;
+									}
+								}
+							}
+						}
+					}
+					MergeTable.restrict.persist.range.start = y + MergeTable.restrict.options.separator + (parseInt(arr[1]) + 1);
+					MergeTable.restrict.persist.selection = [MergeTable.restrict.persist.range.start];
+				}
 			} else {
 				alert(MergeTable.restrict.options.oneSelectedMsg);
 				return;
@@ -633,7 +812,152 @@ MergeTable.restrict = {
 		},
 		addColRight: function() {
 			if (MergeTable.restrict.persist.checkSelectionOne()) {
-
+				var arr = MergeTable.restrict.persist.range.start.split(MergeTable.restrict.options.separator);
+				var x = parseInt(arr[1]);
+				var y = parseInt(arr[0]);
+				var cell = MergeTable.restrict.persist.storage[y][x];
+				var x_ = null;
+				for (var i = 0; i < MergeTable.restrict.persist.storage.length; i++) {
+					var isColMerge = false;
+					var mergeCell = MergeTable.restrict.persist.storage[i][x];
+					if (x_ === null)
+						x_ = x + cell.colSpan;
+					if (mergeCell) {
+						if (mergeCell.colSpan + x < x_) {
+							for (var j = 0; j < MergeTable.restrict.persist.storage[i].length; j++) {
+								if (MergeTable.restrict.persist.storage[i][j] && MergeTable.restrict.persist.storage[i][j].colSpan + j >= x_) {
+									mergeCell = MergeTable.restrict.persist.storage[i][j];
+									x = j;
+									break;
+								}
+							}
+							if (mergeCell.colSpan + x > x_)
+								isColMerge = true;
+							else
+								isColMerge = false;
+						} else if (mergeCell.colSpan + x > x_) {
+							isColMerge = true;
+						}
+						if (isColMerge === false) {
+							var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
+							AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
+							AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
+							AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
+							if (MergeTable.util.nextSibling(mergeCell))
+								mergeCell.parentNode.insertBefore(insertCell, MergeTable.util.nextSibling(mergeCell));
+							else
+								mergeCell.parentNode.appendChild(insertCell);
+							MergeTable.restrict.persist.storage[i].splice(x_, 0, insertCell);
+							if (mergeCell.rowSpan > 1) {
+								var nextRow = null;
+								for (var k = 1; k < mergeCell.rowSpan; k++) {
+									var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
+									AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
+									AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
+									AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
+									if (!nextRow)
+										nextRow = MergeTable.util.nextSibling(mergeCell.parentNode);
+									else
+										nextRow = MergeTable.util.nextSibling(nextRow);
+									var x_1 = x_ - 1;
+									if (x_1 >= 0) {
+										while (!MergeTable.restrict.persist.storage[i + k][x_1]) {
+											x_1--;
+											if (x_1 < 0)
+												break;
+										}
+									}
+									if (MergeTable.restrict.persist.storage[i + k][x_1]) {
+										if (MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + k][x_1]))
+											nextRow.insertBefore(insertCell, MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + k][x_1]));
+										else
+											nextRow.appendChild(insertBefore);
+									} else {
+										if (nextRow.firstElementChild || nextRow.firstChild)
+											nextRow.insertBefore(insertCell, nextRow.firstElementChild || nextRow.firstChild);
+										else
+											nextRow.appendChild(insertCell);
+									}
+									MergeTable.restrict.persist.storage[i + k].splice(x_, 0, insertCell);
+								}
+								i += mergeCell.rowSpan - 1;
+							}
+						} else {
+							MergeTable.restrict.persist.storage[i].splice(x_, 0, null);
+							if (mergeCell.rowSpan > 1) {
+								var nextRow = null;
+								for (var k = 1; k < mergeCell.rowSpan; k++) {
+									MergeTable.restrict.persist.storage[i + k].splice(x_, 0, null);
+								}
+								i += mergeCell.rowSpan - 1;
+							}
+							mergeCell.colSpan++;
+						}
+					} else {
+						var xx_ = x;
+						if (xx_ >= 0) {
+							while (!MergeTable.restrict.persist.storage[i][xx_]) {
+								xx_--;
+								if (xx_ < 0)
+									break;
+							}
+						}
+						if (MergeTable.restrict.persist.storage[i][xx_]) {
+							if (xx_ === parseInt(arr[1])) {
+								var nextRow = null;
+								for (var o = 0; o < MergeTable.restrict.persist.storage[i][xx_].rowSpan; o++) {
+									if (o === 0)
+										nextRow = MergeTable.restrict.persist.storage[i][xx_].parentNode;
+									else {
+										if (nextRow)
+											nextRow = MergeTable.util.nextSibling(nextRow);
+									}
+									var insertCell = document.createElement(MergeTable.restrict.persist.storage[i][xx_].tagName.toLowerCase());
+									AttachEvent(insertCell, "mousedown", onCellMouseDown, false);
+									AttachEvent(insertCell, "mouseup", onCellMouseUp, false);
+									AttachEvent(insertCell, "mouseover", onCellMouseOver, false);
+									if (o === 0) {
+										if (MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + o][xx_]))
+											nextRow.insertBefore(insertCell, MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + o][xx_]));
+										else
+											nextRow.appendChild(insertCell);
+									} else {
+										var preX = xx_;
+										if (preX > 0) {
+											while (!MergeTable.restrict.persist.storage[i + o][preX]) {
+												preX--;
+												if (preX < 0)
+													break;
+											}
+										}
+										if (MergeTable.restrict.persist.storage[i + o][preX]) {
+											if (MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + o][preX]))
+												nextRow.insertBefore(insertCell, MergeTable.util.nextSibling(MergeTable.restrict.persist.storage[i + o][preX]));
+											else
+												nextRow.appendChild(insertCell);
+										} else {
+											if (nextRow.firstElementChild || nextRow.firstChild)
+												nextRow.insertBefore(insertCell, nextRow.nextElementSibling || nextRow.firstChild);
+											else
+												nextRow.appendChild(insertCell);
+										}
+									}
+									MergeTable.restrict.persist.storage[i + o].splice(xx_ + MergeTable.restrict.persist.storage[i][xx_].colSpan, 0, insertCell);
+								}
+								i += MergeTable.restrict.persist.storage[i][xx_].rowSpan - 1;
+							} else {
+								MergeTable.restrict.persist.storage[i].splice(x_, 0, null);
+								if (MergeTable.restrict.persist.storage[i][xx_].rowSpan > 1) {
+									for (var k = 1; k < MergeTable.restrict.persist.storage[i][xx_].rowSpan; k++) {
+										MergeTable.restrict.persist.storage[i + k].splice(x_, 0, null);
+									}
+								}
+								MergeTable.restrict.persist.storage[i][xx_].colSpan++;
+								i += MergeTable.restrict.persist.storage[i][xx_].rowSpan - 1;
+							}
+						}
+					}
+				}
 			} else {
 				alert(MergeTable.restrict.options.oneSelectedMsg);
 				return;
