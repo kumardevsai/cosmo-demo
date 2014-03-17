@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>
+			Editor
+		</title>
+		<style>
+			* { box-sizing: border-box; -moz-box-sizing: border-box; } body { font-family:
+			"Helvetica Neue", Arial, Helvetica, sans-serif; } .etable{ border-collapse:collapse;
+			margin-top:30px; } .etable td{ border:1px solid #e4e4e4; height: 20px;
+			width:60px; }
+		</style>
+		<link type="text/css" media="screen" rel="stylesheet" href="css/MergeTable.css"
+		/>
+	</head>
+	<body onselectstart="return false;" style="-moz-user-select:none;">
+		<div style="position:fixed;top:0px;">
+			<input type="button" id="merge" value="合并" onclick="MergeTable.restrict.operation.merge();">
+			<input type="button" id="splitH" value="横拆" onclick="MergeTable.restrict.operation.splitH();">
+			<input type="button" id="splitV" value="竖拆" onclick="MergeTable.restrict.operation.splitV();">
+			<input type="button" id="addRowTop" value="添加行(上方)" onclick="MergeTable.restrict.operation.addRowTop();">
+			<input type="button" id="addRowBottom" value="添加行(下方)" onclick="MergeTable.restrict.operation.addRowBottom();">
+			<input type="button" id="deleteRow" value="删除(行)" onclick="MergeTable.restrict.operation.deleteRow();">
+			<input type="button" id="deleteCol" value="删除(列)" onclick="MergeTable.restrict.operation.deleteCol();">
+			<input type="button" id="addColLeft" value="添加列(左)" onclick="MergeTable.restrict.operation.addColLeft();">
+			<input type="button" id="addColRight" value="添加列(右)" onclick="MergeTable.restrict.operation.addColRight();">
+		</div>
+		<table class="etable" id="etable" border="1px" bordercolor="#433423">
+			<tbody>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+				<tr>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+					<td style="">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<script type="text/javascript" src="js/util.js" charset="utf-8">
+		</script>
+		<script type="text/javascript" src="js/MergeTable.js" charset="utf-8">
+		</script>
+	</body>
+
+</html>
