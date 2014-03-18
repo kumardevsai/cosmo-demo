@@ -41,7 +41,7 @@ AttachEvent(window, 'load', function() {
 function openEdit() {
 	var editContent = document.getElementById("editContent");
 	editContent.style.display = "";
-	document.getElementById("op").style.display="";
+	document.getElementById("op").style.display="block";
 	var editTextArea = document.getElementById("editTextArea");
 	editTextArea.value = MergeTable.read();
 };
@@ -61,7 +61,7 @@ function closeEdit(){
 function setCss()
 {
 	var url = "CssEdit/SetCss.htm?t=" + Math.random();
-	var str = window.showModalDialog(url);
+	var str = window.showModalDialog(url , "");
 	if(str !== undefined && str !== null )
 	{
 		MergeTable.setSelectionCss(str);

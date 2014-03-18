@@ -47,7 +47,7 @@ body {
 	-moz-box-shadow: 2px 2px 2px #d3d0d9;
 	-o-box-shadow: 2px 2px 2px #d3d0d9;
 	background-color: #e4e4e4;
-	z-index: 20;
+	z-index: 200;
 }
 .editTopBar{
 	width: 100%;
@@ -77,9 +77,12 @@ body {
 .editTextArea{
 	width: 100%;
 	height: 100%;
+	_height:350px;
+	_width:598px;
 }
 .editBottomBar{
 	text-align: center;
+	background-color: #00B2EE;
 }
 
 .cell_input{
@@ -93,8 +96,15 @@ body {
 
 .opDiv{
 	background-color: #E0EEE0;
+	-ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+    filter: alpha(opacity=50);
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+    -khtml-opacity: 0.5;
+    -moz-opacity: 0.5;
 	opacity: 0.5;
 	width: 100%;
 	height: 100%;
-	z-index: 10;
+	z-index: 100;
+	/**兼容ie8，否则蒙版失效**/
+	position: absolute;
 }

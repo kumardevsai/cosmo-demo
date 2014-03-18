@@ -3,7 +3,7 @@
 	1.代码优化
 	2.有bug，未复现
 	3.单元格尺寸的计算（添加行、添加列）
-	4.点击单元格其中有时会显示textaera标签 (textarea尺寸计算问题，单元格会出现1-2个像素的留白，当点击留白处的时候，就会发生这种情况)
+	4.点击单元格其中有时会显示textaera标签 (input尺寸计算问题，单元格会出现1-2个像素的留白，当点击留白处的时候，就会发生这种情况)
 	5.关于单元格被选中时的自定义样式（不仅是背景色，包括虚线边框，透明度等）
 	6.实现绝对的正方形选区（而不是提示选区不正确显示红色）
 **/
@@ -1307,37 +1307,37 @@ var MergeTable = window.MergeTable = (function() {
 	};
 
 	function contentEditable(ele, index) {
-		var textarea = document.createElement("textarea");
-		textarea.className = "cell_input";
-		textarea.style.height = (ele.clientHeight - 4) + "px";
-		textarea.style.width = (ele.clientWidth - 1) + "px";
-		textarea.value = ele.innerHTML;
+		var input = document.createElement("input");
+		input.className = "cell_input";
+		input.style.height = (ele.clientHeight - 4) + "px";
+		input.style.width = (ele.clientWidth - 1) + "px";
+		input.value = ele.innerHTML;
 		ele.innerHTML = "";
-		ele.appendChild(textarea);
+		ele.appendChild(input);
 		// 设置延时器，兼容ie无法获取焦点的方法
 		setTimeout(function() {
-			textarea.focus();
+			input.focus();
 		}, 0);
 		// 文本框失去焦点消失
-		AttachEvent(textarea, "blur", function() {
+		AttachEvent(input, "blur", function() {
 			// 将文本框中的值取出添加到单元格显示
-			textarea.parentNode.innerHTML = textarea.value.Trim();
+			input.parentNode.innerHTML = input.value.Trim();
 			// 清空可编辑文本框的缓存数组
 			persist.edition = [];
 		}, false);
 		// 事件冒泡给父元素
-		AttachEvent(textarea, "click", function(e) {}, true);
+		AttachEvent(input, "click", function(e) {}, true);
 		// 清空可编辑文本框的缓存数组
 		persist.edition = [];
 		// 将当前显示的文本框添加到数组缓存中
-		persist.edition.push([index, textarea]);
+		persist.edition.push([index, input]);
 	};
 
 	function clearEditable() {
 		for (var i = 0; i < persist.edition.length; i++) {
-			var textarea = persist.edition[i][1];
-			if (textarea && textarea.parentNode)
-				textarea.parentNode.innerHTML = textarea.value.Trim();
+			var input = persist.edition[i][1];
+			if (input && input.parentNode)
+				input.parentNode.innerHTML = input.value.Trim();
 		}
 	};
 
