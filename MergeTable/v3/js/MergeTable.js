@@ -1,3 +1,6 @@
+/**
+	TODO 代码优化
+**/
 "use strict";
 
 var MergeTable = window.MergeTable = (function() {
@@ -12,6 +15,13 @@ var MergeTable = window.MergeTable = (function() {
 			AttachEvent(cell, "mousedown", onCellMouseDown, false);
 			AttachEvent(cell, "mouseup", onCellMouseUp, false);
 			AttachEvent(cell, "mouseover", onCellMouseOver, false);
+		},
+		index2Obj: function(index) {
+			var arr = index.split(defaults.separator);
+			return {
+				y: parseInt(arr[0]),
+				x: parseInt(arr[1])
+			};
 		}
 	};
 
@@ -33,7 +43,11 @@ var MergeTable = window.MergeTable = (function() {
 		// 单元格水平拆分提示信息
 		splitHMsg: "当前单元格无法进行纵向拆分!",
 		// 只能选择一个单元格提示信息
-		oneSelectedMsg: "只能选择一个单元格!"
+		oneSelectedMsg: "只能选择一个单元格!",
+		// 删除行提示
+		deleteRowMsg: "请选择有效行进行删除",
+		// 删除列提示
+		deleteColMsg: "请选择有效列进行删除"
 	};
 
 	var persist = {
@@ -50,28 +64,45 @@ var MergeTable = window.MergeTable = (function() {
 		}
 	};
 
+	function getPreviousSiblingStorageElementNotNull(y, x) {
+		var x_ = x - 1;
+		if (x_ >= 0) {
+			while (!persist.storage[y][x_]) {
+				x_--;
+				if (x_ < 0)
+					break;
+			}
+		}
+		return persist.storage[y][x_];
+	};
+
+	// 转换二维数组
+	function selectionTrans2ArrayStack() {
+		var selection2Array = [];
+		// 遍历被选择的单元格的下标数组
+		for (var i = 0; i < persist.selection.length; i++) {
+			// 拆分单元格下标
+			var y = persist.selection[i].split(defaults.separator)[0];
+			// 建立数组
+			if (!selection2Array[y])
+				selection2Array[y] = [];
+			// 插入单元格下标值
+			selection2Array[y].push(persist.selection[i]);
+		}
+		var selection2ArrayStack = [];
+		var index = 0;
+		for (var i in selection2Array) {
+			selection2ArrayStack[index] = selection2Array[i];
+			index++;
+		}
+		return selection2ArrayStack;
+	};
+
 	// 合并单元格
 	function merge() {
 		// 单元格是否可以合并
 		if (checkMerge()) {
-			// 被选中的单元格
-			var selection2Array = [];
-			// 遍历被选择的单元格的下标数组
-			for (var i = 0; i < persist.selection.length; i++) {
-				// 拆分单元格下标
-				var y = persist.selection[i].split(defaults.separator)[0];
-				// 建立数组
-				if (!selection2Array[y])
-					selection2Array[y] = [];
-				// 插入单元格下标值
-				selection2Array[y].push(persist.selection[i]);
-			}
-			var selection2ArrayStack = [];
-			var index = 0;
-			for (var i in selection2Array) {
-				selection2ArrayStack[index] = selection2Array[i];
-				index++;
-			}
+			var selection2ArrayStack = selectionTrans2ArrayStack();
 			var totalColSpan = 0;
 			var totalRowSpan = 0;
 			var text = "";
@@ -146,10 +177,34 @@ var MergeTable = window.MergeTable = (function() {
 		var nextRow = null;
 		var cell = persist.storage[y][x];
 		for (var i = 0; i < cell.rowSpan; i++) {
+			if (i === 0)
+				nextRow = cell.parentNode;
+			else
+				nextRow = utils.nextSibling(nextRow);
 			for (var j = 0; j < cell.colSpan; j++) {
-				// TODO
+				if (j === 0 && i === 0)
+					continue;
+				else {
+					var insertCell = document.createElement(cell.tagName.toLowerCase());
+					var previousElement = getPreviousSiblingStorageElementNotNull(y + i, x + j);
+					if (previousElement) {
+						if (utils.nextSibling(previousElement))
+							nextRow.insertBefore(insertCell, utils.nextSibling(previousElement));
+						else
+							nextRow.appendChild(insertCell);
+					} else {
+						if (nextRow.firstElementChild || nextRow.firstChild)
+							nextRow.insertBefore(insertCell, nextRow.firstElementChild || nextRow.firstChild)
+						else
+							nextRow.appendChild(insertCell);
+					}
+					persist.storage[y + i][x + j] = insertCell;
+					utils.attachEvent(insertCell);
+				}
 			}
 		}
+		cell.rowSpan = 1;
+		cell.colSpan = 1;
 	};
 
 	function checkMerge() {
@@ -543,13 +598,17 @@ var MergeTable = window.MergeTable = (function() {
 	};
 
 	function deleteRow() {
-		if (checkSelectionOne()) {
-			var arr = persist.range.start.split(defaults.separator);
-			var y = parseInt(arr[0]);
-			var x = parseInt(arr[1]);
-			deleteRowHandler(y, x);
+		if (checkSelection()) {
+			var selection2ArrayStack = selectionTrans2ArrayStack();
+			var y;
+			for (var i = 0; i < selection2ArrayStack.length; i++) {
+				var obj = utils.index2Obj(selection2ArrayStack[i][0]);
+				if (i === 0)
+					y = obj.y;
+				deleteRowHandler(y, obj.x);
+			}
 		} else {
-			alert(defaults.oneSelectedMsg);
+			alert(defaults.deleteRowMsg);
 			return;
 		}
 	};
@@ -646,13 +705,20 @@ var MergeTable = window.MergeTable = (function() {
 	};
 
 	function deleteCol() {
-		if (checkSelectionOne()) {
-			var arr = persist.range.start.split(defaults.separator);
-			var x = parseInt(arr[1]);
-			var y = parseInt(arr[0]);
-			deleteRowHandler(y, x);
+		if (checkSelection()) {
+			var y;
+			var x;
+			var selection2ArrayStack = selectionTrans2ArrayStack();
+			for (var i = 0; i < selection2ArrayStack[0].length; i++) {
+				var obj = utils.index2Obj(selection2ArrayStack[0][i]);
+				if (i === 0) {
+					y = obj.y;
+					x = obj.x;
+				}
+				deleteColHandler(y, x);
+			}
 		} else {
-			alert(defaults.oneSelectedMsg);
+			alert(defaults.deleteColMsg);
 			return;
 		}
 	};
@@ -1385,6 +1451,7 @@ var MergeTable = window.MergeTable = (function() {
 		addColLeft: addColLeft,
 		addColRight: addColRight,
 		reloadStr: reloadStr,
-		init: init
+		init: init,
+		clearMerge: clearMerge
 	};
 })();
