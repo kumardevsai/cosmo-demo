@@ -48,9 +48,16 @@ function openEdit() {
 
 function edit() {
 	var editTextArea = document.getElementById("editTextArea");
-	MergeTable.write(editTextArea.value);
-	document.getElementById("editContent").style.display = "none";
-	document.getElementById("op").style.display="none";
+	if(editTextArea.value)
+	{
+		MergeTable.write(editTextArea.value);
+		document.getElementById("editContent").style.display = "none";
+		document.getElementById("op").style.display="none";
+	}
+	else
+	{
+		alert("表格不能为空!");
+	}
 };
 
 function closeEdit(){
