@@ -1344,9 +1344,11 @@ var MergeTable = window.MergeTable = (function() {
 			if (options.hasOwnProperty(i))
 				defaults[i] = options[i];
 		}
-		var tableContainer = document.getElementById(id);
-		tableContainer.innerHTML = str;
-		load();
+		if (str) {
+			var tableContainer = document.getElementById(id);
+			tableContainer.innerHTML = str;
+			load();
+		}
 	};
 
 	function load() {
