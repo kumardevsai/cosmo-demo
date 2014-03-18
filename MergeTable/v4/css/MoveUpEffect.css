@@ -1,0 +1,51 @@
+.bar
+{
+	font: 12px;
+	background: buttonface;
+	color: #000000;
+	border: 1px solid buttonface;
+	cursor: default;
+	behavior: url(img/button.htc);
+}
+.up1
+{
+	background-color: buttonface;
+	border-left: 1px solid buttonhighlight;
+	border-right: 1px solid buttonshadow;
+	color: #000000;
+	border-top: 1px solid buttonhighlight;
+	border-bottom: 1px solid buttonshadow;
+	padding: 1px;
+}
+.up
+{
+	background-color: buttonface;
+	border-left: 1px solid buttonhighlight;
+	border-right: 1px solid buttonshadow;
+	color: #000000;
+	border-top: 1px solid buttonhighlight;
+	border-bottom: 1px solid buttonshadow;
+	padding: 0px;
+}
+.down1
+{
+	background-color: buttonface;
+	border: 1 inset buttonhighlight;
+	padding: 0;
+	cursor: default;
+}
+
+.down2
+{
+	background-color: buttonface;
+	border-left: 1px solid buttonhighlight;
+	border-right: 1px solid buttonshadow;
+	color: #000000;
+	border-top: 1px solid buttonshadow;
+	border-bottom: 1px solid buttonhighlight;
+	padding: 1px;
+}
+td
+{
+	white-space:nowrap
+}

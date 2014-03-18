@@ -2,7 +2,9 @@
 	TODO 
 	1.代码优化
 	2.有bug，未复现
-	3.样式缓存
+	3.单元格尺寸的计算（添加行、添加列）
+	4.点击单元格其中有时会显示textaera标签 (textarea尺寸计算问题，单元格会出现1-2个像素的留白，当点击留白处的时候，就会发生这种情况)
+	5.关于单元格被选中时的自定义样式（不仅是背景色，包括虚线边框，透明度等）
 **/
 "use strict";
 
@@ -51,9 +53,11 @@ var MergeTable = window.MergeTable = (function() {
 		// 只能选择一个单元格提示信息
 		oneSelectedMsg: "只能选择一个单元格!",
 		// 删除行提示
-		deleteRowMsg: "请选择有效行进行删除",
+		deleteRowMsg: "请选择有效行进行删除!",
 		// 删除列提示
-		deleteColMsg: "请选择有效列进行删除"
+		deleteColMsg: "请选择有效列进行删除!",
+		// 没有选择任何单元格
+		selectionNullMsg: "请选择单元格!"
 	};
 
 	var persist = {
@@ -67,7 +71,8 @@ var MergeTable = window.MergeTable = (function() {
 		},
 		mouse: {
 			status: -1
-		}
+		},
+		css: {}
 	};
 
 	function getPreviousSiblingStorageElementNotNull(y, x) {
@@ -152,7 +157,7 @@ var MergeTable = window.MergeTable = (function() {
 							persist.storage[y][x].style.backgroundColor = defaults.normal;
 							// TODO style.width and style.height
 							persist.range.start = selection2ArrayStack[i][j];
-							persist.range.end = null;
+							persist.range.end = selection2ArrayStack[i][j];
 						} else {
 							persist.storage[y][x].parentNode.removeChild(persist.storage[y][x]);
 							persist.storage[y][x] = null;
@@ -1183,6 +1188,8 @@ var MergeTable = window.MergeTable = (function() {
 		}
 	};
 
+
+
 	function renderSelection() {
 		var num = 0;
 		var flag = false;
@@ -1193,6 +1200,9 @@ var MergeTable = window.MergeTable = (function() {
 			var row = arr[0];
 			var col = arr[1];
 			if (persist.storage[row][col]) {
+				// 单元格样式缓存
+				if (!persist.css[persist.selection[i]])
+					persist.css[persist.selection[i]] = persist.storage[row][col].style.cssText;
 				num++;
 				if (flag === true)
 					persist.storage[row][col].style.backgroundColor = defaults.right;
@@ -1215,10 +1225,15 @@ var MergeTable = window.MergeTable = (function() {
 			var arr = persist.selection[i].split(defaults.separator);
 			var row = arr[0];
 			var col = arr[1];
-			if (persist.storage[row][col])
-				persist.storage[row][col].style.backgroundColor = "";
+			if (persist.storage[row][col]) {
+				if (persist.css[persist.selection[i]])
+					persist.storage[row][col].style.cssText = persist.css[persist.selection[i]];
+				else
+					persist.storage[row][col].style.cssText = "";
+			}
 		}
 		persist.selection = [];
+		persist.css = {};
 	};
 
 	function checkSelection() {
@@ -1228,6 +1243,8 @@ var MergeTable = window.MergeTable = (function() {
 			var maxX = range.maxX;
 			var minY = range.minY;
 			var maxY = range.maxY;
+			if (minY === maxY && minX === maxX)
+				return true;
 			var count = 0;
 			var height = 0;
 			for (var y = minY; y <= maxY; y++) {
@@ -1394,7 +1411,7 @@ var MergeTable = window.MergeTable = (function() {
 		tableContainer.innerHTML = str;
 	};
 
-	function reloadStr(str) {
+	function write(str) {
 		clear();
 		loadStr(str);
 		load();
@@ -1441,14 +1458,51 @@ var MergeTable = window.MergeTable = (function() {
 					index = rowIndex + defaults.separator + i;
 			}
 			persist.range.start = index;
+			persist.range.end = index;
 			persist.selection.push(index);
 			persist.mouse.status = 0;
+			persist.css[index] = ele.style.cssText;
 			ele.style.backgroundColor = defaults.normal;
 
 			contentEditable(ele, index);
 		}
 	};
 
+	// 设置被选中单元格的样式
+	function setSelectionCss(css) {
+		if (persist.selection.length <= 0) {
+			alert(defaults.selectionNullMsg);
+			return;
+		}
+		if (css !== null && 　css !== undefined) {
+			var selection2ArrayStack = selectionTrans2ArrayStack();
+			for (var i = 0; i < selection2ArrayStack.length; i++) {
+				for (var j = 0; j < selection2ArrayStack[i].length; j++) {
+					var obj = utils.index2Obj(selection2ArrayStack[i][j]);
+					if (persist.storage[obj.y][obj.x]) {
+						persist.storage[obj.y][obj.x].style.cssText = css;
+					}
+				}
+			}
+		}
+		persist.selection = [];
+		persist.range = {
+			start: null,
+			end: null
+		};
+	};
+
+	// 读取
+	function read() {
+
+		// TODO 不使用清空当前选区的方法也能获取正确的表格字符串
+		clearSelection();
+		clearEditable();
+
+		return document.getElementById(id).innerHTML;
+	};
+
+	// 公开方法
 	return {
 		merge: merge,
 		splitH: splitH,
@@ -1459,8 +1513,10 @@ var MergeTable = window.MergeTable = (function() {
 		addRowBottom: addRowBottom,
 		addColLeft: addColLeft,
 		addColRight: addColRight,
-		reloadStr: reloadStr,
+		write: write,
 		init: init,
-		clearMerge: clearMerge
+		clearMerge: clearMerge,
+		setSelectionCss: setSelectionCss,
+		read: read
 	};
 })();
