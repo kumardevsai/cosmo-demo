@@ -1314,10 +1314,7 @@ var MergeTable = window.MergeTable = (function() {
 		input.value = ele.innerHTML;
 		ele.innerHTML = "";
 		ele.appendChild(input);
-		// 设置延时器，兼容ie无法获取焦点的方法
-		setTimeout(function() {
-			input.focus();
-		}, 0);
+		input.focus();
 		// 文本框失去焦点消失
 		AttachEvent(input, "blur", function() {
 			// 将文本框中的值取出添加到单元格显示
