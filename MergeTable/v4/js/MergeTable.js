@@ -1306,15 +1306,30 @@ var MergeTable = window.MergeTable = (function() {
 		return exist && num === 1;
 	};
 
+	function checkCellHaveEditableInput(index) {
+		var flag = false;
+		for (var i = 0; i < persist.edition.length; i++) {
+			if (persist.edition[i][0] === index && persist.edition[i][1]) {
+				flag = true;
+				break;
+			}
+		}
+		return flag;
+	};
+
 	function contentEditable(ele, index) {
+		if (checkCellHaveEditableInput(index))
+			return;
 		var input = document.createElement("input");
 		input.className = "cell_input";
 		input.style.height = (ele.clientHeight - 4) + "px";
 		input.style.width = (ele.clientWidth - 1) + "px";
 		input.value = ele.innerHTML;
+		input.focused = true;
 		ele.innerHTML = "";
 		ele.appendChild(input);
-		input.focus();
+		if(input)
+			input.focus();
 		// 文本框失去焦点消失
 		AttachEvent(input, "blur", function() {
 			// 将文本框中的值取出添加到单元格显示
