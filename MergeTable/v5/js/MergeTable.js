@@ -84,7 +84,9 @@ var MergeTable = window.MergeTable = (function() {
 			status: -1,
 			selected: -1,
 			targetSelected: -1,
-			templates: []
+			templates: [],
+			selectedCss: {},
+			targetSelectedCss: {}
 		}
 	};
 
@@ -1244,8 +1246,10 @@ var MergeTable = window.MergeTable = (function() {
 			var col = arr[1];
 			if (persist.storage[row][col]) {
 				// 单元格样式缓存
-				if (!persist.css[persist.selection[i]])
+				if (persist.css[persist.selection[i]] === undefined)
 					persist.css[persist.selection[i]] = persist.storage[row][col].style.cssText;
+				if (persist.brush.selectedCss[persist.selection[i]] === undefined)
+					persist.brush.selectedCss[persist.selection[i]] = persist.storage[row][col].style.cssText;
 				num++;
 				if (flag === true) {
 					if (checkBrushSelected() === true)
@@ -1259,15 +1263,29 @@ var MergeTable = window.MergeTable = (function() {
 	};
 
 	function clearSelection() {
+		// 遍历选区
 		for (var i = 0; i < persist.selection.length; i++) {
-			var arr = persist.selection[i].split(defaults.separator);
-			var row = arr[0];
-			var col = arr[1];
+			var obj = utils.index2Obj(persist.selection[i]);
+			var row = obj.y;
+			var col = obj.x;
+			// 单元格存在
 			if (persist.storage[row][col]) {
-				if (persist.css[persist.selection[i]])
-					persist.storage[row][col].style.cssText = persist.css[persist.selection[i]];
-				else
-					persist.storage[row][col].style.cssText = "";
+				// 缓存样式存在
+				if (persist.css[persist.selection[i]]) {
+					// 格式刷开启且格式选区存在
+					if (checkBrushFormatOpened() === true && checkBrushSelected() === true) {
+						// 单元格对应的格式样式缓存不存在
+						if (persist.brush.selectedCss[persist.selection[i]] === undefined)
+							persist.storage[row][col].style.cssText = persist.css[persist.selection[i]];
+					} else
+						persist.storage[row][col].style.cssText = persist.css[persist.selection[i]];
+				} else {
+					if (checkBrushFormatOpened() === true && checkBrushSelected() === true) {
+						if (persist.brush.selectedCss[persist.selection[i]] === undefined)
+							persist.storage[row][col].style.cssText = "";
+					} else
+						persist.storage[row][col].style.cssText = "";
+				}
 			}
 		}
 		persist.selection = [];
@@ -1366,7 +1384,9 @@ var MergeTable = window.MergeTable = (function() {
 		ele.innerHTML = "";
 		ele.appendChild(input);
 		if (input)
-			input.focus();
+			setTimeout(function() {
+				input.focus();
+			}, 0);
 		// 文本框失去焦点消失
 		AttachEvent(input, "blur", function() {
 			// 将文本框中的值取出添加到单元格显示
@@ -1482,8 +1502,7 @@ var MergeTable = window.MergeTable = (function() {
 						index = rowIndex + defaults.separator + i;
 				}
 				persist.range.end = index;
-				if (!(checkBrushFormatOpened() === true && checkBrushSelected() === true))
-					clearSelection();
+				clearSelection();
 				select();
 				if (checkBrushFormatOpened() === true) {
 					renderBrush();
@@ -1498,40 +1517,88 @@ var MergeTable = window.MergeTable = (function() {
 
 	function onCellMouseUp(e) {
 		e = e || window.event;
+		// 设置鼠标弹起状态
 		persist.mouse.status = -1;
+		// 格式刷已经开启
 		if (checkBrushFormatOpened() === true) {
-			persist.brush.selected = true;
-			if (checkBrushSelected() === true && checkBrushTargetSelected() === false) {
-				persist.brush.templates = persist.selection.slice( 0);
+			// 格式选区不存在
+			if (checkBrushSelected() === false) {
+				// 格式选区状态设置
+				persist.brush.selected = true;
+				// 模板设置
+				persist.brush.templates = persist.selection.slice(0);
+			} else {
+				// 目标选区不存在
+				if (checkBrushTargetSelected() === false) {
+					// 目标选区存在
+					persist.brush.targetSelected = true;
+				} else {
+					// 清空选区
+					clearSelection();
+					// 消除格式选区
+					persist.brush.selected = false;
+					// 消除目标选区
+					persist.brush.targetSelected = false;
+					
+				}
 			}
 		}
 	};
 
+	// 鼠标按下操作
 	function onCellMouseDown(e) {
-		if (!(checkBrushFormatOpened() && checkBrushSelected()))
-			clearSelection();
+		// 清除选区
+		clearSelection();
 		e = e || window.event;
+		// 获取单元格
 		var ele = e.srcElement || e.currentTarget;
+		// td标签
 		var tagName = ele.tagName.toLowerCase();
 		if (tagName === "td" || tagName === "th") {
+			// 单元格所在行号
 			var rowIndex = ele.parentNode.rowIndex;
+			// 单元格对应下标
 			var index;
+			// 遍历单元格
 			for (var i = 0; i < persist.storage[rowIndex].length; i++) {
-				if (ele == persist.storage[rowIndex][i])
+				// 查询出对应的单元格
+				if (ele == persist.storage[rowIndex][i]) {
+					// 获取对应的单元格下标
 					index = rowIndex + defaults.separator + i;
+					break;
+				}
 			}
+			// 选区起始下标
 			persist.range.start = index;
+			// 选区结束下标
 			persist.range.end = index;
+			// 添加入选区缓存
 			persist.selection.push(index);
+			// 鼠标被按下
 			persist.mouse.status = 0;
+			// 选区缓存样式
 			persist.css[index] = ele.style.cssText;
+			// 判断是否开启格式刷
 			if (checkBrushFormatOpened() === true) {
-				if (checkBrushSelected() === true)
+				// 格式单元格被选择
+				if (checkBrushSelected() === true) {
+					// 设置目标单元格样式缓存
+					persist.brush.targetSelectedCss[index] = ele.style.cssText;
+					// 设置边框样式
 					ele.style.border = defaults.brushused;
-				else
+				} else {
+					// 如果格式刷单元格样式缓存不存在
+					if (persist.brush.selectedCss[index] === undefined) {
+						// 设置格式刷单元格样式缓存
+						persist.brush.selectedCss[index] = ele.style.cssText;
+					}
+					// 格式刷正确边框样式
 					ele.style.border = defaults.brushright;
+				}
 			} else {
+				// 没开启格式刷时单元格被选中的样式
 				ele.style.backgroundColor = defaults.normal;
+				// 设置可编辑单元格
 				contentEditable(ele, index);
 			}
 		}
@@ -1539,22 +1606,29 @@ var MergeTable = window.MergeTable = (function() {
 
 	// 设置被选中单元格的样式
 	function setSelectionCss(css) {
+		// 选区为空
 		if (persist.selection.length <= 0) {
 			alert(defaults.selectionNullMsg);
 			return;
 		}
 		if (css !== null && 　css !== undefined) {
+			// 选区数组转换二维数组
 			var selection2ArrayStack = selectionTrans2ArrayStack();
 			for (var i = 0; i < selection2ArrayStack.length; i++) {
 				for (var j = 0; j < selection2ArrayStack[i].length; j++) {
+					// 回去下标对象
 					var obj = utils.index2Obj(selection2ArrayStack[i][j]);
+					// 存在单元格
 					if (persist.storage[obj.y][obj.x]) {
+						// 设置样式
 						persist.storage[obj.y][obj.x].style.cssText = css;
 					}
 				}
 			}
 		}
+		// 清空选区
 		persist.selection = [];
+		// 清空选区范围
 		persist.range = {
 			start: null,
 			end: null
@@ -1571,6 +1645,7 @@ var MergeTable = window.MergeTable = (function() {
 		return document.getElementById(id).innerHTML;
 	};
 
+	// 获取被选中的单元格
 	function getSelectionCells() {
 		var selectionCells = [];
 		var selection2ArrayStack = selectionTrans2ArrayStack();
@@ -1591,6 +1666,8 @@ var MergeTable = window.MergeTable = (function() {
 
 	function openBrushFormat() {
 		persist.brush.status = 0;
+		clearSelection();
+		clearEditable();
 	};
 
 	function closeBrushFormat() {
