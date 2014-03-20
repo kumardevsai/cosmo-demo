@@ -58,7 +58,13 @@ var MergeTable = window.MergeTable = (function() {
 		// 删除列提示
 		deleteColMsg: "请选择有效列进行删除!",
 		// 没有选择任何单元格
-		selectionNullMsg: "请选择单元格!"
+		selectionNullMsg: "请选择单元格!",
+		// 采用格式刷时单元格的样式(选区正确)
+		brushright: '2px dashed green',
+		// 采用格式刷时单元格的样式(选区错误)
+		brushwrong: '2px dashed red',
+		// 应用格式刷单元格样式
+		brushused: '2px dashed blue'
 	};
 
 	var persist = {
@@ -73,7 +79,13 @@ var MergeTable = window.MergeTable = (function() {
 		mouse: {
 			status: -1
 		},
-		css: {}
+		css: {},
+		brush: {
+			status: -1,
+			selected: -1,
+			targetSelected: -1,
+			templates: []
+		}
 	};
 
 	function getPreviousSiblingStorageElementNotNull(y, x) {
@@ -1221,6 +1233,31 @@ var MergeTable = window.MergeTable = (function() {
 		}
 	};
 
+	function renderBrush() {
+		var num = 0;
+		var flag = false;
+		if (checkSelection())
+			flag = true;
+		for (var i = 0; i < persist.selection.length; i++) {
+			var arr = persist.selection[i].split(defaults.separator);
+			var row = arr[0];
+			var col = arr[1];
+			if (persist.storage[row][col]) {
+				// 单元格样式缓存
+				if (!persist.css[persist.selection[i]])
+					persist.css[persist.selection[i]] = persist.storage[row][col].style.cssText;
+				num++;
+				if (flag === true) {
+					if (checkBrushSelected() === true)
+						persist.storage[row][col].style.border = defaults.brushused;
+					else
+						persist.storage[row][col].style.border = defaults.brushright;
+				} else
+					persist.storage[row][col].style.border = defaults.brushwrong;
+			}
+		}
+	};
+
 	function clearSelection() {
 		for (var i = 0; i < persist.selection.length; i++) {
 			var arr = persist.selection[i].split(defaults.separator);
@@ -1360,8 +1397,7 @@ var MergeTable = window.MergeTable = (function() {
 				defaults[i] = options[i];
 		}
 		if (str) {
-			var tableContainer = document.getElementById(id);
-			tableContainer.innerHTML = str;
+			loadStr(str);
 			load();
 		}
 	};
@@ -1446,11 +1482,16 @@ var MergeTable = window.MergeTable = (function() {
 						index = rowIndex + defaults.separator + i;
 				}
 				persist.range.end = index;
-				clearSelection();
+				if (!(checkBrushFormatOpened() === true && checkBrushSelected() === true))
+					clearSelection();
 				select();
-				renderSelection();
+				if (checkBrushFormatOpened() === true) {
+					renderBrush();
+				} else {
+					renderSelection();
 
-				clearEditable();
+					clearEditable();
+				}
 			}
 		}
 	};
@@ -1458,10 +1499,17 @@ var MergeTable = window.MergeTable = (function() {
 	function onCellMouseUp(e) {
 		e = e || window.event;
 		persist.mouse.status = -1;
+		if (checkBrushFormatOpened() === true) {
+			persist.brush.selected = true;
+			if (checkBrushSelected() === true && checkBrushTargetSelected() === false) {
+				persist.brush.templates = persist.selection.slice( 0);
+			}
+		}
 	};
 
 	function onCellMouseDown(e) {
-		clearSelection();
+		if (!(checkBrushFormatOpened() && checkBrushSelected()))
+			clearSelection();
 		e = e || window.event;
 		var ele = e.srcElement || e.currentTarget;
 		var tagName = ele.tagName.toLowerCase();
@@ -1477,9 +1525,15 @@ var MergeTable = window.MergeTable = (function() {
 			persist.selection.push(index);
 			persist.mouse.status = 0;
 			persist.css[index] = ele.style.cssText;
-			ele.style.backgroundColor = defaults.normal;
-
-			contentEditable(ele, index);
+			if (checkBrushFormatOpened() === true) {
+				if (checkBrushSelected() === true)
+					ele.style.border = defaults.brushused;
+				else
+					ele.style.border = defaults.brushright;
+			} else {
+				ele.style.backgroundColor = defaults.normal;
+				contentEditable(ele, index);
+			}
 		}
 	};
 
@@ -1535,6 +1589,36 @@ var MergeTable = window.MergeTable = (function() {
 		return selectionCells;
 	};
 
+	function openBrushFormat() {
+		persist.brush.status = 0;
+	};
+
+	function closeBrushFormat() {
+		persist.brush.status = -1;
+	};
+
+	function checkBrushFormatOpened() {
+		if (persist.brush.status === 0)
+			return true;
+		else
+			return false;
+	};
+
+	function checkBrushSelected() {
+		if (persist.brush.selected === -1)
+			return false;
+		else
+			return true;
+	};
+
+	function checkBrushTargetSelected() {
+		if (persist.brush.targetSelected === -1)
+
+			return false;
+		else
+			return true;
+	};
+
 	// 公开方法
 	return {
 		merge: merge,
@@ -1551,6 +1635,9 @@ var MergeTable = window.MergeTable = (function() {
 		clearMerge: clearMerge,
 		setSelectionCss: setSelectionCss,
 		read: read,
-		getSelectionCells: getSelectionCells
+		getSelectionCells: getSelectionCells,
+		openBrushFormat: openBrushFormat,
+		closeBrushFormat: closeBrushFormat,
+		checkBrushFormatOpened: checkBrushFormatOpened
 	};
 })();

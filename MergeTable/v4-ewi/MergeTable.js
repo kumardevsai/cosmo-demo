@@ -58,7 +58,19 @@ var MergeTable = window.MergeTable = (function() {
 		// 删除列提示
 		deleteColMsg: "请选择有效列进行删除!",
 		// 没有选择任何单元格
-		selectionNullMsg: "请选择单元格!"
+		selectionNullMsg: "请选择单元格!",
+		// 不可选择行号
+		unselectablerow: [],
+		// 不可选择列号
+		unselectablecol: [],
+		// 不可编辑行
+		uneditablerow: [],
+		// 不可编辑列
+		uneditablecol: [],
+		// 是否开启列标
+		allowcolincremented: false,
+		// 是否开启行标
+		allowrowincremented: false
 	};
 
 	var persist = {
@@ -1317,17 +1329,47 @@ var MergeTable = window.MergeTable = (function() {
 		return flag;
 	};
 
+	function checkSelectable(index) {
+		var obj = utils.index2Obj(index);
+		for (var i = 0; i < defaults.unselectablerow.length; i++) {
+			if (defaults.unselectablerow[i] == obj.y)
+				return false;
+		}
+		for (var i = 0; i < defaults.unselectablecol.length; i++) {
+			if (defaults.unselectablecol[i] == obj.x)
+				return false;
+		}
+		return true;
+	};
+
+	function checkEditable(index) {
+		var obj = utils.index2Obj(index);
+		for (var i = 0; i < defaults.uneditablerow.length; i++) {
+			if (defaults.uneditablerow[i] == obj.y)
+				return false;
+		}
+		for (var i = 0; i < defaults.uneditablecol.length; i++) {
+			if (defaults.uneditablecol[i] == obj.x)
+				return false;
+		}
+		return true;
+	};
+
 	function contentEditable(ele, index) {
+		if (!checkEditable(index))
+			return;
 		if (checkCellHaveEditableInput(index))
 			return;
 		var input = document.createElement("input");
 		input.className = "cell_input";
+		var width_ = ele.clientWidth;
 		input.style.height = (ele.clientHeight - 4) + "px";
-		input.style.width = (ele.clientWidth - 1) + "px";
+		input.style.width = (width_ - 1) + "px";
 		input.value = ele.innerHTML;
 		input.focused = true;
 		ele.innerHTML = "";
 		ele.appendChild(input);
+		ele.style.width = width_ + "px";
 		if (input)
 			input.focus();
 		// 文本框失去焦点消失
@@ -1442,9 +1484,13 @@ var MergeTable = window.MergeTable = (function() {
 				var rowIndex = ele.parentNode.rowIndex;
 				var index;
 				for (var i = 0; i < persist.storage[rowIndex].length; i++) {
-					if (ele == persist.storage[rowIndex][i])
+					if (ele == persist.storage[rowIndex][i]) {
 						index = rowIndex + defaults.separator + i;
+						break;
+					}
 				}
+				if (!checkSelectable(index))
+					return;
 				persist.range.end = index;
 				clearSelection();
 				select();
@@ -1469,17 +1515,22 @@ var MergeTable = window.MergeTable = (function() {
 			var rowIndex = ele.parentNode.rowIndex;
 			var index;
 			for (var i = 0; i < persist.storage[rowIndex].length; i++) {
-				if (ele == persist.storage[rowIndex][i])
+				if (ele == persist.storage[rowIndex][i]) {
 					index = rowIndex + defaults.separator + i;
+					break;
+				}
 			}
+
+			contentEditable(ele, index);
+
+			if (!checkSelectable(index))
+				return;
 			persist.range.start = index;
 			persist.range.end = index;
 			persist.selection.push(index);
 			persist.mouse.status = 0;
 			persist.css[index] = ele.style.cssText;
 			ele.style.backgroundColor = defaults.normal;
-
-			contentEditable(ele, index);
 		}
 	};
 

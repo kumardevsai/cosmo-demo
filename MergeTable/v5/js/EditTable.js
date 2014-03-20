@@ -78,3 +78,17 @@ function setCss()
 		MergeTable.setSelectionCss(str);
 	}
 };
+
+function brushCss()
+{
+	if(MergeTable.checkBrushFormatOpened() === false)
+	{
+		MergeTable.openBrushFormat();
+		document.getElementById("brushtext").innerHTML = "&nbsp;格式刷(<font color='red'>已开启</font>)&nbsp;";
+	}
+	else
+	{
+		MergeTable.closeBrushFormat();
+		document.getElementById("brushtext").innerHTML =  "&nbsp;格式刷&nbsp;";
+	}
+};
