@@ -275,6 +275,8 @@ function batch_add() {
 		return;
 	} else {
 		// 设置更新成功后的页面显示
-		ViewInits();
+		for (var i = 0; i < updateRows.length; i++) {
+			updateRows[i].children[1].innerHTML = "-";
+		}
 	}
 };

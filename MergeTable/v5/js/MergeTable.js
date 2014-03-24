@@ -60,11 +60,7 @@ var MergeTable = window.MergeTable = (function() {
 		// 没有选择任何单元格
 		selectionNullMsg: "请选择单元格!",
 		// 采用格式刷时单元格的样式(选区正确)
-		brushright: '2px dashed green',
-		// 采用格式刷时单元格的样式(选区错误)
-		brushwrong: '2px dashed red',
-		// 应用格式刷单元格样式
-		brushused: '2px dashed blue'
+		brushright: '2px dashed green'
 	};
 
 	var persist = {
@@ -83,10 +79,7 @@ var MergeTable = window.MergeTable = (function() {
 		brush: {
 			status: -1,
 			selected: -1,
-			targetSelected: -1,
-			templates: [],
-			selectedCss: {},
-			targetSelectedCss: {}
+			selectedCss: {}
 		}
 	};
 
@@ -1235,32 +1228,6 @@ var MergeTable = window.MergeTable = (function() {
 		}
 	};
 
-	function renderBrush() {
-		var num = 0;
-		var flag = false;
-		if (checkSelection())
-			flag = true;
-		for (var i = 0; i < persist.selection.length; i++) {
-			var arr = persist.selection[i].split(defaults.separator);
-			var row = arr[0];
-			var col = arr[1];
-			if (persist.storage[row][col]) {
-				// 单元格样式缓存
-				if (persist.css[persist.selection[i]] === undefined)
-					persist.css[persist.selection[i]] = persist.storage[row][col].style.cssText;
-				if (persist.brush.selectedCss[persist.selection[i]] === undefined)
-					persist.brush.selectedCss[persist.selection[i]] = persist.storage[row][col].style.cssText;
-				num++;
-				if (flag === true) {
-					if (checkBrushSelected() === true)
-						persist.storage[row][col].style.border = defaults.brushused;
-					else
-						persist.storage[row][col].style.border = defaults.brushright;
-				} else
-					persist.storage[row][col].style.border = defaults.brushwrong;
-			}
-		}
-	};
 
 	function clearSelection() {
 		// 遍历选区
@@ -1270,22 +1237,10 @@ var MergeTable = window.MergeTable = (function() {
 			var col = obj.x;
 			// 单元格存在
 			if (persist.storage[row][col]) {
-				// 缓存样式存在
-				if (persist.css[persist.selection[i]]) {
-					// 格式刷开启且格式选区存在
-					if (checkBrushFormatOpened() === true && checkBrushSelected() === true) {
-						// 单元格对应的格式样式缓存不存在
-						if (persist.brush.selectedCss[persist.selection[i]] === undefined)
-							persist.storage[row][col].style.cssText = persist.css[persist.selection[i]];
-					} else
-						persist.storage[row][col].style.cssText = persist.css[persist.selection[i]];
-				} else {
-					if (checkBrushFormatOpened() === true && checkBrushSelected() === true) {
-						if (persist.brush.selectedCss[persist.selection[i]] === undefined)
-							persist.storage[row][col].style.cssText = "";
-					} else
-						persist.storage[row][col].style.cssText = "";
-				}
+				if (persist.css[persist.selection[i]])
+					persist.storage[row][col].style.cssText = persist.css[persist.selection[i]];
+				else
+					persist.storage[row][col].style.cssText = "";
 			}
 		}
 		persist.selection = [];
@@ -1490,6 +1445,8 @@ var MergeTable = window.MergeTable = (function() {
 
 
 	function onCellMouseOver(e) {
+		if (checkBrushFormatOpened())
+			return;
 		e = e || window.event;
 		var ele = e.srcElement || e.currentTarget;
 		var tagNameV = ele.tagName.toLowerCase();
@@ -1504,19 +1461,15 @@ var MergeTable = window.MergeTable = (function() {
 				persist.range.end = index;
 				clearSelection();
 				select();
-				if (checkBrushFormatOpened() === true) {
-					renderBrush();
-				} else {
-					renderSelection();
-
-					clearEditable();
-				}
+				renderSelection();
+				clearEditable();
 			}
 		}
 	};
 
 	function onCellMouseUp(e) {
 		e = e || window.event;
+		var ele = e.srcElement || e.currentTarget;
 		// 设置鼠标弹起状态
 		persist.mouse.status = -1;
 		// 格式刷已经开启
@@ -1524,23 +1477,22 @@ var MergeTable = window.MergeTable = (function() {
 			// 格式选区不存在
 			if (checkBrushSelected() === false) {
 				// 格式选区状态设置
-				persist.brush.selected = true;
-				// 模板设置
-				persist.brush.templates = persist.selection.slice(0);
+				persist.brush.selected = 0;
 			} else {
-				// 目标选区不存在
-				if (checkBrushTargetSelected() === false) {
-					// 目标选区存在
-					persist.brush.targetSelected = true;
-				} else {
-					// 清空选区
-					clearSelection();
-					// 消除格式选区
-					persist.brush.selected = false;
-					// 消除目标选区
-					persist.brush.targetSelected = false;
-					
+				// 清空选区
+				clearSelection();
+				// 消除格式选区
+				persist.brush.selected = -1;
+
+				// 设置样式
+				for (var i in persist.brush.selectedCss) {
+					var sty = persist.brush.selectedCss[i];
+					ele.style.cssText = sty;
+					var obj = utils.index2Obj(i);
+					persist.storage[obj.y][obj.x].style.cssText = sty;
+					break;
 				}
+				persist.brush.selectedCss = {};
 			}
 		}
 	};
@@ -1581,12 +1533,7 @@ var MergeTable = window.MergeTable = (function() {
 			// 判断是否开启格式刷
 			if (checkBrushFormatOpened() === true) {
 				// 格式单元格被选择
-				if (checkBrushSelected() === true) {
-					// 设置目标单元格样式缓存
-					persist.brush.targetSelectedCss[index] = ele.style.cssText;
-					// 设置边框样式
-					ele.style.border = defaults.brushused;
-				} else {
+				if (checkBrushSelected() === true) {} else {
 					// 如果格式刷单元格样式缓存不存在
 					if (persist.brush.selectedCss[index] === undefined) {
 						// 设置格式刷单元格样式缓存
@@ -1622,6 +1569,14 @@ var MergeTable = window.MergeTable = (function() {
 					if (persist.storage[obj.y][obj.x]) {
 						// 设置样式
 						persist.storage[obj.y][obj.x].style.cssText = css;
+						// 格式刷单元格如果被选中时更改样式，则格式刷的样式缓存也应该更改
+						for (var m in persist.brush.selectedCss) {
+							if (m === selection2ArrayStack[i][j]) {
+								persist.brush.selectedCss[m] = css;
+								persist.storage[obj.y][obj.x].style.border = defaults.brushright;
+								break;
+							}
+						}
 					}
 				}
 			}
@@ -1664,16 +1619,35 @@ var MergeTable = window.MergeTable = (function() {
 		return selectionCells;
 	};
 
+	// 打开格式刷
 	function openBrushFormat() {
+		// 设置格式刷可用
 		persist.brush.status = 0;
+		// 清空选区
 		clearSelection();
+		// 清空可编辑文本
 		clearEditable();
 	};
 
+	// 关闭格式刷
 	function closeBrushFormat() {
+		// 设置格式刷状态不可用
 		persist.brush.status = -1;
+		// 清空选区 TODO 好像用不到
+		clearSelection();
+		// 还原被选中的单元格的样式
+		for (var i in persist.brush.selectedCss) {
+			var sty = persist.brush.selectedCss[i];
+			var obj = utils.index2Obj(i);
+			// 样式设置
+			persist.storage[obj.y][obj.x].style.cssText = sty;
+			break;
+		}
+		// 清空格式刷样式缓存区
+		persist.brush.selectedCss = {};
 	};
 
+	// 检查格式刷是否打开 
 	function checkBrushFormatOpened() {
 		if (persist.brush.status === 0)
 			return true;
@@ -1681,6 +1655,7 @@ var MergeTable = window.MergeTable = (function() {
 			return false;
 	};
 
+	// 检查格式刷的样式单元格是否被选中
 	function checkBrushSelected() {
 		if (persist.brush.selected === -1)
 			return false;
@@ -1688,33 +1663,45 @@ var MergeTable = window.MergeTable = (function() {
 			return true;
 	};
 
-	function checkBrushTargetSelected() {
-		if (persist.brush.targetSelected === -1)
-
-			return false;
-		else
-			return true;
-	};
 
 	// 公开方法
+	// TODO 为每一个方法添加回调函数
 	return {
+		// 合并单元格
 		merge: merge,
+		// 竖拆
 		splitH: splitH,
+		// 横拆
 		splitV: splitV,
+		// 删除列
 		deleteCol: deleteCol,
+		// 删除行
 		deleteRow: deleteRow,
+		// 上部添加行
 		addRowTop: addRowTop,
+		// 底部添加行
 		addRowBottom: addRowBottom,
+		// 左侧添加列
 		addColLeft: addColLeft,
+		// 右侧添加列
 		addColRight: addColRight,
+		// 书写单元格 ， 传入字符串
 		write: write,
+		// 初始化
 		init: init,
+		// 完全拆分单元格
 		clearMerge: clearMerge,
+		// 设置被选中的单元格的样式
 		setSelectionCss: setSelectionCss,
+		// 读取表格字符串
 		read: read,
+		// 获取被选中的单元格
 		getSelectionCells: getSelectionCells,
+		// 打开格式刷
 		openBrushFormat: openBrushFormat,
+		// 关闭格式刷
 		closeBrushFormat: closeBrushFormat,
+		// 检查格式刷是否打开
 		checkBrushFormatOpened: checkBrushFormatOpened
 	};
 })();
