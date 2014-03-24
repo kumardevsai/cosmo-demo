@@ -1,0 +1,6 @@
+1:ctrldq.js 文件里是对齐的方法。
+2:CtrlResize.js 为控件拖动改变大小的类和相关方法。
+3：controlResize.html 为测试页面。
+4:平均值分析.gif 为测试图片
+
+

@@ -1,0 +1,311 @@
+﻿<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title></title>
+		<style>
+        .tip
+		{
+			background-color: #FFFFE1;
+			border: 1px solid #000000;
+			width:0px;
+			padding: 1px;
+			font-size:12px;
+			position:absolute;
+			top: -100px;
+			white-space:nowrap;
+		}
+        </style>
+		<script src="js/CtrlResize.js" language="javascript" charset="gb2312"></script>
+		<script src="js/ToolBar/ctrldq.js" language="javascript" charset="gb2312"></script>
+	</head>
+	<body onmouseup="up()" onmousedown="down()" onmousemove="moveing()">
+		<DIV id="div1" style="WIDTH: 100%; HEIGHT: 100%" name="div1">
+			<INPUT id="btn1" style="FONT-SIZE: 12px;left:12px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 114px"
+				type="button" value="按钮" Close="false"> <INPUT id="Button1" style="FONT-SIZE: 12px;left:42px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 154px;"
+				type="button" value="按钮" Close="false" NAME="Button1"> <INPUT id="text1" style="FONT-SIZE: 12px;left:82px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 164px"
+				type="text" value="文本框" Close="false"> <IMG alt="" style="FONT-SIZE: 12px;left:102px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 264px"
+				src="平均值分析.gif">
+			<SELECT  ID="Select1" NAME="Select1" style="FONT-SIZE: 12px;left:52px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 214px">
+				<OPTION></OPTION>
+			</SELECT>
+				<SELECT  ID="Select2_1" size='2' NAME="Select1" style="FONT-SIZE: 12px;left:52px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 114px">
+				<OPTION></OPTION>
+			</SELECT>
+			<INPUT id="imagebutton1" style="FONT-SIZE: 12px; LEFT: 125px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 77px"
+				type="image" NAME="imagebutton1"> 
+			<!--table表格--->
+			<DIV id="table1" style="FONT-SIZE: 12px; LEFT: 477px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 380px;"
+				PageSize="20" ExtType="Table"><DIV style="MARGIN-LEFT: 12px; WHITE-SPACE: nowrap">上一页 
+					下一页 <INPUT id="Text2" size="4" name="textfield"><INPUT id="Button2" type="button" value="跳转" name="Submit">
+					第X页,共XX页</DIV>
+				<TABLE style="WIDTH: 300px; BORDER-COLLAPSE: collapse" cellSpacing="0" border="1" ID="Table2">
+					<TBODY>
+						<TR align="middle">
+							<TD>列0</TD>
+							<TD>列1</TD>
+							<TD>列2</TD>
+						</TR>
+						<TR>
+							<TD>abc</TD>
+							<TD>abc</TD>
+							<TD>abc</TD>
+						</TR>
+						<TR>
+							<TD>abc</TD>
+							<TD>abc</TD>
+							<TD>abc</TD>
+						</TR>
+						<TR>
+							<TD>abc</TD>
+							<TD>abc</TD>
+							<TD>abc</TD>
+						</TR>
+					</TBODY></TABLE>
+			</DIV>
+			<DIV id="Div2" style="FONT-SIZE: 12px; LEFT: 29px; WIDTH: 300px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 363px"
+				ExtType="ContainTable">[容器Table]<BR>
+				<TABLE style="WIDTH: 100%; BORDER-COLLAPSE: collapse" cellSpacing="0" border="1" ID="Table3">
+					<TBODY>
+						<TR>
+							<TD style="HEIGHT: 20px"></TD>
+							<TD style="LEFT: 179px; TOP: 155px; HEIGHT: 20px"></TD>
+							<TD style="HEIGHT: 20px"></TD>
+						</TR>
+						<TR>
+							<TD style="HEIGHT: 20px"></TD>
+							<TD style="HEIGHT: 20px"></TD>
+							<TD style="HEIGHT: 20px"></TD>
+						</TR>
+					</TBODY></TABLE>
+			</DIV>
+			<TEXTAREA id="textarea1" style="FONT-SIZE: 12px; LEFT: 359px; POSITION: absolute; TOP: 106px"
+				NAME="textarea1"></TEXTAREA> <INPUT id="file1" style="FONT-SIZE: 12px; LEFT: 279px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 402px"
+				type="file" onchange="AddFile()" NAME="file1"> <INPUT id="chk1" style="FONT-SIZE: 12px; LEFT: 185px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 262px"
+				type="checkbox" CHECKED value="checkbox" NAME="chk1"> <INPUT id="radio1" style="FONT-SIZE: 12px; LEFT: 106px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 230px"
+				type="radio" value="radiobutton" NAME="RadioGroup">
+			<DIV id="divcon1" style="FONT-SIZE: 12px; LEFT: 138px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 224px"
+				ExtType="ContainDiv">[容器Div组件分组]<BR>
+			</DIV>
+			<DIV id="horizontal1" style="FONT-SIZE: 12px; LEFT: 430px; OVERFLOW: hidden; WIDTH: 300px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 164px; HEIGHT: 1px; BACKGROUND-COLOR: #808080"
+				ExtType="HorizontalLine"></DIV>
+			<!--<DIV id="iframe1" style="FONT-SIZE: 12px; LEFT: 12px; WHITE-SPACE: nowrap; POSITION: absolute; TOP: 20px;"
+				ExtType="IFrame">
+				<DIV>窗口拖动</DIV><IFRAME style="WIDTH: 100%; HEIGHT: 100%" src=""></IFRAME></DIV>
+			</DIV>-->
+			<DIV class="tip" id="div_tip" style="DISPLAY: none; LEFT: 32px; TOP: 29px"></DIV>
+			</div>
+			<script>
+var obj1 = null; // 鼠标点击的对象
+var moveobj = null; // 移动的对象
+
+// body里当鼠标点下去的事件
+function down()
+{   
+	div1.setCapture();
+	obj1 = GetRoot();
+	if(obj1.id == "div1"){ moveobj = null;document.releaseCapture();return;}
+	
+	moveobj = obj1;
+	a1 = obj1.offsetLeft - event.x;
+	b1 = obj1.offsetTop -  event.y; 
+	
+	info_show(moveobj);
+	div_tip.style.display = '';
+
+	// 如果按住了ctrl键，如果点击的控件选中的话，则清除选中，如果没选中则选中
+	if (event.ctrlKey)
+	{   
+	    if (obj1.tagName == 'TD')
+	    {
+			obj1 = obj1.parentNode.parentNode.parentNode.parentNode; 
+	    }
+		// 如果选中则当前控件取消选中
+		if (document.getElementById('imgObj0_'+obj1.id) != null && document.getElementById('imgObj0_'+obj1.id) != '')
+		{    
+			cs = new CtrlSize(obj1);
+			cs.clearSelf(obj1);
+		}
+		// 如果没选中则当前的控件选中
+		else
+		{   
+			cs = new CtrlSize(obj1);
+			cs.selectCtrl();
+		}
+	}
+	// 没有按住ctrl键，则选中当前点击的控件，其它选中的控件清除选中
+	else  
+	{    
+	    var num = 0; // 页面有几个控件选中的标志
+		for(var i= 0; i<CtrlSize.arrayctrl.length; i++)
+		{
+			if (CtrlSize.arrayctrl[i] != null && CtrlSize.arrayctrl[i] != undefined && CtrlSize.arrayctrl[i] !='')
+			{   
+				num ++;			    	
+			}
+		}
+		var tag = 0; // 当前点击的控件是否已经选中的标记 
+		if (num >= 2) // 如果页面上大于2个控件选中，再点击其中的某一个控件则什么也不做 
+		{ 
+		    for(var i= 0; i<CtrlSize.arrayctrl.length; i++)
+			{
+				if (CtrlSize.arrayctrl[i] != null && CtrlSize.arrayctrl[i] != undefined && CtrlSize.arrayctrl[i] !='')
+				{   
+				    if (obj1.tagName == 'TD') // 如果 点击的对象是td则为它所在的表格对象
+				    {
+				       obj1 = obj1.parentNode.parentNode.parentNode.parentNode; 
+				    }
+					if (CtrlSize.arrayctrl[i].id == obj1.id ) 
+					{   
+						tag = 1;	
+					}	    	
+				}
+			}
+			if (tag == 1) // 如果当前的控件已经选中，则什么也不做
+			{
+				return;
+			}
+		}
+		// 如果没有选中，则选中当前的控件，其他选中的控件清除选中状态
+		if(tag == 0) 
+		{   
+			cs = new CtrlSize(obj1);
+			cs.selectCtrl();
+			cs.clearSelected();
+		}
+	}
+}
+var a1 = 0,b1 = 0;
+
+// 得到鼠标作用的对象
+function GetRoot()
+{  
+	var obj1 = event.srcElement;
+	while(obj1.parentElement != null)
+	{
+		if(obj1.parentElement.id=="div1")
+			break;
+		if(obj1.parentElement.ExtType)
+		{
+			if (obj1.parentElement.ExtType.substring(0,7) == "Contain")
+			{
+				obj1 = event.srcElement;
+				break;
+			}
+		}
+		obj1 = obj1.parentElement;
+	}
+	if (obj1.parentElement == null)
+	{
+		obj1 = event.srcElement;
+	}
+	return obj1
+}
+//当组件拖动时的事件
+function moveing()
+{   
+	var num = 0; // 页面有几个控件选中的标记
+	var len = CtrlSize.arrayctrl.length; // 选中的控件的数组有几个控件
+    var tag = 0; // 是否按住ctrl键，并且选择了2个以上控件的标记，如果没有按住ctrl并且选择了2个以上的控件则tag=1，此时可以集体拖动控件的位置
+    var beforex = 0; // 控件没移动前的left
+    var beforey = 0; // 控件没移动前的top
+	for(var i = 0; i<= len; i++)
+	{   
+		if (CtrlSize.arrayctrl[i] != null && CtrlSize.arrayctrl[i] != '' && CtrlSize.arrayctrl[i] != undefined)
+		{
+			num ++;
+		}
+	}
+	
+    // 如果按住了ctrl选择了2个以上的控件，则什么也不做
+    if (event.ctrlKey)
+    {  
+	    if (num >=2)
+	    {
+	       return;
+	    }
+    }
+    // 如果没有按住ctrl键，选择了2个以上的控件，则可以拖动这几个控件的位置,但是不可以移动拖拽某个控件的大小
+    else
+    {     
+		if (num >= 2)
+		{  
+			tag = 1;
+		}
+    }
+    if(obj1 != null && moveobj != null)
+	{   
+	    beforex = moveobj.style.left;
+	    beforey = moveobj.style.top;
+	    if (tag == 0) // 1:没有按住ctrl键选择的控件小于2个;2按住了ctrl键选择的控件小于2个
+	    {
+			// 当移动对象为横调图片和纵调图片时限制其移动的方向
+			if(obj1.id.indexOf('imgObj0_') != -1) // 只可以x轴方向移动
+			{   
+				tempx = event.x + a1;
+				moveobj.style.left = tempx;
+			}
+			else if(obj1.id.indexOf('imgObj2_') != -1) // 只可以y轴方向移动
+			{   
+				tempy=event.y + b1;
+				moveobj.style.top = tempy;
+			}
+			else // x，y轴方向都可以移动，可以为横纵调图片或者是控件
+			{  
+				tempx=event.x + a1;
+				moveobj.style.left = tempx;
+				tempy=event.y + b1;
+				moveobj.style.top = tempy;
+			}
+		}
+		else // 选择了2个或者2个以上的控件则集体移动,只可以移动控件，图片不可以移动
+		{  
+		   if (obj1.id.indexOf('imgObj') == -1)
+		   {
+				tempx=event.x + a1;
+				moveobj.style.left = tempx;
+				tempy=event.y + b1;
+				moveobj.style.top = tempy;
+		   }
+		}
+		cs.ctrlMove(moveobj);   // 控件移动时重新设置图片的位置或者图片移动时改变控件的大小
+		info_show(moveobj);
+		if (tag == 1) // 如果没有按住ctrl但是选择了多个，则集体移动
+		{
+		    var x = moveobj.style.left.replace('px','') - beforex.replace('px',''); // 记录鼠标作用的控件相对于原始位置的x轴偏移
+			var y = moveobj.style.top.replace('px','') - beforey.replace('px','');  //  记录鼠标作用的控件相对于原始位置的y轴偏移
+		    for(var i = 0; i<= len; i++)
+			{   
+				if (CtrlSize.arrayctrl[i] != null && CtrlSize.arrayctrl[i] != '' && CtrlSize.arrayctrl[i] != undefined)
+				{   
+				    if (CtrlSize.arrayctrl[i].id != moveobj.id)
+				    {   
+						moveCtrls(CtrlSize.arrayctrl[i],x,y); // 移动CtrlSize.arrayctrl[i]控件
+				    }
+				}
+			}
+		}
+	}
+}
+
+//在div_tip上显示组件的位置
+function info_show(obj)
+{
+	div_tip.style.left = event.x + 14 + document.body.scrollLeft;
+	div_tip.style.top = event.y + 18 + document.body.scrollTop;
+	div_tip.innerHTML = obj.style.left + "," + obj.style.top + "";
+}
+//body里鼠标onmouseup事件
+function up()
+{   
+	// div1不进行删除操作。
+	if (obj1 != '' && obj1 != null && obj1 != undefined)
+	{
+		if (obj1.id == 'div1') return;
+	}
+	div_tip.style.display = 'none';
+	document.releaseCapture(); 
+	obj1 = null;
+}
+			</script>
+	</body>
+</html>
