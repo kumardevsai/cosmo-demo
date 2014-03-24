@@ -1208,22 +1208,37 @@ var MergeTable = window.MergeTable = (function() {
 			var row = arr[0];
 			var col = arr[1];
 			if (persist.storage[row][col]) {
-				// 单元格样式缓存
-				if (!persist.css[persist.selection[i]])
-					persist.css[persist.selection[i]] = persist.storage[row][col].style.cssText;
-				num++;
-				if (flag === true)
-					persist.storage[row][col].style.backgroundColor = defaults.right;
-				else
-					persist.storage[row][col].style.backgroundColor = defaults.wrong;
+				if (persist.brush.selectedCss[persist.selection[i]] !== undefined) {
+					continue;
+				} else {
+					// 单元格样式缓存
+					if (!persist.css[persist.selection[i]])
+						persist.css[persist.selection[i]] = persist.storage[row][col].style.cssText;
+					num++;
+					if (checkBrushFormatOpened() && checkBrushSelected()) {
+						var sty = "";
+						for (var m in persist.brush.selectedCss) {
+							sty = persist.brush.selectedCss[m];
+							break;
+						}
+						persist.storage[row][col].style.cssText = sty;
+					} else {
+						if (flag === true)
+							persist.storage[row][col].style.backgroundColor = defaults.right;
+						else
+							persist.storage[row][col].style.backgroundColor = defaults.wrong;
+					}
+				}
 			}
 		}
-		if (num === 1) {
-			var arr = persist.selection[0].split(defaults.separator);
-			var row = arr[0];
-			var col = arr[1];
-			if (persist.storage[row][col]) {
-				persist.storage[row][col].style.backgroundColor = defaults.normal;
+		if (!checkBrushFormatOpened()) {
+			if (num === 1) {
+				var arr = persist.selection[0].split(defaults.separator);
+				var row = arr[0];
+				var col = arr[1];
+				if (persist.storage[row][col]) {
+					persist.storage[row][col].style.backgroundColor = defaults.normal;
+				}
 			}
 		}
 	};
@@ -1237,10 +1252,15 @@ var MergeTable = window.MergeTable = (function() {
 			var col = obj.x;
 			// 单元格存在
 			if (persist.storage[row][col]) {
-				if (persist.css[persist.selection[i]])
-					persist.storage[row][col].style.cssText = persist.css[persist.selection[i]];
-				else
-					persist.storage[row][col].style.cssText = "";
+				// 格式样式单元格不变化
+				if (persist.brush.selectedCss[persist.selection[i]] !== undefined) {
+
+				} else {
+					if (persist.css[persist.selection[i]])
+						persist.storage[row][col].style.cssText = persist.css[persist.selection[i]];
+					else
+						persist.storage[row][col].style.cssText = "";
+				}
 			}
 		}
 		persist.selection = [];
@@ -1332,15 +1352,23 @@ var MergeTable = window.MergeTable = (function() {
 			return;
 		var input = document.createElement("input");
 		input.className = "cell_input";
-		input.style.height = (ele.clientHeight - 4) + "px";
-		input.style.width = (ele.clientWidth - 1) + "px";
+		var height_ = ele.clientHeight;
+		var width_ = ele.clientWidth;
+		input.style.height = (height_ - 4) + "px";
+		input.style.width = (width_ - 1) + "px";
 		input.value = ele.innerHTML;
 		input.focused = true;
 		ele.innerHTML = "";
 		ele.appendChild(input);
+		// 重新设置尺寸
+		// TODO IE8 发生单元格抖动 !
+		ele.style.height = height_ + "px";
+		ele.style.widht = width_ + "px";
 		if (input)
 			setTimeout(function() {
-				input.focus();
+				try {
+					input.focus();
+				} catch (e) {}
 			}, 0);
 		// 文本框失去焦点消失
 		AttachEvent(input, "blur", function() {
@@ -1445,7 +1473,7 @@ var MergeTable = window.MergeTable = (function() {
 
 
 	function onCellMouseOver(e) {
-		if (checkBrushFormatOpened())
+		if (checkBrushFormatOpened() && checkBrushSelected() === false)
 			return;
 		e = e || window.event;
 		var ele = e.srcElement || e.currentTarget;
@@ -1479,8 +1507,8 @@ var MergeTable = window.MergeTable = (function() {
 				// 格式选区状态设置
 				persist.brush.selected = 0;
 			} else {
-				// 清空选区
-				clearSelection();
+				persist.selection = [];
+				persist.css = {};
 				// 消除格式选区
 				persist.brush.selected = -1;
 
@@ -1609,7 +1637,7 @@ var MergeTable = window.MergeTable = (function() {
 				var obj = utils.index2Obj(selection2ArrayStack[i][j]);
 				if (persist.storage[obj.y][obj.x]) {
 					var cell = persist.storage[obj.y][obj.x].cloneNode(true);
-					if (persist.css[selection2ArrayStack[i][j]]) {
+					if (persist.css[selection2ArrayStack[i][j]] !== undefined) {
 						cell.style.cssText = persist.css[selection2ArrayStack[i][j]];
 						selectionCells.push(cell);
 					}

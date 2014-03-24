@@ -46,14 +46,17 @@ function closeEdit() {
 };
 
 function setCss() {
-	var url = "CssEdit/SetCss.htm?t=" + Math.random();
-	var css = "";
 	var selectionCells = MergeTable.getSelectionCells();
-	if (selectionCells.length > 0)
+	if (selectionCells.length > 0) {
+		var css = "";
 		css = selectionCells[0].style.cssText;
-	var str = window.showModalDialog(url, css);
-	if (str !== undefined && str !== null) {
-		MergeTable.setSelectionCss(str);
+		var url = "CssEdit/SetCss.htm?t=" + Math.random();
+		var str = window.showModalDialog(url, css);
+		if (str !== undefined && str !== null) {
+			MergeTable.setSelectionCss(str);
+		}
+	} else {
+		alert("请选择有效单元格!");
 	}
 };
 
