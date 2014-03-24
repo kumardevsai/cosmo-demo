@@ -1362,8 +1362,6 @@ var MergeTable = window.MergeTable = (function() {
 		ele.appendChild(input);
 		// 重新设置尺寸
 		// TODO IE8 发生单元格抖动 !
-		ele.style.height = height_ + "px";
-		ele.style.widht = width_ + "px";
 		if (input)
 			setTimeout(function() {
 				try {
