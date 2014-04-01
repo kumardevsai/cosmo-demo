@@ -3,9 +3,8 @@
 	1.代码优化
 	2.有bug，未复现
 	3.单元格尺寸的计算（添加行、添加列）
-	4.点击单元格其中有时会显示textaera标签 (input尺寸计算问题，单元格会出现1-2个像素的留白，当点击留白处的时候，就会发生这种情况)
-	5.关于单元格被选中时的自定义样式（不仅是背景色，包括虚线边框，透明度等）
-	6.实现绝对的正方形选区（而不是提示选区不正确显示红色）
+	4.关于单元格被选中时的自定义样式（不仅是背景色，包括虚线边框，透明度等）
+	5.实现绝对的正方形选区（而不是提示选区不正确显示红色）
 **/
 "use strict";
 
@@ -67,7 +66,7 @@ var MergeTable = window.MergeTable = (function() {
 		storage: [],
 		place: [],
 		selection: [],
-		edition: [],
+		edition: {},
 		range: {
 			start: null,
 			end: null
@@ -1110,7 +1109,7 @@ var MergeTable = window.MergeTable = (function() {
 		persist.storage = [];
 		persist.place = [];
 		persist.selection = [];
-		persist.edition = [];
+		persist.edition = {};
 		persist.range = {};
 		persist.mouse.status = -1;
 	};
@@ -1338,8 +1337,8 @@ var MergeTable = window.MergeTable = (function() {
 
 	function checkCellHaveEditableInput(index) {
 		var flag = false;
-		for (var i = 0; i < persist.edition.length; i++) {
-			if (persist.edition[i][0] === index && persist.edition[i][1]) {
+		for (var i in persist.edition) {
+			if (i === index && persist.edition[i]) {
 				flag = true;
 				break;
 			}
@@ -1354,10 +1353,9 @@ var MergeTable = window.MergeTable = (function() {
 		input.className = "cell_input";
 		var height_ = ele.clientHeight;
 		var width_ = ele.clientWidth;
-		input.style.height = (height_ - 4) + "px";
+		input.style.height = (height_ - 1) + "px";
 		input.style.width = (width_ - 1) + "px";
 		input.value = ele.innerHTML;
-		input.focused = true;
 		ele.innerHTML = "";
 		ele.appendChild(input);
 		// 重新设置尺寸
@@ -1366,26 +1364,30 @@ var MergeTable = window.MergeTable = (function() {
 			setTimeout(function() {
 				try {
 					input.focus();
+					// 清空可编辑文本框的缓存数组
+					persist.edition = {};
+					// 将当前显示的文本框添加到数组缓存中
+					persist.edition[index] = input;
 				} catch (e) {}
 			}, 0);
 		// 文本框失去焦点消失
 		AttachEvent(input, "blur", function() {
-			// 将文本框中的值取出添加到单元格显示
-			input.parentNode.innerHTML = input.value.Trim();
+			var cellTd = input.parentNode;
+			var inputValue = input.value.Trim();
+			if(cellTd)
+			{
+			    // 将文本框中的值取出添加到单元格显示
+			    cellTd.removeChild(input);
+			    cellTd.innerHTML = inputValue;
+			}
 			// 清空可编辑文本框的缓存数组
-			persist.edition = [];
+			persist.edition = {};
 		}, false);
-		// 事件冒泡给父元素
-		AttachEvent(input, "click", function(e) {}, true);
-		// 清空可编辑文本框的缓存数组
-		persist.edition = [];
-		// 将当前显示的文本框添加到数组缓存中
-		persist.edition.push([index, input]);
 	};
 
 	function clearEditable() {
-		for (var i = 0; i < persist.edition.length; i++) {
-			var input = persist.edition[i][1];
+		for (var i in persist.edition) {
+			var input = persist.edition[i];
 			if (input && input.parentNode)
 				input.parentNode.innerHTML = input.value.Trim();
 		}
