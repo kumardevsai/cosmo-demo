@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>CSS编辑器</title>
+		<script src="Js/judgebrowser.js" type="text/javascript" charset="GB2312"></script>
+		<script src="Js/CssList.js" type="text/javascript" charset="GB2312"></script>
+		<script src="Js/managecss.js" type="text/javascript" charset="GB2312"></script>
+		<link href="css/ManageCss.css" rel="stylesheet" type="text/css"></link>
+	</head>
+	<body onLoad="bodyinit()">
+		<form id="Form1" method="post" runat="server">
+			<div id="content">
+				<div id="view">
+					<div id="designView">
+						<div id="buttonlist">
+							<input type="button" value="  修改  " id="modify" onClick="OpenDialogM()" NAME="modify">
+							<input type="button" value="  增加  " id="add" onClick="OpenSetCssName()" NAME="add">
+							<input type="button" value="  删除  " id="del" onClick="CssDelete()" NAME="del">
+						</div>
+						<div id="stylelist">
+							<p>css样式大纲</p>
+							<select size="21" id="cssName" NAME="cssName" ondblclick="OpenDialogM()">
+							</select>
+						</div>
+					</div>
+					<iframe id="cssIframe" frameborder="0" scrolling="no" src="CodeView.htm"></iframe>
+					<div class="changeiframe"><input type="button" value=" 源码 " id="btncode" onClick="openCodeView()" NAME="btncode"><input type="button" value=" 预览 " id="btnview" onClick="viewCss()" NAME="btnview"></div>
+				</div>
+				<div id="bottom">
+					<input type="button" value="  确定  " onClick="CloseManageCss()" ID="Button3" NAME="Button3">
+					<input type="button" value="  取消  " onClick="cancel()" ID="Button4" NAME="Button4">
+				</div>
+			</div>
+			<div id="bgstyleName"></div>
+		
+			<div id="styleName" >
+				<h2 class="style_title">新建 css 样式</h2>
+				 <fieldset class="fieldset_cls">
+				     <div class="first_row_cls">
+						<span id="cssNameSpan">名称:</span>
+						<div class="txtseldiv">
+							
+							<input id="textCssName" NAME="textCssName" value="" type="text">
+							<select id="selCssName" onclick="selCssNameClick()" NAME="selCssName">
+							</select>
+						</div>
+				     </div>
+				   <div class="cssType">
+				    <span>选择器类型:</span>
+					<span>
+					  <label id="label1" onclick="radioClick();setRadioValue('RadioGroup',1)">
+				      <input type="radio" name="RadioGroup" value="1" id="RadioGroup_0" onclick="radioClick()">
+				      类(可应用于任何标签)</label>
+						<br>
+						<label class="cssTypelabel" onclick="radioClick();setRadioValue('RadioGroup',2)">
+				      <input type="radio" name="RadioGroup" value="2" id="RadioGroup_1" onclick="radioClick()">
+				      标签(重新定义标签的外观)</label>
+						<br>
+						<label class="cssTypelabel" onclick="radioClick();setRadioValue('RadioGroup',3)">
+				      <input type="radio" name="RadioGroup" value="3" id="RadioGroup_2" onclick="radioClick()">
+				      高级(ID,上下文选择器等)</label>
+						<br>
+					 </span>
+				 </div>
+				</fieldset>
+				<div  class="cssNameBottom">
+				  <input type="button" value=" 确定 " onClick="closeSetCssName()" ID="Button1" NAME="Button1">
+				  <br>
+				  <input type="button" value=" 取消 " onClick="cancelSetCssName()" ID="Button2" NAME="Button2">
+				</div>
+			</div>
+			<input type="hidden" value="" id="cssContent" NAME="cssContent"> <input type="hidden" value="" id="cssHtmlContent" NAME="cssHtmlContent">
+			<input type="hidden" value="" id="checkchange" NAME="checkchange"> <input type="hidden" value="" id="checkhtmlchange" NAME="checkhtmlchange">
+		</form>
+	</body>
+</html>

@@ -1,0 +1,10 @@
+.etable {
+	border-collapse:collapse;
+	table-layout: fixed;
+}
+.etable td {
+	border:1px solid #d3d0d9;
+	height:20px;
+	width:64px;
+	padding:0;
+}
