@@ -1,6 +1,10 @@
 /**
+	已知浏览器bug，当存在多个thead/tbody/tfoot时，rowIndex不准确
+**/
+/**
 	此版本加入：
 	1.空行移除
+	2.区域限制
 **/
 /**
 	TODO 
@@ -20,6 +24,21 @@ var MergeTable = window.MergeTable = (function() {
 		nextSibling: function(ele) {
 			return ele.nextElementSibling || ele.nextSibling;
 		},
+		// 当前行的下一行
+		nextRow: function(row) {
+			var rows = this.fixedTableRows(row.parentNode.parentNode);
+			var m = 0;
+			for (var i = 0; i < rows.length; i++) {
+				if (rows[i] === row) {
+					m = i;
+					break;
+				}
+			}
+			if (rows[m + 1])
+				return rows[m + 1];
+			else
+				return null;
+		},
 		// 添加事件
 		attachEvent: function(cell) {
 			AttachEvent(cell, "mousedown", onCellMouseDown, false);
@@ -36,8 +55,42 @@ var MergeTable = window.MergeTable = (function() {
 				x: parseInt(arr[1])
 			};
 		},
+		index2Region: function(index) {
+			var arr = index.split(defaults.separator);
+			return arr[2] + defaults.separator + arr[3];
+		},
 		firstChild: function(ele) {
 			return ele.firstElementChild || ele.firstChild
+		},
+		fixedRowIndex: function(row) {
+			var rows = this.fixedTableRows(row.parentNode.parentNode)
+			for (var i = 0; i < rows.length; i++) {
+				if (rows[i] === row)
+					return i;
+			}
+		},
+		fixedTableRows: function(table) {
+			var cs = [];
+			try {
+				cs = Array.prototype.slice.call(table.children);
+			} catch (e) {
+				for (var i = 0; i < table.children.length; i++)
+					cs.push(table.children[i]);
+			}
+			for (var i = 0; i < cs.length; i++) {
+				if (cs[i].tagName.toLowerCase() === "tfoot") {
+					var p = cs.slice(0, i);
+					var t = cs.slice(i);
+					cs = p.concat(t.reverse());
+					break;
+				}
+			}
+			var rows = [];
+			for (var i = 0; i < cs.length; i++) {
+				for (var j = 0; j < cs[i].children.length; j++)
+					rows.push(cs[i].children[j]);
+			}
+			return rows;
 		}
 	};
 
@@ -239,11 +292,9 @@ var MergeTable = window.MergeTable = (function() {
 	function clearMerge() {
 		// 当前是否只选择了一个单元格
 		if (checkSelectionOne()) {
-			var arr = persist.range.start.split(defaults.separator);
-			var y = parseInt(arr[0]);
-			var x = parseInt(arr[1]);
+			var obj = utils.index2Obj(persist.range.start);
 			// 完全拆分单元格操作
-			clearMergeHandler(y, x);
+			clearMergeHandler(obj.y, obj.x);
 		} else {
 			// 提示错误信息
 			alert(defaults.oneSelectedMsg);
@@ -262,7 +313,7 @@ var MergeTable = window.MergeTable = (function() {
 			if (i === 0)
 				nextRow = cell.parentNode;
 			else
-				nextRow = utils.nextSibling(nextRow);
+				nextRow = utils.nextRow(nextRow);
 			// 跨列遍历
 			for (var j = 0; j < cell.colSpan; j++) {
 				if (j === 0 && i === 0)
@@ -337,18 +388,16 @@ var MergeTable = window.MergeTable = (function() {
 				else
 					beforeCell.parentNode.appendChild(insertCell);
 			} else {
-				utils.nextSibling(cell.parentNode).insertBefore(insertCell, utils.firstChild(utils.nextSibling
-
-					(cell.parentNode)));
+				utils.nextRow(cell.parentNode).insertBefore(insertCell, utils.firstChild(utils.nextRow(cell.parentNode)));
 			}
 		} else if (i === -1) {
 			var nextTr;
 			var rowSpan1_ = rowSpan1;
 			while (rowSpan1_ >= 1) {
 				if (!nextTr)
-					nextTr = utils.nextSibling(cell.parentNode);
+					nextTr = utils.nextRow(cell.parentNode);
 				else
-					nextTr = utils.nextSibling(nextTr);
+					nextTr = utils.nextRow(nextTr);
 				rowSpan1_--;
 			}
 			nextTr.insertBefore(insertCell, utils.firstChild(nextTr));
@@ -359,10 +408,8 @@ var MergeTable = window.MergeTable = (function() {
 
 	function splitV() {
 		if (checkSplitV()) {
-			var arr = persist.range.start.split(defaults.separator);
-			var y = parseInt(arr[0]);
-			var x = parseInt(arr[1]);
-			splitVHandler(y, x);
+			var obj = utils.index2Obj(persist.range.start);
+			splitVHandler(obj.y, obj.x);
 		} else {
 			alert(defaults.splitVMsg);
 			return;
@@ -396,10 +443,8 @@ var MergeTable = window.MergeTable = (function() {
 
 	function splitH() {
 		if (checkSplitH()) {
-			var arr = persist.range.start.split(defaults.separator);
-			var y = parseInt(arr[0]);
-			var x = parseInt(arr[1]);
-			splitHHandler(y, x);
+			var obj = utils.index2Obj(persist.range.start);
+			splitHHandler(obj.y, obj.x);
 		} else {
 			alert(defaults.splitHMsg);
 			return;
@@ -476,16 +521,14 @@ var MergeTable = window.MergeTable = (function() {
 			}
 			persist.storage.splice(y, 0, insertStorage[0]);
 		}
-		persist.range.start = y + 1 + defaults.separator + x;
+		persist.range.start = y + 1 + defaults.separator + x + defaults.separator + getIndexByElement(cell.parentNode.parentNode);
 		persist.selection = [persist.range.start];
 	};
 
 	function addRowTop() {
 		if (checkSelectionOne()) {
-			var arr = persist.range.start.split(defaults.separator);
-			var y = parseInt(arr[0]);
-			var x = parseInt(arr[1]);
-			addRowTopHandler(y, x);
+			var obj = utils.index2Obj(persist.range.start);
+			addRowTopHandler(obj.y, obj.x);
 		} else {
 			alert(defaults.oneSelectedMsg);
 			return;
@@ -500,19 +543,22 @@ var MergeTable = window.MergeTable = (function() {
 		var insertStorage = [];
 		insertStorage[0] = [];
 		var insertRow = document.createElement(cell.parentNode.tagName.toLowerCase());
-		if (!utils.nextSibling(cell.parentNode))
+		if (!utils.nextRow(cell.parentNode))
 			cell.parentNode.parentNode.appendChild(insertRow);
 		else {
 			var index_ = y + cell.rowSpan;
 			var nextSiblingTr;
 			while (index_ !== y) {
 				if (!nextSiblingTr)
-					nextSiblingTr = utils.nextSibling(cell.parentNode);
+					nextSiblingTr = utils.nextRow(cell.parentNode);
 				else
-					nextSiblingTr = utils.nextSibling(nextSiblingTr);
+					nextSiblingTr = utils.nextRow(nextSiblingTr);
 				index_--;
 			}
-			cell.parentNode.parentNode.insertBefore(insertRow, nextSiblingTr);
+			if(nextSiblingTr.parentNode !== cell.parentNode.parentNode)
+				cell.parentNode.parentNode.appendChild(insertRow);
+			else
+				cell.parentNode.parentNode.insertBefore(insertRow, nextSiblingTr);
 		}
 		if (y === rowNum - 1) {
 			for (var i = 0; i < len; i++) {
@@ -586,10 +632,8 @@ var MergeTable = window.MergeTable = (function() {
 
 	function addRowBottom() {
 		if (checkSelectionOne()) {
-			var arr = persist.range.start.split(defaults.separator);
-			var y = parseInt(arr[0]);
-			var x = parseInt(arr[1]);
-			addRowBottomHandler(y, x);
+			var obj = utils.index2Obj(persist.range.start);
+			addRowBottomHandler(obj.y, obj.x);
 		} else {
 			alert(defaults.oneSelectedMsg);
 			return;
@@ -605,9 +649,9 @@ var MergeTable = window.MergeTable = (function() {
 					var nextRow = null;
 					for (var i = 1; i < mergeCell.rowSpan; i++) {
 						if (!nextRow)
-							nextRow = utils.nextSibling(mergeCell.parentNode);
+							nextRow = utils.nextRow(mergeCell.parentNode);
 						else
-							nextRow = utils.nextSibling(nextRow);
+							nextRow = utils.nextRow(nextRow);
 						var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
 						if (m === 0) {
 							nextRow.insertBefore(insertCell, utils.firstChild(nextRow));
@@ -631,15 +675,12 @@ var MergeTable = window.MergeTable = (function() {
 					var nextRow = null;
 					for (var i = 1; i < mergeCell.rowSpan; i++) {
 						if (!nextRow)
-							nextRow = utils.nextSibling(mergeCell.parentNode);
+							nextRow = utils.nextRow(mergeCell.parentNode);
 						else
-							nextRow = utils.nextSibling(nextRow);
+							nextRow = utils.nextRow(nextRow);
 						for (var j = 0; j < mergeCell.colSpan - 1; j++) {
 							var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
-							nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[y + i][m
-
-								+ j
-							]));
+							nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[y + i][m + j]));
 							persist.storage[y + i][m + j + 1] = insertCell;
 							utils.attachEvent(insertCell);
 						}
@@ -700,7 +741,7 @@ var MergeTable = window.MergeTable = (function() {
 			// 删除
 			row.parentNode.removeChild(row);
 		} else
-			// 删除单元格
+		// 删除单元格
 			cell.parentNode.parentNode.removeChild(cell.parentNode);
 	};
 
@@ -744,9 +785,9 @@ var MergeTable = window.MergeTable = (function() {
 						var nextRow = null;
 						for (var n = 1; n < mergeCell.rowSpan; n++) {
 							if (!nextRow)
-								nextRow = utils.nextSibling(mergeCell.parentNode);
+								nextRow = utils.nextRow(mergeCell.parentNode);
 							else
-								nextRow = utils.nextSibling(nextRow);
+								nextRow = utils.nextRow(nextRow);
 							for (var j = 0; j < mergeCell.colSpan - 1; j++) {
 								var x_ = x;
 								if (x_ >= 0) {
@@ -761,24 +802,15 @@ var MergeTable = window.MergeTable = (function() {
 								(mergeCell.tagName.toLowerCase());
 								if (persist.storage[i + n][x_ - 1]) {
 									if (utils.nextSibling(persist.storage[i + n][x_ - 1])) {
-										nextRow.insertBefore(insertCell, utils.nextSibling
-
-											(persist.storage[i + n][x_ - 1]));
-										persist.storage[i + n][x + mergeCell.colSpan - 1 -
-
-											j
-										] = insertCell;
+										nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + n][x_ - 1]));
+										persist.storage[i + n][x + mergeCell.colSpan - 1 - j] = insertCell;
 									} else {
 										nextRow.appendChild(insertCell);
-										persist.storage[i + n][x + mergeCell.colSpan - 1] =
-
-										insertCell;
+										persist.storage[i + n][x + mergeCell.colSpan - 1] = insertCell;
 									}
 								} else {
 									if (utils.firstChild(nextRow))
-										nextRow.insertBefore(insertCell, utils.firstChild
-
-											(nextRow));
+										nextRow.insertBefore(insertCell, utils.firstChild(nextRow));
 									else
 										nextRow.appendChild(insertCell);
 									persist.storage[i + n][x + mergeCell.colSpan - j - 1] =
@@ -854,7 +886,7 @@ var MergeTable = window.MergeTable = (function() {
 				if (i === 0)
 					nextRow = persist.storage[i][0].parentNode;
 				else
-					nextRow = utils.nextSibling(nextRow);
+					nextRow = utils.nextRow(nextRow);
 				var insertCell = document.createElement(cell.tagName.toLowerCase());
 				if (utils.firstChild(nextRow))
 					nextRow.insertBefore(insertCell, utils.firstChild(nextRow));
@@ -863,6 +895,8 @@ var MergeTable = window.MergeTable = (function() {
 				persist.storage[i].splice(0, 0, insertCell);
 				utils.attachEvent(insertCell);
 			}
+			persist.range.start = y + defaults.separator + (x + 1) + defaults.separator + getIndexByElement(cell.parentNode.parentNode);
+			persist.selection = [persist.range.start];
 		} else {
 			var p_x = x - 1;
 			if (p_x >= 0) {
@@ -904,9 +938,7 @@ var MergeTable = window.MergeTable = (function() {
 							var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
 							utils.attachEvent(insertCell);
 							if (utils.nextSibling(mergeCell))
-								mergeCell.parentNode.insertBefore(insertCell, utils.nextSibling
-
-									(mergeCell));
+								mergeCell.parentNode.insertBefore(insertCell, utils.nextSibling(mergeCell));
 							else
 								mergeCell.parentNode.appendChild(insertCell);
 							persist.storage[i].splice(x_, 0, insertCell);
@@ -918,9 +950,9 @@ var MergeTable = window.MergeTable = (function() {
 									(mergeCell.tagName.toLowerCase());
 									utils.attachEvent(insertCell);
 									if (!nextRow)
-										nextRow = utils.nextSibling(mergeCell.parentNode);
+										nextRow = utils.nextRow(mergeCell.parentNode);
 									else
-										nextRow = utils.nextSibling(nextRow);
+										nextRow = utils.nextRow(nextRow);
 									var x_1 = x_ - 1;
 									if (x_1 >= 0) {
 										while (!persist.storage[i + k][x_1]) {
@@ -931,16 +963,12 @@ var MergeTable = window.MergeTable = (function() {
 									}
 									if (persist.storage[i + k][x_1]) {
 										if (utils.nextSibling(persist.storage[i + k][x_1]))
-											nextRow.insertBefore(insertCell,
-
-												utils.nextSibling(persist.storage[i + k][x_1]));
+											nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + k][x_1]));
 										else
 											nextRow.appendChild(insertCell);
 									} else {
 										if (utils.firstChild(nextRow))
-											nextRow.insertBefore(insertCell,
-
-												utils.firstChild(nextRow));
+											nextRow.insertBefore(insertCell, utils.firstChild(nextRow));
 										else
 											nextRow.appendChild(insertCell);
 									}
@@ -976,7 +1004,7 @@ var MergeTable = window.MergeTable = (function() {
 										nextRow = persist.storage[i][xx_].parentNode;
 									else {
 										if (nextRow)
-											nextRow = utils.nextSibling(nextRow);
+											nextRow = utils.nextRow(nextRow);
 									}
 									var insertCell = document.createElement(persist.storage[i]
 
@@ -984,9 +1012,7 @@ var MergeTable = window.MergeTable = (function() {
 									utils.attachEvent(insertCell);
 									if (o === 0) {
 										if (utils.nextSibling(persist.storage[i + o][xx_]))
-											nextRow.insertBefore(insertCell,
-
-												utils.nextSibling(persist.storage[i + o][xx_]));
+											nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + o][xx_]));
 										else
 											nextRow.appendChild(insertCell);
 									} else {
@@ -999,19 +1025,13 @@ var MergeTable = window.MergeTable = (function() {
 											}
 										}
 										if (persist.storage[i + o][preX]) {
-											if (utils.nextSibling(persist.storage[i +
-
-												o][preX]))
-												nextRow.insertBefore(insertCell,
-
-													utils.nextSibling(persist.storage[i + o][preX]));
+											if (utils.nextSibling(persist.storage[i + o][preX]))
+												nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + o][preX]));
 											else
 												nextRow.appendChild(insertCell);
 										} else {
 											if (utils.firstChild(nextRow))
-												nextRow.insertBefore(insertCell,
-
-													utils.firstChild(nextRow));
+												nextRow.insertBefore(insertCell, utils.firstChild(nextRow));
 											else
 												nextRow.appendChild(insertCell);
 										}
@@ -1035,7 +1055,7 @@ var MergeTable = window.MergeTable = (function() {
 					}
 				}
 			}
-			persist.range.start = y + defaults.separator + (parseInt(arr[1]) + 1);
+			persist.range.start = y + defaults.separator + (parseInt(arr[1]) + 1) + defaults.separator + getIndexByElement(cell.parentNode.parentNode);
 			persist.selection = [persist.range.start];
 		}
 
@@ -1043,10 +1063,8 @@ var MergeTable = window.MergeTable = (function() {
 
 	function addColLeft() {
 		if (checkSelectionOne()) {
-			var arr = persist.range.start.split(defaults.separator);
-			var y = parseInt(arr[0]);
-			var x = parseInt(arr[1]);
-			addColLeftHandler(y, x, arr);
+			var obj = utils.index2Obj(persist.range.start);
+			addColLeftHandler(obj.y, obj.x, [obj.y, obj.x]);
 		} else {
 			alert(defaults.oneSelectedMsg);
 			return;
@@ -1091,9 +1109,9 @@ var MergeTable = window.MergeTable = (function() {
 							var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
 							utils.attachEvent(insertCell);
 							if (!nextRow)
-								nextRow = utils.nextSibling(mergeCell.parentNode);
+								nextRow = utils.nextRow(mergeCell.parentNode);
 							else
-								nextRow = utils.nextSibling(nextRow);
+								nextRow = utils.nextRow(nextRow);
 							var x_1 = x_ - 1;
 							if (x_1 >= 0) {
 								while (!persist.storage[i + k][x_1]) {
@@ -1104,9 +1122,7 @@ var MergeTable = window.MergeTable = (function() {
 							}
 							if (persist.storage[i + k][x_1]) {
 								if (utils.nextSibling(persist.storage[i + k][x_1]))
-									nextRow.insertBefore(insertCell, utils.nextSibling
-
-										(persist.storage[i + k][x_1]));
+									nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + k][x_1]));
 								else
 									nextRow.appendChild(insertCell);
 							} else {
@@ -1147,7 +1163,7 @@ var MergeTable = window.MergeTable = (function() {
 								nextRow = persist.storage[i][xx_].parentNode;
 							else {
 								if (nextRow)
-									nextRow = utils.nextSibling(nextRow);
+									nextRow = utils.nextRow(nextRow);
 							}
 							var insertCell = document.createElement(persist.storage[i]
 
@@ -1155,9 +1171,7 @@ var MergeTable = window.MergeTable = (function() {
 							utils.attachEvent(insertCell);
 							if (o === 0) {
 								if (utils.nextSibling(persist.storage[i + o][xx_]))
-									nextRow.insertBefore(insertCell, utils.nextSibling
-
-										(persist.storage[i + o][xx_]));
+									nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + o][xx_]));
 								else
 									nextRow.appendChild(insertCell);
 							} else {
@@ -1171,16 +1185,12 @@ var MergeTable = window.MergeTable = (function() {
 								}
 								if (persist.storage[i + o][preX]) {
 									if (utils.nextSibling(persist.storage[i + o][preX]))
-										nextRow.insertBefore(insertCell, utils.nextSibling
-
-											(persist.storage[i + o][preX]));
+										nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + o][preX]));
 									else
 										nextRow.appendChild(insertCell);
 								} else {
 									if (utils.firstChild(nextRow))
-										nextRow.insertBefore(insertCell, utils.firstChild
-
-											(nextRow));
+										nextRow.insertBefore(insertCell, utils.firstChild(nextRow));
 									else
 										nextRow.appendChild(insertCell);
 								}
@@ -1207,10 +1217,8 @@ var MergeTable = window.MergeTable = (function() {
 
 	function addColRight() {
 		if (checkSelectionOne()) {
-			var arr = persist.range.start.split(defaults.separator);
-			var x = parseInt(arr[1]);
-			var y = parseInt(arr[0]);
-			addColRightHandler(y, x, arr);
+			var obj = utils.index2Obj(persist.range.start);
+			addColRightHandler(obj.y, obj.x, [obj.y, obj.x]);
 		} else {
 			alert(defaults.oneSelectedMsg);
 			return;
@@ -1218,10 +1226,8 @@ var MergeTable = window.MergeTable = (function() {
 	};
 
 	function checkSplitH() {
-		var arr = persist.range.start.split(defaults.separator);
-		var y = arr[0];
-		var x = arr[1];
-		var cell = persist.storage[y][x];
+		var obj = utils.index2Obj(persist.range.start);
+		var cell = persist.storage[obj.y][obj.x];
 		var colSpan_ = cell.colSpan;
 		if (checkSelectionOne() && colSpan_ > 1)
 			return true;
@@ -1230,10 +1236,8 @@ var MergeTable = window.MergeTable = (function() {
 	};
 
 	function checkSplitV() {
-		var arr = persist.range.start.split(defaults.separator);
-		var y = arr[0];
-		var x = arr[1];
-		var cell = persist.storage[y][x];
+		var obj = utils.index2Obj(persist.range.start);
+		var cell = persist.storage[obj.y][obj.x];
 		var rowSpan_ = cell.rowSpan;
 		if (checkSelectionOne() && rowSpan_ > 1)
 			return true;
@@ -1241,6 +1245,7 @@ var MergeTable = window.MergeTable = (function() {
 			return false;
 	};
 
+	// 清除数据保存
 	function clear() {
 		persist.storage = [];
 		persist.place = [];
@@ -1542,10 +1547,49 @@ var MergeTable = window.MergeTable = (function() {
 		}
 	};
 
+	// 表格子元素前缀
+	var tableChildPrefix = {
+		thead: "thead",
+		tbody: "tbody",
+		tfoot: "tfoot"
+	};
+
+	var tableChildren = {};
+
+	function getIndexByElement(ele) {
+		for (var i in tableChildren) {
+			if (tableChildren[i] === ele) {
+				return i;
+			}
+		}
+	};
+
+	// 加载表格
 	function load() {
 		var tableContainer = document.getElementById(id);
 		var table = utils.firstChild(tableContainer);
-		var rows = table.rows;
+		var theadCount = 0;
+		var tbodyCount = 0;
+		var tfootCount = 0;
+		var thead_ = "thead";
+		var tbody_ = "tbody";
+		var tfoot_ = "tfoot";
+		for (var i = 0; i < table.children.length; i++) {
+			var r = table.children[i];
+			var regionIndex = "";
+			if (r.tagName.toLowerCase() === "thead") {
+				regionIndex = thead_ + "_" + theadCount;
+				theadCount++;
+			} else if (r.tagName.toLowerCase() === "tbody") {
+				regionIndex = tbody_ + "_" + tbodyCount;
+				tbodyCount++;
+			} else if (r.tagName.toLowerCase() === "tfoot") {
+				regionIndex = tfoot_ + "_" + tfootCount;
+				tfootCount++;
+			}
+			tableChildren[regionIndex] = r;
+		}
+		var rows = utils.fixedTableRows(table);
 		for (var i = 0; i < rows.length; i++) {
 			var index = 0;
 			for (var j = 0; j < rows[i].cells.length; j++) {
@@ -1553,7 +1597,6 @@ var MergeTable = window.MergeTable = (function() {
 				var cell = rows[i].cells[j];
 
 				utils.attachEvent(cell);
-
 				if (!persist.storage[i])
 					persist.storage[i] = [];
 				if (persist.storage[i][index] === null) {
@@ -1608,26 +1651,29 @@ var MergeTable = window.MergeTable = (function() {
 		load();
 	};
 
-
 	function onCellMouseOver(e) {
 		if (checkBrushFormatOpened() && checkBrushSelected() === false)
 			return;
 		e = e || window.event;
 		var ele = e.srcElement || e.currentTarget;
+		var regionIdnex = getIndexByElement(ele.parentNode.parentNode);
 		var tagNameV = ele.tagName.toLowerCase();
 		if (tagNameV === "td" || tagNameV === "th") {
 			if (persist.mouse.status === 0) {
-				var rowIndex = ele.parentNode.rowIndex;
+				var rowIndex = utils.fixedRowIndex(ele.parentNode);
 				var index;
 				for (var i = 0; i < persist.storage[rowIndex].length; i++) {
 					if (ele == persist.storage[rowIndex][i])
 						index = rowIndex + defaults.separator + i;
 				}
-				persist.range.end = index;
-				clearSelection();
-				select();
-				renderSelection();
-				clearEditable();
+				index += defaults.separator + regionIdnex;
+				if (regionIdnex === utils.index2Region(persist.range.start) || checkBrushSelected() && checkBrushFormatOpened()) {
+					persist.range.end = index;
+					clearSelection();
+					select();
+					renderSelection();
+					clearEditable();
+				}
 			}
 		}
 	};
@@ -1669,11 +1715,12 @@ var MergeTable = window.MergeTable = (function() {
 		e = e || window.event;
 		// 获取单元格
 		var ele = e.srcElement || e.currentTarget;
+		var regionIdnex = getIndexByElement(ele.parentNode.parentNode);
 		// td标签
 		var tagName = ele.tagName.toLowerCase();
 		if (tagName === "td" || tagName === "th") {
 			// 单元格所在行号
-			var rowIndex = ele.parentNode.rowIndex;
+			var rowIndex = utils.fixedRowIndex(ele.parentNode);
 			// 单元格对应下标
 			var index;
 			// 遍历单元格
@@ -1685,6 +1732,7 @@ var MergeTable = window.MergeTable = (function() {
 					break;
 				}
 			}
+			index += defaults.separator + regionIdnex;
 			// 选区起始下标
 			persist.range.start = index;
 			// 选区结束下标
@@ -1852,7 +1900,7 @@ var MergeTable = window.MergeTable = (function() {
 	function getRow(y) {
 		var tableContainer = document.getElementById(id);
 		var table = utils.firstChild(tableContainer);
-		return table.rows[y];
+		return utils.fixedTableRows(table)[y];
 	};
 
 	// 移除空行
@@ -1865,6 +1913,7 @@ var MergeTable = window.MergeTable = (function() {
 			}
 		}
 	};
+
 
 	// 公开方法
 	// TODO 为每一个方法添加回调函数

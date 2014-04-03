@@ -1,4 +1,8 @@
 /**
+	此版本加入：
+	1.空行移除
+**/
+/**
 	TODO 
 	1.代码优化
 	2.有bug，未复现
@@ -16,11 +20,13 @@ var MergeTable = window.MergeTable = (function() {
 		nextSibling: function(ele) {
 			return ele.nextElementSibling || ele.nextSibling;
 		},
+		// 添加事件
 		attachEvent: function(cell) {
 			AttachEvent(cell, "mousedown", onCellMouseDown, false);
 			AttachEvent(cell, "mouseup", onCellMouseUp, false);
 			AttachEvent(cell, "mouseover", onCellMouseOver, false);
 		},
+		// 单元格下标转对象
 		index2Obj: function(index) {
 			var arr = index.split(defaults.separator);
 			return {
@@ -59,39 +65,72 @@ var MergeTable = window.MergeTable = (function() {
 		// 没有选择任何单元格
 		selectionNullMsg: "请选择单元格!",
 		// 采用格式刷时单元格的样式(选区正确)
-		brushright: '2px dashed green'
+		brushright: '2px dashed green',
+		// 空行是否移除
+		nullRowRomoved: true,
+		// 行不存在提示
+		noRowExist: "对不起，行不存在!"
 	};
 
+	// 操作区定义
+	// TODO 未在此定义选择区
+	function Region() {
+		this.storage = [];
+		this.place = [];
+	};
+
+	// 数据存储
 	var persist = {
+		// 表格子元素区域
+		region: {},
+		// 当前操作区索引
+		currentRegionIndex: null,
+		// 单元格二维数组
 		storage: [],
+		// 表格初始化中colSpan 或 rowSpan大于1的单元格的数组占位
 		place: [],
+		// 当前被选择的单元格下标数组
 		selection: [],
+		// 当前处于编辑状态的单元格下标
 		edition: {},
+		// 被选择的单元格的范围
 		range: {
+			// 开始单元格，鼠标按下时的单元格下标
 			start: null,
+			// 结束单元格，鼠标抬起时的单元格下标
 			end: null
 		},
+		// 鼠标
 		mouse: {
+			// 鼠标状态 -1表示鼠标抬起 ， 0 表示鼠标按下
 			status: -1
 		},
+		// 被选择的单元个的样式缓存
+		// TODO 。。。
 		css: {},
+		// 格式刷
 		brush: {
+			// 格式刷不可用-1 ， 使用中0
 			status: -1,
+			// 格式单元格未选择-1 ， 已经选择0
 			selected: -1,
+			// 格式单元格样式
 			selectedCss: {}
 		}
 	};
 
+	// 获取同行前置不为空的单元格
 	function getPreviousSiblingStorageElementNotNull(y, x) {
 		var x_ = x - 1;
 		if (x_ >= 0) {
-			while (!persist.storage[y][x_]) {
+			while (!persist.region[persist.currentRegionIdnex].storage[y][x_]) {
 				x_--;
 				if (x_ < 0)
 					break;
 			}
 		}
-		return persist.storage[y][x_];
+		// 返回的结果可能为null ， 所以在调用后还是需要进行判断
+		return persist.region[persist.currentRegionIdnex].storage[y][x_];
 	};
 
 	// 转换二维数组
@@ -107,7 +146,9 @@ var MergeTable = window.MergeTable = (function() {
 			// 插入单元格下标值
 			selection2Array[y].push(persist.selection[i]);
 		}
+		// 单元格数组
 		var selection2ArrayStack = [];
+		// 初始索引为0
 		var index = 0;
 		for (var i in selection2Array) {
 			selection2ArrayStack[index] = selection2Array[i];
@@ -121,58 +162,83 @@ var MergeTable = window.MergeTable = (function() {
 		// 单元格是否可以合并
 		if (checkMerge()) {
 			var selection2ArrayStack = selectionTrans2ArrayStack();
+			// 总共跨列数
 			var totalColSpan = 0;
+			// 总共跨行数
 			var totalRowSpan = 0;
+			// 文本
 			var text = "";
+			// 遍历单元格
 			for (var i = 0; i < selection2ArrayStack[0].length; i++) {
+				// 拆分下标获取单元格
 				var arr = selection2ArrayStack[0][i].split(defaults.separator);
 				var y = arr[0];
 				var x = arr[1];
-				if (persist.storage[y][x])
-					totalColSpan += persist.storage[y][x].colSpan;
+				// 如果单元格存在
+				if (persist.region[persist.currentRegionIdnex].storage[y][x])
+				// 跨列增加
+					totalColSpan += persist.region[persist.currentRegionIdnex].storage[y][x].colSpan;
 			}
+			// 遍历单元格
 			for (var i = 0; i < selection2ArrayStack.length; i++) {
 				for (var j = 0; j < selection2ArrayStack[i].length; j++) {
 					var arr = selection2ArrayStack[i][j].split(defaults.separator);
 					var y = arr[0];
 					var x = arr[1];
-					if (persist.storage[y][x]) {
+					if (persist.region[persist.currentRegionIdnex].storage[y][x]) {
+						// 如果需要保存文本
 						if (defaults.retainMergeText)
-							text += persist.storage[y][x].innerHTML.Trim();
+						// 文本连接
+							text += persist.region[persist.currentRegionIdnex].storage[y][x].innerHTML.Trim();
+						// 如果是第一列
 						if (j === 0) {
-							totalRowSpan += persist.storage[y][x].rowSpan;
+							// 跨行数增加
+							totalRowSpan += persist.region[persist.currentRegionIdnex].storage[y][x].rowSpan;
+							// 如果单元格跨行数大于1
 							if (selection2ArrayStack[i][0].rowSpan > 1)
-							;
-							i = i + persist.storage[y][x].rowSpan - 1;
+							// 跳过中间行
+								i = i + persist.region[persist.currentRegionIdnex].storage[y][x].rowSpan - 1;
 						}
 					}
 				}
 			}
+			// 选区置空
 			persist.selection = [];
+			// 遍历
 			for (var i = 0; i < selection2ArrayStack.length; i++) {
 				for (var j = 0; j < selection2ArrayStack[i].length; j++) {
 					var arr = selection2ArrayStack[i][j].split(defaults.separator);
 					var y = arr[0];
 					var x = arr[1];
-					if (persist.storage[y][x]) {
+					// 如果单元格存在
+					if (persist.region[persist.currentRegionIdnex].storage[y][x]) {
+						// 选中区左上角单元格
 						if (i === 0 && j === 0) {
+							// 添加到选区数组
 							persist.selection.push(selection2ArrayStack[i][j]);
-							persist.storage[y][x].rowSpan = totalRowSpan;
-							persist.storage[y][x].colSpan = totalColSpan;
+							persist.region[persist.currentRegionIdnex].storage[y][x].rowSpan = totalRowSpan;
+							persist.region[persist.currentRegionIdnex].storage[y][x].colSpan = totalColSpan;
+							// 如果保留文本
 							if (defaults.retainMergeText)
-								persist.storage[y][x].innerHTML = text.Trim();
-							persist.storage[y][x].style.backgroundColor = defaults.normal;
+								persist.region[persist.currentRegionIdnex].storage[y][x].innerHTML = text.Trim();
+							// 还原背景色
+							persist.region[persist.currentRegionIdnex].storage[y][x].style.backgroundColor = defaults.normal;
 							// TODO style.width and style.height
+							// 设置选区开始
 							persist.range.start = selection2ArrayStack[i][j];
+							// 设置选区结束
 							persist.range.end = selection2ArrayStack[i][j];
 						} else {
-							persist.storage[y][x].parentNode.removeChild(persist.storage[y][x]);
-							persist.storage[y][x] = null;
+							// 移除单元格
+							persist.region[persist.currentRegionIdnex].storage[y][x].parentNode.removeChild(persist.region[persist.currentRegionIdnex].storage[y][x]);
+							// 设置对应下标的单元格为空
+							persist.region[persist.currentRegionIdnex].storage[y][x] = null;
 						}
 					}
 				}
 			}
 		} else {
+			// 提示错误信息
 			alert(defaults.mergeMsg);
 			return;
 		}
@@ -180,32 +246,44 @@ var MergeTable = window.MergeTable = (function() {
 
 	// 清除单元格的格式，完全拆分
 	function clearMerge() {
+		// 当前是否只选择了一个单元格
 		if (checkSelectionOne()) {
 			var arr = persist.range.start.split(defaults.separator);
 			var y = parseInt(arr[0]);
 			var x = parseInt(arr[1]);
+			// 完全拆分单元格操作
 			clearMergeHandler(y, x);
 		} else {
+			// 提示错误信息
 			alert(defaults.oneSelectedMsg);
 			return;
 		}
 	};
 
+	// 完全拆分单元格的操作
 	function clearMergeHandler(y, x) {
+		// 下一行
 		var nextRow = null;
-		var cell = persist.storage[y][x];
+		// 单元格
+		var cell = persist.region[persist.currentRegionIdnex].storage[y][x];
+		// 遍历跨行
 		for (var i = 0; i < cell.rowSpan; i++) {
 			if (i === 0)
 				nextRow = cell.parentNode;
 			else
 				nextRow = utils.nextSibling(nextRow);
+			// 跨列遍历
 			for (var j = 0; j < cell.colSpan; j++) {
 				if (j === 0 && i === 0)
 					continue;
 				else {
+					// 创建单元格并插入
 					var insertCell = document.createElement(cell.tagName.toLowerCase());
+					// 获取前置单元格
 					var previousElement = getPreviousSiblingStorageElementNotNull(y + i, x + j);
+					// 如果存在
 					if (previousElement) {
+						// 获取后置单元格
 						if (utils.nextSibling(previousElement))
 							nextRow.insertBefore(insertCell, utils.nextSibling(previousElement));
 						else
@@ -216,7 +294,9 @@ var MergeTable = window.MergeTable = (function() {
 						else
 							nextRow.appendChild(insertCell);
 					}
-					persist.storage[y + i][x + j] = insertCell;
+					// 缓存
+					persist.region[persist.currentRegionIdnex].storage[y + i][x + j] = insertCell;
+					// 添加事件
 					utils.attachEvent(insertCell);
 				}
 			}
@@ -225,6 +305,7 @@ var MergeTable = window.MergeTable = (function() {
 		cell.colSpan = 1;
 	};
 
+	// 检查单元格是否可以被完全拆分
 	function checkMerge() {
 		if (checkSelection() && persist.selection.length > 1)
 			return true;
@@ -232,8 +313,10 @@ var MergeTable = window.MergeTable = (function() {
 			return false;
 	};
 
+	// 横拆操作
 	function splitVHandler(y, x) {
-		var cell = persist.storage[y][x];
+		// 获取单元格
+		var cell = persist.region[persist.currentRegionIdnex].storage[y][x];
 		var colSpan_ = cell.colSpan;
 		var rowSpan_ = cell.rowSpan;
 
@@ -253,17 +336,19 @@ var MergeTable = window.MergeTable = (function() {
 		insertCell.rowSpan = rowSpan2;
 		var nextRowIndex = y + rowSpan1;
 		var i = x - 1;
-		while (persist.storage[nextRowIndex][i] === null)
+		while (persist.region[persist.currentRegionIdnex].storage[nextRowIndex][i] === null)
 			i--;
 		if (i >= 0) {
-			var beforeCell = persist.storage[nextRowIndex][i];
+			var beforeCell = persist.region[persist.currentRegionIdnex].storage[nextRowIndex][i];
 			if (beforeCell) {
 				if (utils.nextSibling(beforeCell))
 					beforeCell.parentNode.insertBefore(insertCell, utils.nextSibling(beforeCell));
 				else
 					beforeCell.parentNode.appendChild(insertCell);
 			} else {
-				utils.nextSibling(cell.parentNode).insertBefore(insertCell, utils.firstChild(utils.nextSibling(cell.parentNode)));
+				utils.nextSibling(cell.parentNode).insertBefore(insertCell, utils.firstChild(utils.nextSibling
+
+					(cell.parentNode)));
 			}
 		} else if (i === -1) {
 			var nextTr;
@@ -278,7 +363,7 @@ var MergeTable = window.MergeTable = (function() {
 			nextTr.insertBefore(insertCell, utils.firstChild(nextTr));
 		}
 		utils.attachEvent(insertCell);
-		persist.storage[nextRowIndex][x] = insertCell;
+		persist.region[persist.currentRegionIdnex].storage[nextRowIndex][x] = insertCell;
 	};
 
 	function splitV() {
@@ -294,7 +379,7 @@ var MergeTable = window.MergeTable = (function() {
 	};
 
 	function splitHHandler(y, x) {
-		var cell = persist.storage[y][x];
+		var cell = persist.region[persist.currentRegionIdnex].storage[y][x];
 		var colSpan_ = cell.colSpan;
 		var rowSpan_ = cell.rowSpan;
 
@@ -315,7 +400,7 @@ var MergeTable = window.MergeTable = (function() {
 		// appendChild?
 		cell.parentNode.insertBefore(insertCell, utils.nextSibling(cell));
 		utils.attachEvent(insertCell);
-		persist.storage[y][x + colSpan1] = insertCell;
+		persist.region[persist.currentRegionIdnex].storage[y][x + colSpan1] = insertCell;
 	};
 
 	function splitH() {
@@ -331,8 +416,8 @@ var MergeTable = window.MergeTable = (function() {
 	};
 
 	function addRowTopHandler(y, x) {
-		var cell = persist.storage[y][x];
-		var len = persist.storage[y].length;
+		var cell = persist.region[persist.currentRegionIdnex].storage[y][x];
+		var len = persist.region[persist.currentRegionIdnex].storage[y].length;
 		// TODO 添加多行
 		var insertStorage = [];
 		insertStorage[0] = [];
@@ -345,60 +430,60 @@ var MergeTable = window.MergeTable = (function() {
 				insertStorage[0][i] = insertCell;
 				utils.attachEvent(insertCell);
 			}
-			persist.storage = insertStorage.concat(persist.storage);
+			persist.region[persist.currentRegionIdnex].storage = insertStorage.concat(persist.region[persist.currentRegionIdnex].storage);
 		} else {
 			var preRowIndex = y - 1;
-			for (var i = 0; i < persist.storage[preRowIndex].length; i++) {
-				if (persist.storage[preRowIndex][i]) {
-					if (persist.storage[preRowIndex][i].rowSpan > 1) {
+			for (var i = 0; i < persist.region[persist.currentRegionIdnex].storage[preRowIndex].length; i++) {
+				if (persist.region[persist.currentRegionIdnex].storage[preRowIndex][i]) {
+					if (persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].rowSpan > 1) {
 						insertStorage[0][i] = null;
-						persist.storage[preRowIndex][i].rowSpan++;
-						if (persist.storage[preRowIndex][i].colSpan > 1) {
-							for (var k = 1; k < persist.storage[preRowIndex][i].colSpan; k++) {
+						persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].rowSpan++;
+						if (persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].colSpan > 1) {
+							for (var k = 1; k < persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].colSpan; k++) {
 								insertStorage[0][i + k] = null;
 							}
-							i += persist.storage[preRowIndex][i].colSpan - 1;
+							i += persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].colSpan - 1;
 						}
 					} else {
 						var insertCell = document.createElement(cell.tagName.toLowerCase());
 						insertRow.appendChild(insertCell);
 						insertStorage[0][i] = insertCell;
 						utils.attachEvent(insertCell);
-						if (persist.storage[preRowIndex][i].colSpan > 1) {
-							for (var k = 1; k < persist.storage[preRowIndex][i].colSpan; k++) {
+						if (persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].colSpan > 1) {
+							for (var k = 1; k < persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].colSpan; k++) {
 								var insertCell = document.createElement(cell.tagName.toLowerCase());
 								insertRow.appendChild(insertCell);
 								insertStorage[0][i + k] = insertCell;
 								utils.attachEvent(insertCell);
 							}
-							i += persist.storage[preRowIndex][i].colSpan - 1;
+							i += persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].colSpan - 1;
 						}
 					}
 				} else {
 					insertStorage[0][i] = null;
 					var preRowIndex_ = preRowIndex;
-					while (!persist.storage[preRowIndex_][i])
+					while (!persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i])
 						preRowIndex_--;
-					if (persist.storage[preRowIndex_][i].rowSpan + preRowIndex_ > y) {
-						persist.storage[preRowIndex_][i].rowSpan++;
-						if (persist.storage[preRowIndex_][i].colSpan > 1) {
-							for (var k = 1; k < persist.storage[preRowIndex_][i].colSpan; k++) {
+					if (persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].rowSpan + preRowIndex_ > y) {
+						persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].rowSpan++;
+						if (persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].colSpan > 1) {
+							for (var k = 1; k < persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].colSpan; k++) {
 								insertStorage[0][i + k] = null;
 							}
-							i += persist.storage[preRowIndex_][i].colSpan - 1;
+							i += persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].colSpan - 1;
 						}
 					} else {
-						for (var k = 0; k < persist.storage[preRowIndex_][i].colSpan; k++) {
+						for (var k = 0; k < persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].colSpan; k++) {
 							var insertCell = document.createElement(cell.tagName.toLowerCase());
 							insertRow.appendChild(insertCell);
 							insertStorage[0][i + k] = insertCell;
 							utils.attachEvent(insertCell);
 						}
-						i += persist.storage[preRowIndex_][i].colSpan - 1;
+						i += persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].colSpan - 1;
 					}
 				}
 			}
-			persist.storage.splice(y, 0, insertStorage[0]);
+			persist.region[persist.currentRegionIdnex].storage.splice(y, 0, insertStorage[0]);
 		}
 		persist.range.start = y + 1 + defaults.separator + x;
 		persist.selection = [persist.range.start];
@@ -417,9 +502,9 @@ var MergeTable = window.MergeTable = (function() {
 	};
 
 	function addRowBottomHandler(y, x) {
-		var cell = persist.storage[y][x];
-		var rowNum = persist.storage.length;
-		var len = persist.storage[y].length;
+		var cell = persist.region[persist.currentRegionIdnex].storage[y][x];
+		var rowNum = persist.region[persist.currentRegionIdnex].storage.length;
+		var len = persist.region[persist.currentRegionIdnex].storage[y].length;
 		// TODO 添加多行
 		var insertStorage = [];
 		insertStorage[0] = [];
@@ -445,66 +530,66 @@ var MergeTable = window.MergeTable = (function() {
 				insertStorage[0][i] = insertCell;
 				utils.attachEvent(insertCell);
 			}
-			persist.storage = persist.storage.concat(insertStorage);
+			persist.region[persist.currentRegionIdnex].storage = persist.region[persist.currentRegionIdnex].storage.concat(insertStorage);
 		} else {
 			var preRowIndex = y + cell.rowSpan - 1;
-			for (var i = 0; i < persist.storage[preRowIndex].length; i++) {
-				if (persist.storage[preRowIndex][i]) {
-					if (persist.storage[preRowIndex][i].rowSpan > 1) {
+			for (var i = 0; i < persist.region[persist.currentRegionIdnex].storage[preRowIndex].length; i++) {
+				if (persist.region[persist.currentRegionIdnex].storage[preRowIndex][i]) {
+					if (persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].rowSpan > 1) {
 						insertStorage[0][i] = null;
-						persist.storage[preRowIndex][i].rowSpan++;
-						if (persist.storage[preRowIndex][i].colSpan > 1) {
-							for (var k = 1; k < persist.storage[preRowIndex][i].colSpan; k++) {
+						persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].rowSpan++;
+						if (persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].colSpan > 1) {
+							for (var k = 1; k < persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].colSpan; k++) {
 								insertStorage[0][i + k] = null;
 							}
-							i += persist.storage[preRowIndex][i].colSpan - 1;
+							i += persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].colSpan - 1;
 						}
 					} else {
 						var insertCell = document.createElement(cell.tagName.toLowerCase());
 						insertRow.appendChild(insertCell);
 						insertStorage[0][i] = insertCell;
 						utils.attachEvent(insertCell);
-						if (persist.storage[preRowIndex][i].colSpan > 1) {
-							for (var k = 1; k < persist.storage[preRowIndex][i].colSpan; k++) {
+						if (persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].colSpan > 1) {
+							for (var k = 1; k < persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].colSpan; k++) {
 								var insertCell = document.createElement(cell.tagName.toLowerCase());
 								insertRow.appendChild(insertCell);
 								insertStorage[0][i + k] = insertCell;
 								utils.attachEvent(insertCell);
 							}
-							i += persist.storage[preRowIndex][i].colSpan - 1;
+							i += persist.region[persist.currentRegionIdnex].storage[preRowIndex][i].colSpan - 1;
 						}
 					}
 				} else {
 					insertStorage[0][i] = null;
 					var preRowIndex_ = preRowIndex;
-					while (!persist.storage[preRowIndex_][i])
+					while (!persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i])
 						preRowIndex_--;
-					if (persist.storage[preRowIndex_][i].rowSpan + preRowIndex_ - 1 === preRowIndex) {
+					if (persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].rowSpan + preRowIndex_ - 1 === preRowIndex) {
 						var insertCell = document.createElement(cell.tagName.toLowerCase());
 						insertRow.appendChild(insertCell);
 						insertStorage[0][i] = insertCell;
 						utils.attachEvent(insertCell);
-						if (persist.storage[preRowIndex_][i].colSpan > 1) {
-							for (var k = 1; k < persist.storage[preRowIndex_][i].colSpan; k++) {
+						if (persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].colSpan > 1) {
+							for (var k = 1; k < persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].colSpan; k++) {
 								var insertCell = document.createElement(cell.tagName.toLowerCase());
 								insertRow.appendChild(insertCell);
 								insertStorage[0][i + k] = insertCell;
 								utils.attachEvent(insertCell);
 							}
-							i += persist.storage[preRowIndex_][i].colSpan - 1;
+							i += persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].colSpan - 1;
 						}
 					} else {
-						persist.storage[preRowIndex_][i].rowSpan++;
-						if (persist.storage[preRowIndex_][i].colSpan > 1) {
-							for (var k = 1; k < persist.storage[preRowIndex_][i].colSpan; k++) {
+						persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].rowSpan++;
+						if (persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].colSpan > 1) {
+							for (var k = 1; k < persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].colSpan; k++) {
 								insertStorage[0][i + k] = null;
 							}
-							i += persist.storage[preRowIndex_][i].colSpan - 1;
+							i += persist.region[persist.currentRegionIdnex].storage[preRowIndex_][i].colSpan - 1;
 						}
 					}
 				}
 			}
-			persist.storage.splice(preRowIndex + 1, 0, insertStorage[0]);
+			persist.region[persist.currentRegionIdnex].storage.splice(preRowIndex + 1, 0, insertStorage[0]);
 		}
 	};
 
@@ -520,10 +605,10 @@ var MergeTable = window.MergeTable = (function() {
 		}
 	};
 
-	function deleteRowHandler(y, x) {
-		var cell = persist.storage[y][x];
-		for (var m = 0; m < persist.storage[y].length; m++) {
-			var mergeCell = persist.storage[y][m];
+	function deleteRowHandler(y, x, removeRow) {
+		var cell = persist.region[persist.currentRegionIdnex].storage[y][x];
+		for (var m = 0; m < persist.region[persist.currentRegionIdnex].storage[y].length; m++) {
+			var mergeCell = persist.region[persist.currentRegionIdnex].storage[y][m];
 			if (mergeCell) {
 				if (mergeCell.rowSpan > 1) {
 					var nextRow = null;
@@ -537,18 +622,18 @@ var MergeTable = window.MergeTable = (function() {
 							nextRow.insertBefore(insertCell, utils.firstChild(nextRow));
 						} else {
 							var l = 0;
-							var preCell = persist.storage[y + i][m - 1];
+							var preCell = persist.region[persist.currentRegionIdnex].storage[y + i][m - 1];
 							while (!preCell) {
 								l++;
 								if (m - 1 - l < 0) {
 									preCell = utils.firstChild(nextRow);
 								} else
-									preCell = persist.storage[y + i][m - 1 - l];
+									preCell = persist.region[persist.currentRegionIdnex].storage[y + i][m - 1 - l];
 							}
 							nextRow.insertBefore(insertCell, utils.nextSibling(preCell));
 						}
 						utils.attachEvent(insertCell);
-						persist.storage[y + i][m] = insertCell;
+						persist.region[persist.currentRegionIdnex].storage[y + i][m] = insertCell;
 					}
 				}
 				if (mergeCell.colSpan > 1) {
@@ -560,8 +645,11 @@ var MergeTable = window.MergeTable = (function() {
 							nextRow = utils.nextSibling(nextRow);
 						for (var j = 0; j < mergeCell.colSpan - 1; j++) {
 							var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
-							nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[y + i][m + j]));
-							persist.storage[y + i][m + j + 1] = insertCell;
+							nextRow.insertBefore(insertCell, utils.nextSibling(persist.region[persist.currentRegionIdnex].storage[y + i][m
+
+								+ j
+							]));
+							persist.region[persist.currentRegionIdnex].storage[y + i][m + j + 1] = insertCell;
 							utils.attachEvent(insertCell);
 						}
 					}
@@ -569,50 +657,60 @@ var MergeTable = window.MergeTable = (function() {
 			} else {
 				var preRowIndex = y - 1;
 				if (preRowIndex !== -1) {
-					while (!persist.storage[preRowIndex][m]) {
+					while (!persist.region[persist.currentRegionIdnex].storage[preRowIndex][m]) {
 						preRowIndex--;
 						if (preRowIndex === -1)
 							break;
 					}
 				}
 				if (preRowIndex !== -1) {
-					if (persist.storage[preRowIndex][m]) {
-						if (persist.storage[preRowIndex][m].rowSpan > 1) {
-							persist.storage[preRowIndex][m].rowSpan--;
-							if (persist.storage[preRowIndex][m].colSpan > 1) {
-								m += persist.storage[preRowIndex][m].colSpan - 1;
+					if (persist.region[persist.currentRegionIdnex].storage[preRowIndex][m]) {
+						if (persist.region[persist.currentRegionIdnex].storage[preRowIndex][m].rowSpan > 1) {
+							persist.region[persist.currentRegionIdnex].storage[preRowIndex][m].rowSpan--;
+							if (persist.region[persist.currentRegionIdnex].storage[preRowIndex][m].colSpan > 1) {
+								m += persist.region[persist.currentRegionIdnex].storage[preRowIndex][m].colSpan - 1;
 							}
 						} else {
 							if (m > 0) {
-								if (persist.storage[y][m - 1]) {
+								if (persist.region[persist.currentRegionIdnex].storage[y][m - 1]) {
 									// 需要考虑到赋值之后发生自增的情况
-									m += persist.storage[y][m - 1].colSpan - 1 - 1;
+									m += persist.region[persist.currentRegionIdnex].storage[y][m - 1].colSpan - 1 - 1;
 								} else {
 									var preRowIndex_ = y - 1;
 									if (preRowIndex_ !== -1) {
-										while (!persist.storage[preRowIndex_][m - 1]) {
+										while (!persist.region[persist.currentRegionIdnex].storage[preRowIndex_][m - 1]) {
 											preRowIndex_--;
 											if (preRowIndex_ === -1)
 												break;
 										}
 									}
-									if (persist.storage[preRowIndex_][m - 1]) {
-										persist.storage[preRowIndex_][m - 1].rowSpan--;
-										m += persist.storage[preRowIndex_][m - 1].colSpan - 2;
+									if (persist.region[persist.currentRegionIdnex].storage[preRowIndex_][m - 1]) {
+										persist.region[persist.currentRegionIdnex].storage[preRowIndex_][m - 1].rowSpan--;
+										m += persist.region[persist.currentRegionIdnex].storage[preRowIndex_][m - 1].colSpan -
+
+										2;
 									}
 								}
 							}
 						}
 					}
 				} else { // 需要考虑到赋值之后发生自增的情况
-					m += persist.storage[y][m - 1].colSpan - 1 - 1;
+					m += persist.region[persist.currentRegionIdnex].storage[y][m - 1].colSpan - 1 - 1;
 				}
 			}
 		}
-		persist.storage.splice(y, 1);
+		persist.region[persist.currentRegionIdnex].storage.splice(y, 1);
 		persist.start = null;
 		persist.selection = [];
-		cell.parentNode.parentNode.removeChild(cell.parentNode);
+		// 如果要删除行
+		if (removeRow === true) {
+			// 获取行
+			var row = getRow(y);
+			// 删除
+			row.parentNode.removeChild(row);
+		} else
+		// 删除单元格
+			cell.parentNode.parentNode.removeChild(cell.parentNode);
 	};
 
 	function deleteRow() {
@@ -632,8 +730,8 @@ var MergeTable = window.MergeTable = (function() {
 	};
 
 	function deleteColHandler(y, x) {
-		for (var i = 0; i < persist.storage.length; i++) {
-			var mergeCell = persist.storage[i][x];
+		for (var i = 0; i < persist.region[persist.currentRegionIdnex].storage.length; i++) {
+			var mergeCell = persist.region[persist.currentRegionIdnex].storage[i][x];
 			if (mergeCell) {
 				if (mergeCell.colSpan > 1) {
 					var currentCell = null;
@@ -646,7 +744,7 @@ var MergeTable = window.MergeTable = (function() {
 						else
 							mergeCell.parentNode.appendChild(insertCell);
 						currentCell = insertCell;
-						persist.storage[i][x + mergeCell.colSpan - m] = insertCell;
+						persist.region[persist.currentRegionIdnex].storage[i][x + mergeCell.colSpan - m] = insertCell;
 						utils.attachEvent(insertCell);
 					}
 				}
@@ -661,64 +759,77 @@ var MergeTable = window.MergeTable = (function() {
 							for (var j = 0; j < mergeCell.colSpan - 1; j++) {
 								var x_ = x;
 								if (x_ >= 0) {
-									while (!persist.storage[i + n][x_ - 1]) {
+									while (!persist.region[persist.currentRegionIdnex].storage[i + n][x_ - 1]) {
 										x_--;
 										if (x_ - 1 < 0)
 											break;
 									}
 								}
-								var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
-								if (persist.storage[i + n][x_ - 1]) {
-									if (utils.nextSibling(persist.storage[i + n][x_ - 1])) {
-										nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + n][x_ - 1]));
-										persist.storage[i + n][x + mergeCell.colSpan - 1 - j] = insertCell;
+								var insertCell = document.createElement
+
+								(mergeCell.tagName.toLowerCase());
+								if (persist.region[persist.currentRegionIdnex].storage[i + n][x_ - 1]) {
+									if (utils.nextSibling(persist.region[persist.currentRegionIdnex].storage[i + n][x_ - 1])) {
+										nextRow.insertBefore(insertCell, utils.nextSibling
+
+											(persist.region[persist.currentRegionIdnex].storage[i + n][x_ - 1]));
+										persist.region[persist.currentRegionIdnex].storage[i + n][x + mergeCell.colSpan - 1 -
+
+											j
+										] = insertCell;
 									} else {
 										nextRow.appendChild(insertCell);
-										persist.storage[i + n][x + mergeCell.colSpan - 1] = insertCell;
+										persist.region[persist.currentRegionIdnex].storage[i + n][x + mergeCell.colSpan - 1] =
+
+										insertCell;
 									}
 								} else {
 									if (utils.firstChild(nextRow))
-										nextRow.insertBefore(insertCell, utils.firstChild(nextRow));
+										nextRow.insertBefore(insertCell, utils.firstChild
+
+											(nextRow));
 									else
 										nextRow.appendChild(insertCell);
-									persist.storage[i + n][x + mergeCell.colSpan - j - 1] = insertCell;
+									persist.region[persist.currentRegionIdnex].storage[i + n][x + mergeCell.colSpan - j - 1] =
+
+									insertCell;
 								}
 								utils.attachEvent(insertCell);
 							}
 						}
 					}
 				}
-				persist.storage[i].splice(x, 1);
+				persist.region[persist.currentRegionIdnex].storage[i].splice(x, 1);
 				mergeCell.parentNode.removeChild(mergeCell);
 			} else {
 				var flag = false;
 				var x_ = x;
 				if (x_ >= 0) {
-					while (!persist.storage[i][x_]) {
+					while (!persist.region[persist.currentRegionIdnex].storage[i][x_]) {
 						x_--;
 						if (x_ < 0)
 							break;
 					}
 				}
 				if (x_ >= 0) {
-					var rowSpan_ = persist.storage[i][x_].rowSpan;
-					if (persist.storage[i][x_].colSpan + x_ > x) {
-						if (persist.storage[i][x_].colSpan > 1) {
-							persist.storage[i][x_].colSpan--;
+					var rowSpan_ = persist.region[persist.currentRegionIdnex].storage[i][x_].rowSpan;
+					if (persist.region[persist.currentRegionIdnex].storage[i][x_].colSpan + x_ > x) {
+						if (persist.region[persist.currentRegionIdnex].storage[i][x_].colSpan > 1) {
+							persist.region[persist.currentRegionIdnex].storage[i][x_].colSpan--;
 							if (rowSpan_ > 1) {
 								for (var b = 1; b < rowSpan_; b++) {
-									persist.storage[i + b].splice(x, 1);
+									persist.region[persist.currentRegionIdnex].storage[i + b].splice(x, 1);
 								}
 								i += rowSpan_ - 1;
 							} else {
 								flag = true;
 							}
-							persist.storage[i - rowSpan_ + 1].splice(x, 1);
+							persist.region[persist.currentRegionIdnex].storage[i - rowSpan_ + 1].splice(x, 1);
 						}
 					}
 				}
 				if (flag === false)
-					persist.storage[i].splice(x, 1);
+					persist.region[persist.currentRegionIdnex].storage[i].splice(x, 1);
 			}
 		}
 		persist.start = null;
@@ -745,12 +856,12 @@ var MergeTable = window.MergeTable = (function() {
 	};
 
 	function addColLeftHandler(y, x, arr) {
-		var cell = persist.storage[y][x];
+		var cell = persist.region[persist.currentRegionIdnex].storage[y][x];
 		if (x === 0) {
 			var nextRow = null;
-			for (var i = 0; i < persist.storage.length; i++) {
+			for (var i = 0; i < persist.region[persist.currentRegionIdnex].storage.length; i++) {
 				if (i === 0)
-					nextRow = persist.storage[i][0].parentNode;
+					nextRow = persist.region[persist.currentRegionIdnex].storage[i][0].parentNode;
 				else
 					nextRow = utils.nextSibling(nextRow);
 				var insertCell = document.createElement(cell.tagName.toLowerCase());
@@ -758,33 +869,35 @@ var MergeTable = window.MergeTable = (function() {
 					nextRow.insertBefore(insertCell, utils.firstChild(nextRow));
 				else
 					nextRow.appendChild(insertCell);
-				persist.storage[i].splice(0, 0, insertCell);
+				persist.region[persist.currentRegionIdnex].storage[i].splice(0, 0, insertCell);
 				utils.attachEvent(insertCell);
 			}
 		} else {
 			var p_x = x - 1;
 			if (p_x >= 0) {
-				while (!persist.storage[y][p_x]) {
+				while (!persist.region[persist.currentRegionIdnex].storage[y][p_x]) {
 					p_x--;
 					if (p_x < 0)
 						break;
 				}
 			}
-			if (persist.storage[y][p_x]) {
+			if (persist.region[persist.currentRegionIdnex].storage[y][p_x]) {
 				x = p_x;
-				cell = persist.storage[y][p_x];
+				cell = persist.region[persist.currentRegionIdnex].storage[y][p_x];
 				var x_ = null;
-				for (var i = 0; i < persist.storage.length; i++) {
+				for (var i = 0; i < persist.region[persist.currentRegionIdnex].storage.length; i++) {
 
 					var isColMerge = false;
-					var mergeCell = persist.storage[i][x];
+					var mergeCell = persist.region[persist.currentRegionIdnex].storage[i][x];
 					if (x_ === null)
 						x_ = x + cell.colSpan;
 					if (mergeCell) {
 						if (mergeCell.colSpan + x < x_) {
-							for (var j = 0; j < persist.storage[i].length; j++) {
-								if (persist.storage[i][j] && persist.storage[i][j].colSpan + j >= x_) {
-									mergeCell = persist.storage[i][j];
+							for (var j = 0; j < persist.region[persist.currentRegionIdnex].storage[i].length; j++) {
+								if (persist.region[persist.currentRegionIdnex].storage[i][j] && persist.region[persist.currentRegionIdnex].storage[i][j].colSpan + j >=
+
+									x_) {
+									mergeCell = persist.region[persist.currentRegionIdnex].storage[i][j];
 									x = j;
 									break;
 								}
@@ -800,14 +913,18 @@ var MergeTable = window.MergeTable = (function() {
 							var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
 							utils.attachEvent(insertCell);
 							if (utils.nextSibling(mergeCell))
-								mergeCell.parentNode.insertBefore(insertCell, utils.nextSibling(mergeCell));
+								mergeCell.parentNode.insertBefore(insertCell, utils.nextSibling
+
+									(mergeCell));
 							else
 								mergeCell.parentNode.appendChild(insertCell);
-							persist.storage[i].splice(x_, 0, insertCell);
+							persist.region[persist.currentRegionIdnex].storage[i].splice(x_, 0, insertCell);
 							if (mergeCell.rowSpan > 1) {
 								var nextRow = null;
 								for (var k = 1; k < mergeCell.rowSpan; k++) {
-									var insertCell = document.createElement(mergeCell.tagName.toLowerCase());
+									var insertCell = document.createElement
+
+									(mergeCell.tagName.toLowerCase());
 									utils.attachEvent(insertCell);
 									if (!nextRow)
 										nextRow = utils.nextSibling(mergeCell.parentNode);
@@ -815,33 +932,37 @@ var MergeTable = window.MergeTable = (function() {
 										nextRow = utils.nextSibling(nextRow);
 									var x_1 = x_ - 1;
 									if (x_1 >= 0) {
-										while (!persist.storage[i + k][x_1]) {
+										while (!persist.region[persist.currentRegionIdnex].storage[i + k][x_1]) {
 											x_1--;
 											if (x_1 < 0)
 												break;
 										}
 									}
-									if (persist.storage[i + k][x_1]) {
-										if (utils.nextSibling(persist.storage[i + k][x_1]))
-											nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + k][x_1]));
+									if (persist.region[persist.currentRegionIdnex].storage[i + k][x_1]) {
+										if (utils.nextSibling(persist.region[persist.currentRegionIdnex].storage[i + k][x_1]))
+											nextRow.insertBefore(insertCell,
+
+												utils.nextSibling(persist.region[persist.currentRegionIdnex].storage[i + k][x_1]));
 										else
 											nextRow.appendChild(insertCell);
 									} else {
 										if (utils.firstChild(nextRow))
-											nextRow.insertBefore(insertCell, utils.firstChild(nextRow));
+											nextRow.insertBefore(insertCell,
+
+												utils.firstChild(nextRow));
 										else
 											nextRow.appendChild(insertCell);
 									}
-									persist.storage[i + k].splice(x_, 0, insertCell);
+									persist.region[persist.currentRegionIdnex].storage[i + k].splice(x_, 0, insertCell);
 								}
 								i += mergeCell.rowSpan - 1;
 							}
 						} else {
-							persist.storage[i].splice(x_, 0, null);
+							persist.region[persist.currentRegionIdnex].storage[i].splice(x_, 0, null);
 							if (mergeCell.rowSpan > 1) {
 								var nextRow = null;
 								for (var k = 1; k < mergeCell.rowSpan; k++) {
-									persist.storage[i + k].splice(x_, 0, null);
+									persist.region[persist.currentRegionIdnex].storage[i + k].splice(x_, 0, null);
 								}
 								i += mergeCell.rowSpan - 1;
 							}
@@ -850,62 +971,74 @@ var MergeTable = window.MergeTable = (function() {
 					} else {
 						var xx_ = x;
 						if (xx_ >= 0) {
-							while (!persist.storage[i][xx_]) {
+							while (!persist.region[persist.currentRegionIdnex].storage[i][xx_]) {
 								xx_--;
 								if (xx_ < 0)
 									break;
 							}
 						}
-						if (persist.storage[i][xx_]) {
+						if (persist.region[persist.currentRegionIdnex].storage[i][xx_]) {
 							if (xx_ === p_x) {
 								var nextRow = null;
-								for (var o = 0; o < persist.storage[i][xx_].rowSpan; o++) {
+								for (var o = 0; o < persist.region[persist.currentRegionIdnex].storage[i][xx_].rowSpan; o++) {
 									if (o === 0)
-										nextRow = persist.storage[i][xx_].parentNode;
+										nextRow = persist.region[persist.currentRegionIdnex].storage[i][xx_].parentNode;
 									else {
 										if (nextRow)
 											nextRow = utils.nextSibling(nextRow);
 									}
-									var insertCell = document.createElement(persist.storage[i][xx_].tagName.toLowerCase());
+									var insertCell = document.createElement(persist.region[persist.currentRegionIdnex].storage[i]
+
+										[xx_].tagName.toLowerCase());
 									utils.attachEvent(insertCell);
 									if (o === 0) {
-										if (utils.nextSibling(persist.storage[i + o][xx_]))
-											nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + o][xx_]));
+										if (utils.nextSibling(persist.region[persist.currentRegionIdnex].storage[i + o][xx_]))
+											nextRow.insertBefore(insertCell,
+
+												utils.nextSibling(persist.region[persist.currentRegionIdnex].storage[i + o][xx_]));
 										else
 											nextRow.appendChild(insertCell);
 									} else {
 										var preX = xx_;
 										if (preX > 0) {
-											while (!persist.storage[i + o][preX]) {
+											while (!persist.region[persist.currentRegionIdnex].storage[i + o][preX]) {
 												preX--;
 												if (preX < 0)
 													break;
 											}
 										}
-										if (persist.storage[i + o][preX]) {
-											if (utils.nextSibling(persist.storage[i + o][preX]))
-												nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + o][preX]));
+										if (persist.region[persist.currentRegionIdnex].storage[i + o][preX]) {
+											if (utils.nextSibling(persist.region[persist.currentRegionIdnex].storage[i +
+
+												o][preX]))
+												nextRow.insertBefore(insertCell,
+
+													utils.nextSibling(persist.region[persist.currentRegionIdnex].storage[i + o][preX]));
 											else
 												nextRow.appendChild(insertCell);
 										} else {
 											if (utils.firstChild(nextRow))
-												nextRow.insertBefore(insertCell, utils.firstChild(nextRow));
+												nextRow.insertBefore(insertCell,
+
+													utils.firstChild(nextRow));
 											else
 												nextRow.appendChild(insertCell);
 										}
 									}
-									persist.storage[i + o].splice(xx_ + persist.storage[i][xx_].colSpan, 0, insertCell);
+									persist.region[persist.currentRegionIdnex].storage[i + o].splice(xx_ + persist.region[persist.currentRegionIdnex].storage[i]
+
+										[xx_].colSpan, 0, insertCell);
 								}
-								i += persist.storage[i][xx_].rowSpan - 1;
+								i += persist.region[persist.currentRegionIdnex].storage[i][xx_].rowSpan - 1;
 							} else {
-								persist.storage[i].splice(x_, 0, null);
-								if (persist.storage[i][xx_].rowSpan > 1) {
-									for (var k = 1; k < persist.storage[i][xx_].rowSpan; k++) {
-										persist.storage[i + k].splice(x_, 0, null);
+								persist.region[persist.currentRegionIdnex].storage[i].splice(x_, 0, null);
+								if (persist.region[persist.currentRegionIdnex].storage[i][xx_].rowSpan > 1) {
+									for (var k = 1; k < persist.region[persist.currentRegionIdnex].storage[i][xx_].rowSpan; k++) {
+										persist.region[persist.currentRegionIdnex].storage[i + k].splice(x_, 0, null);
 									}
 								}
-								persist.storage[i][xx_].colSpan++;
-								i += persist.storage[i][xx_].rowSpan - 1;
+								persist.region[persist.currentRegionIdnex].storage[i][xx_].colSpan++;
+								i += persist.region[persist.currentRegionIdnex].storage[i][xx_].rowSpan - 1;
 							}
 						}
 					}
@@ -930,18 +1063,18 @@ var MergeTable = window.MergeTable = (function() {
 	};
 
 	function addColRightHandler(y, x, arr) {
-		var cell = persist.storage[y][x];
+		var cell = persist.region[persist.currentRegionIdnex].storage[y][x];
 		var x_ = null;
-		for (var i = 0; i < persist.storage.length; i++) {
+		for (var i = 0; i < persist.region[persist.currentRegionIdnex].storage.length; i++) {
 			var isColMerge = false;
-			var mergeCell = persist.storage[i][x];
+			var mergeCell = persist.region[persist.currentRegionIdnex].storage[i][x];
 			if (x_ === null)
 				x_ = x + cell.colSpan;
 			if (mergeCell) {
 				if (mergeCell.colSpan + x < x_) {
-					for (var j = 0; j < persist.storage[i].length; j++) {
-						if (persist.storage[i][j] && persist.storage[i][j].colSpan + j >= x_) {
-							mergeCell = persist.storage[i][j];
+					for (var j = 0; j < persist.region[persist.currentRegionIdnex].storage[i].length; j++) {
+						if (persist.region[persist.currentRegionIdnex].storage[i][j] && persist.region[persist.currentRegionIdnex].storage[i][j].colSpan + j >= x_) {
+							mergeCell = persist.region[persist.currentRegionIdnex].storage[i][j];
 							x = j;
 							break;
 						}
@@ -960,7 +1093,7 @@ var MergeTable = window.MergeTable = (function() {
 						mergeCell.parentNode.insertBefore(insertCell, utils.nextSibling(mergeCell));
 					else
 						mergeCell.parentNode.appendChild(insertCell);
-					persist.storage[i].splice(x_, 0, insertCell);
+					persist.region[persist.currentRegionIdnex].storage[i].splice(x_, 0, insertCell);
 					if (mergeCell.rowSpan > 1) {
 						var nextRow = null;
 						for (var k = 1; k < mergeCell.rowSpan; k++) {
@@ -972,15 +1105,17 @@ var MergeTable = window.MergeTable = (function() {
 								nextRow = utils.nextSibling(nextRow);
 							var x_1 = x_ - 1;
 							if (x_1 >= 0) {
-								while (!persist.storage[i + k][x_1]) {
+								while (!persist.region[persist.currentRegionIdnex].storage[i + k][x_1]) {
 									x_1--;
 									if (x_1 < 0)
 										break;
 								}
 							}
-							if (persist.storage[i + k][x_1]) {
-								if (utils.nextSibling(persist.storage[i + k][x_1]))
-									nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + k][x_1]));
+							if (persist.region[persist.currentRegionIdnex].storage[i + k][x_1]) {
+								if (utils.nextSibling(persist.region[persist.currentRegionIdnex].storage[i + k][x_1]))
+									nextRow.insertBefore(insertCell, utils.nextSibling
+
+										(persist.region[persist.currentRegionIdnex].storage[i + k][x_1]));
 								else
 									nextRow.appendChild(insertCell);
 							} else {
@@ -989,16 +1124,16 @@ var MergeTable = window.MergeTable = (function() {
 								else
 									nextRow.appendChild(insertCell);
 							}
-							persist.storage[i + k].splice(x_, 0, insertCell);
+							persist.region[persist.currentRegionIdnex].storage[i + k].splice(x_, 0, insertCell);
 						}
 						i += mergeCell.rowSpan - 1;
 					}
 				} else {
-					persist.storage[i].splice(x_, 0, null);
+					persist.region[persist.currentRegionIdnex].storage[i].splice(x_, 0, null);
 					if (mergeCell.rowSpan > 1) {
 						var nextRow = null;
 						for (var k = 1; k < mergeCell.rowSpan; k++) {
-							persist.storage[i + k].splice(x_, 0, null);
+							persist.region[persist.currentRegionIdnex].storage[i + k].splice(x_, 0, null);
 						}
 						i += mergeCell.rowSpan - 1;
 					}
@@ -1007,62 +1142,72 @@ var MergeTable = window.MergeTable = (function() {
 			} else {
 				var xx_ = x;
 				if (xx_ >= 0) {
-					while (!persist.storage[i][xx_]) {
+					while (!persist.region[persist.currentRegionIdnex].storage[i][xx_]) {
 						xx_--;
 						if (xx_ < 0)
 							break;
 					}
 				}
-				if (persist.storage[i][xx_]) {
+				if (persist.region[persist.currentRegionIdnex].storage[i][xx_]) {
 					if (xx_ === parseInt(arr[1])) {
 						var nextRow = null;
-						for (var o = 0; o < persist.storage[i][xx_].rowSpan; o++) {
+						for (var o = 0; o < persist.region[persist.currentRegionIdnex].storage[i][xx_].rowSpan; o++) {
 							if (o === 0)
-								nextRow = persist.storage[i][xx_].parentNode;
+								nextRow = persist.region[persist.currentRegionIdnex].storage[i][xx_].parentNode;
 							else {
 								if (nextRow)
 									nextRow = utils.nextSibling(nextRow);
 							}
-							var insertCell = document.createElement(persist.storage[i][xx_].tagName.toLowerCase());
+							var insertCell = document.createElement(persist.region[persist.currentRegionIdnex].storage[i]
+
+								[xx_].tagName.toLowerCase());
 							utils.attachEvent(insertCell);
 							if (o === 0) {
-								if (utils.nextSibling(persist.storage[i + o][xx_]))
-									nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + o][xx_]));
+								if (utils.nextSibling(persist.region[persist.currentRegionIdnex].storage[i + o][xx_]))
+									nextRow.insertBefore(insertCell, utils.nextSibling
+
+										(persist.region[persist.currentRegionIdnex].storage[i + o][xx_]));
 								else
 									nextRow.appendChild(insertCell);
 							} else {
 								var preX = xx_;
 								if (preX > 0) {
-									while (!persist.storage[i + o][preX]) {
+									while (!persist.region[persist.currentRegionIdnex].storage[i + o][preX]) {
 										preX--;
 										if (preX < 0)
 											break;
 									}
 								}
-								if (persist.storage[i + o][preX]) {
-									if (utils.nextSibling(persist.storage[i + o][preX]))
-										nextRow.insertBefore(insertCell, utils.nextSibling(persist.storage[i + o][preX]));
+								if (persist.region[persist.currentRegionIdnex].storage[i + o][preX]) {
+									if (utils.nextSibling(persist.region[persist.currentRegionIdnex].storage[i + o][preX]))
+										nextRow.insertBefore(insertCell, utils.nextSibling
+
+											(persist.region[persist.currentRegionIdnex].storage[i + o][preX]));
 									else
 										nextRow.appendChild(insertCell);
 								} else {
 									if (utils.firstChild(nextRow))
-										nextRow.insertBefore(insertCell, utils.firstChild(nextRow));
+										nextRow.insertBefore(insertCell, utils.firstChild
+
+											(nextRow));
 									else
 										nextRow.appendChild(insertCell);
 								}
 							}
-							persist.storage[i + o].splice(xx_ + persist.storage[i][xx_].colSpan, 0, insertCell);
+							persist.region[persist.currentRegionIdnex].storage[i + o].splice(xx_ + persist.region[persist.currentRegionIdnex].storage[i][xx_].colSpan, 0,
+
+								insertCell);
 						}
-						i += persist.storage[i][xx_].rowSpan - 1;
+						i += persist.region[persist.currentRegionIdnex].storage[i][xx_].rowSpan - 1;
 					} else {
-						persist.storage[i].splice(x_, 0, null);
-						if (persist.storage[i][xx_].rowSpan > 1) {
-							for (var k = 1; k < persist.storage[i][xx_].rowSpan; k++) {
-								persist.storage[i + k].splice(x_, 0, null);
+						persist.region[persist.currentRegionIdnex].storage[i].splice(x_, 0, null);
+						if (persist.region[persist.currentRegionIdnex].storage[i][xx_].rowSpan > 1) {
+							for (var k = 1; k < persist.region[persist.currentRegionIdnex].storage[i][xx_].rowSpan; k++) {
+								persist.region[persist.currentRegionIdnex].storage[i + k].splice(x_, 0, null);
 							}
 						}
-						persist.storage[i][xx_].colSpan++;
-						i += persist.storage[i][xx_].rowSpan - 1;
+						persist.region[persist.currentRegionIdnex].storage[i][xx_].colSpan++;
+						i += persist.region[persist.currentRegionIdnex].storage[i][xx_].rowSpan - 1;
 					}
 				}
 			}
@@ -1085,7 +1230,7 @@ var MergeTable = window.MergeTable = (function() {
 		var arr = persist.range.start.split(defaults.separator);
 		var y = arr[0];
 		var x = arr[1];
-		var cell = persist.storage[y][x];
+		var cell = persist.region[persist.currentRegionIdnex].storage[y][x];
 		var colSpan_ = cell.colSpan;
 		if (checkSelectionOne() && colSpan_ > 1)
 			return true;
@@ -1097,7 +1242,7 @@ var MergeTable = window.MergeTable = (function() {
 		var arr = persist.range.start.split(defaults.separator);
 		var y = arr[0];
 		var x = arr[1];
-		var cell = persist.storage[y][x];
+		var cell = persist.region[persist.currentRegionIdnex].storage[y][x];
 		var rowSpan_ = cell.rowSpan;
 		if (checkSelectionOne() && rowSpan_ > 1)
 			return true;
@@ -1105,9 +1250,10 @@ var MergeTable = window.MergeTable = (function() {
 			return false;
 	};
 
+	// 清除数据保存
 	function clear() {
-		persist.storage = [];
-		persist.place = [];
+		persist.storage.region = {};
+		persist.storage.currentRegionIdnex = null;
 		persist.selection = [];
 		persist.edition = {};
 		persist.range = {};
@@ -1131,33 +1277,33 @@ var MergeTable = window.MergeTable = (function() {
 			var minY;
 			var maxY;
 			if (startCoords.x > endCoords.x) {
-				maxX = startCoords.x + persist.storage[startCoords.y][startCoords.x].colSpan - 1;
+				maxX = startCoords.x + persist.region[persist.currentRegionIdnex].storage[startCoords.y][startCoords.x].colSpan - 1;
 				minX = endCoords.x;
 			} else if (startCoords.x < endCoords.x) {
-				maxX = endCoords.x + persist.storage[endCoords.y][endCoords.x].colSpan - 1;
+				maxX = endCoords.x + persist.region[persist.currentRegionIdnex].storage[endCoords.y][endCoords.x].colSpan - 1;
 				minX = startCoords.x;
 			} else {
 				if (startCoords.y > endCoords.y) {
-					maxX = startCoords.x + persist.storage[startCoords.y][startCoords.x].colSpan - 1;
+					maxX = startCoords.x + persist.region[persist.currentRegionIdnex].storage[startCoords.y][startCoords.x].colSpan - 1;
 					minX = endCoords.x;
 				} else if (startCoords.y < endCoords.y) {
-					maxX = endCoords.x + persist.storage[endCoords.y][endCoords.x].colSpan - 1;
+					maxX = endCoords.x + persist.region[persist.currentRegionIdnex].storage[endCoords.y][endCoords.x].colSpan - 1;
 					minX = startCoords.x;
 				} else
 					minX = maxX = startCoords.x;
 			}
 			if (startCoords.y > endCoords.y) {
-				maxY = startCoords.y + persist.storage[startCoords.y][startCoords.x].rowSpan - 1;
+				maxY = startCoords.y + persist.region[persist.currentRegionIdnex].storage[startCoords.y][startCoords.x].rowSpan - 1;
 				minY = endCoords.y;
 			} else if (startCoords.y < endCoords.y) {
-				maxY = endCoords.y + persist.storage[endCoords.y][endCoords.x].rowSpan - 1;
+				maxY = endCoords.y + persist.region[persist.currentRegionIdnex].storage[endCoords.y][endCoords.x].rowSpan - 1;
 				minY = startCoords.y;
 			} else {
 				if (startCoords.x > endCoords.x) {
-					maxY = startCoords.y + persist.storage[startCoords.y][startCoords.x].rowSpan - 1;
+					maxY = startCoords.y + persist.region[persist.currentRegionIdnex].storage[startCoords.y][startCoords.x].rowSpan - 1;
 					minY = endCoords.y;
 				} else if (startCoords.x < endCoords.x) {
-					maxY = endCoords.y + persist.storage[endCoords.y][endCoords.x].rowSpan - 1;
+					maxY = endCoords.y + persist.region[persist.currentRegionIdnex].storage[endCoords.y][endCoords.x].rowSpan - 1;
 					minY = startCoords.y;
 				} else
 					minY = maxY = startCoords.y;
@@ -1174,7 +1320,9 @@ var MergeTable = window.MergeTable = (function() {
 	};
 
 	function checkRangeAviliable(range) {
-		if (range.hasOwnProperty("minX") && range.hasOwnProperty("minY") && range.hasOwnProperty("maxX") && range.hasOwnProperty("maxY"))
+		if (range.hasOwnProperty("minX") && range.hasOwnProperty("minY") && range.hasOwnProperty("maxX") &&
+
+			range.hasOwnProperty("maxY"))
 			return true;
 		else
 			return false;
@@ -1206,13 +1354,13 @@ var MergeTable = window.MergeTable = (function() {
 			var arr = persist.selection[i].split(defaults.separator);
 			var row = arr[0];
 			var col = arr[1];
-			if (persist.storage[row][col]) {
+			if (persist.region[persist.currentRegionIdnex].storage[row][col]) {
 				if (persist.brush.selectedCss[persist.selection[i]] !== undefined) {
 					continue;
 				} else {
 					// 单元格样式缓存
 					if (!persist.css[persist.selection[i]])
-						persist.css[persist.selection[i]] = persist.storage[row][col].style.cssText;
+						persist.css[persist.selection[i]] = persist.region[persist.currentRegionIdnex].storage[row][col].style.cssText;
 					num++;
 					if (checkBrushFormatOpened() && checkBrushSelected()) {
 						var sty = "";
@@ -1220,12 +1368,12 @@ var MergeTable = window.MergeTable = (function() {
 							sty = persist.brush.selectedCss[m];
 							break;
 						}
-						persist.storage[row][col].style.cssText = sty;
+						persist.region[persist.currentRegionIdnex].storage[row][col].style.cssText = sty;
 					} else {
 						if (flag === true)
-							persist.storage[row][col].style.backgroundColor = defaults.right;
+							persist.region[persist.currentRegionIdnex].storage[row][col].style.backgroundColor = defaults.right;
 						else
-							persist.storage[row][col].style.backgroundColor = defaults.wrong;
+							persist.region[persist.currentRegionIdnex].storage[row][col].style.backgroundColor = defaults.wrong;
 					}
 				}
 			}
@@ -1235,8 +1383,8 @@ var MergeTable = window.MergeTable = (function() {
 				var arr = persist.selection[0].split(defaults.separator);
 				var row = arr[0];
 				var col = arr[1];
-				if (persist.storage[row][col]) {
-					persist.storage[row][col].style.backgroundColor = defaults.normal;
+				if (persist.region[persist.currentRegionIdnex].storage[row][col]) {
+					persist.region[persist.currentRegionIdnex].storage[row][col].style.backgroundColor = defaults.normal;
 				}
 			}
 		}
@@ -1250,15 +1398,15 @@ var MergeTable = window.MergeTable = (function() {
 			var row = obj.y;
 			var col = obj.x;
 			// 单元格存在
-			if (persist.storage[row][col]) {
+			if (persist.region[persist.currentRegionIdnex].storage[row][col]) {
 				// 格式样式单元格不变化
 				if (persist.brush.selectedCss[persist.selection[i]] !== undefined) {
 
 				} else {
 					if (persist.css[persist.selection[i]])
-						persist.storage[row][col].style.cssText = persist.css[persist.selection[i]];
+						persist.region[persist.currentRegionIdnex].storage[row][col].style.cssText = persist.css[persist.selection[i]];
 					else
-						persist.storage[row][col].style.cssText = "";
+						persist.region[persist.currentRegionIdnex].storage[row][col].style.cssText = "";
 				}
 			}
 		}
@@ -1278,12 +1426,12 @@ var MergeTable = window.MergeTable = (function() {
 			var count = 0;
 			var height = 0;
 			for (var y = minY; y <= maxY; y++) {
-				if (persist.storage[y]) {
+				if (persist.region[persist.currentRegionIdnex].storage[y]) {
 					var width = 0;
 					for (var x = minX; x <= maxX; x++) {
 
-						if (persist.storage[y][x]) {
-							var cell = persist.storage[y][x];
+						if (persist.region[persist.currentRegionIdnex].storage[y][x]) {
+							var cell = persist.region[persist.currentRegionIdnex].storage[y][x];
 							var cols = cell.colSpan;
 							var rows = cell.rowSpan;
 							count += cols * rows;
@@ -1307,9 +1455,9 @@ var MergeTable = window.MergeTable = (function() {
 				for (var x = minX; x <= maxX; x++) {
 					var height = 0;
 					for (var y = minY; y <= maxY; y++) {
-						if (persist.storage[y]) {
-							if (persist.storage[y][x])
-								height += persist.storage[y][x].rowSpan;
+						if (persist.region[persist.currentRegionIdnex].storage[y]) {
+							if (persist.region[persist.currentRegionIdnex].storage[y][x])
+								height += persist.region[persist.currentRegionIdnex].storage[y][x].rowSpan;
 						}
 					}
 					if (height > maxY - minY + 1)
@@ -1329,7 +1477,7 @@ var MergeTable = window.MergeTable = (function() {
 			var arr = persist.selection[i].split(defaults.separator);
 			var y = arr[0];
 			var x = arr[1];
-			if (persist.storage[y][x])
+			if (persist.region[persist.currentRegionIdnex].storage[y][x])
 				num++;
 		}
 		return exist && num === 1;
@@ -1404,10 +1552,54 @@ var MergeTable = window.MergeTable = (function() {
 		}
 	};
 
+	// 表格子元素前缀
+	var tableChildPrefix = {
+		thead: "thead",
+		tbody: "tbody",
+		tfoot: "tfoot"
+	};
+
+	var tableChildren = {};
+
+	function getIndexByElement(ele) {
+		for (var i in tableChildren) {
+			if (tableChildren[i] === ele) {
+				return i;
+			}
+		}
+	};
+
+	// 加载表格
 	function load() {
 		var tableContainer = document.getElementById(id);
 		var table = utils.firstChild(tableContainer);
-		var rows = table.rows;
+		var theadCount = 0;
+		var tbodyCount = 0;
+		var tfootCount = 0;
+		var thead_ = "thead";
+		var tbody_ = "tbody";
+		var tfoot_ = "tfoot";
+		for (var i = 0; i < table.children.length; i++) {
+			var r = table.children[i];
+			var regionIndex = "";
+			if (r.tagName.toLowerCase() === "thead") {
+				regionIndex = thead_ + "_" + theadCount;
+				theadCount++;
+			} else if (r.tagName.toLowerCase() === "tbody") {
+				regionIndex = tbody_ + "_" + tbodyCount;
+				tbodyCount++;
+			} else if (r.tagName.toLowerCase() === "tfoot") {
+				regionIndex = tfoot_ + "_" + tfootCount;
+				tfootCount++;
+			}
+			loadRegion(r, regionIndex);
+			tableChildren[regionIndex] = r;
+		}
+	};
+
+	// 加载区
+	function loadRegion(regionElement, regionIndex) {
+		var rows = regionElement.children;
 		for (var i = 0; i < rows.length; i++) {
 			var index = 0;
 			for (var j = 0; j < rows[i].cells.length; j++) {
@@ -1415,43 +1607,44 @@ var MergeTable = window.MergeTable = (function() {
 				var cell = rows[i].cells[j];
 
 				utils.attachEvent(cell);
-
-				if (!persist.storage[i])
-					persist.storage[i] = [];
-				if (persist.storage[i][index] === null) {
+				if (!persist.region[regionIndex])
+					persist.region[regionIndex] = new Region();
+				if (!persist.region[regionIndex].storage[i])
+					persist.region[regionIndex].storage[i] = [];
+				if (persist.region[regionIndex].storage[i][index] === null) {
 					var wIndex = index;
-					while (persist.storage[i][wIndex] === null)
+					while (persist.region[regionIndex].storage[i][wIndex] === null)
 						wIndex++;
-					persist.storage[i][wIndex] = cell;
+					persist.region[regionIndex].storage[i][wIndex] = cell;
 					var max = 0;
-					for (var b = 0; b < persist.storage[i].length; b++) {
-						if (persist.storage[i][b] !== null && persist.storage[i][b] !== undefined)
+					for (var b = 0; b < persist.region[regionIndex].storage[i].length; b++) {
+						if (persist.region[regionIndex].storage[i][b] !== null && persist.region[regionIndex].storage[i][b] !== undefined)
 							max = b;
 					}
 					oIndex = index = max;
 				} else {
-					persist.storage[i][index] = cell;
+					persist.region[regionIndex].storage[i][index] = cell;
 				}
 				if (cell.rowSpan > 1 || cell.colSpan > 1) {
-					if (!persist.place[i])
-						persist.place[i] = [];
-					persist.place[i].push(cell);
+					if (!persist.region[regionIndex].place[i])
+						persist.region[regionIndex].place[i] = [];
+					persist.region[regionIndex].place[i].push(cell);
 				}
 
 				if (cell.colSpan > 1) {
 					for (var m = 1; m <= cell.colSpan - 1; m++) {
-						persist.storage[i][index + m] = null;
+						persist.region[regionIndex].storage[i][index + m] = null;
 					}
 					index = index + cell.colSpan;
 				} else
 					index++;
 				if (cell.rowSpan > 1) {
 					for (var n = 1; n <= cell.rowSpan - 1; n++) {
-						if (!persist.storage[i + n]) {
-							persist.storage[i + n] = [];
+						if (!persist.region[regionIndex].storage[i + n]) {
+							persist.region[regionIndex].storage[i + n] = [];
 						}
 						for (var m = 0; m < cell.colSpan; m++) {
-							persist.storage[i + n][oIndex + m] = null;
+							persist.region[regionIndex].storage[i + n][oIndex + m] = null;
 						}
 					}
 				}
@@ -1481,8 +1674,8 @@ var MergeTable = window.MergeTable = (function() {
 			if (persist.mouse.status === 0) {
 				var rowIndex = ele.parentNode.rowIndex;
 				var index;
-				for (var i = 0; i < persist.storage[rowIndex].length; i++) {
-					if (ele == persist.storage[rowIndex][i])
+				for (var i = 0; i < persist.region[persist.currentRegionIdnex].storage[rowIndex].length; i++) {
+					if (ele == persist.region[persist.currentRegionIdnex].storage[rowIndex][i])
 						index = rowIndex + defaults.separator + i;
 				}
 				persist.range.end = index;
@@ -1516,7 +1709,7 @@ var MergeTable = window.MergeTable = (function() {
 					var sty = persist.brush.selectedCss[i];
 					ele.style.cssText = sty;
 					var obj = utils.index2Obj(i);
-					persist.storage[obj.y][obj.x].style.cssText = sty;
+					persist.region[persist.currentRegionIdnex].storage[obj.y][obj.x].style.cssText = sty;
 					break;
 				}
 				persist.brush.selectedCss = {};
@@ -1531,6 +1724,7 @@ var MergeTable = window.MergeTable = (function() {
 		e = e || window.event;
 		// 获取单元格
 		var ele = e.srcElement || e.currentTarget;
+		persist.currentRegionIdnex = getIndexByElement(ele.parentNode.parentNode);
 		// td标签
 		var tagName = ele.tagName.toLowerCase();
 		if (tagName === "td" || tagName === "th") {
@@ -1539,9 +1733,9 @@ var MergeTable = window.MergeTable = (function() {
 			// 单元格对应下标
 			var index;
 			// 遍历单元格
-			for (var i = 0; i < persist.storage[rowIndex].length; i++) {
+			for (var i = 0; i < persist.region[persist.currentRegionIdnex].storage[rowIndex].length; i++) {
 				// 查询出对应的单元格
-				if (ele == persist.storage[rowIndex][i]) {
+				if (ele == persist.region[persist.currentRegionIdnex].storage[rowIndex][i]) {
 					// 获取对应的单元格下标
 					index = rowIndex + defaults.separator + i;
 					break;
@@ -1593,14 +1787,14 @@ var MergeTable = window.MergeTable = (function() {
 					// 回去下标对象
 					var obj = utils.index2Obj(selection2ArrayStack[i][j]);
 					// 存在单元格
-					if (persist.storage[obj.y][obj.x]) {
+					if (persist.region[persist.currentRegionIdnex].storage[obj.y][obj.x]) {
 						// 设置样式
-						persist.storage[obj.y][obj.x].style.cssText = css;
+						persist.region[persist.currentRegionIdnex].storage[obj.y][obj.x].style.cssText = css;
 						// 格式刷单元格如果被选中时更改样式，则格式刷的样式缓存也应该更改
 						for (var m in persist.brush.selectedCss) {
 							if (m === selection2ArrayStack[i][j]) {
 								persist.brush.selectedCss[m] = css;
-								persist.storage[obj.y][obj.x].style.border = defaults.brushright;
+								persist.region[persist.currentRegionIdnex].storage[obj.y][obj.x].style.border = defaults.brushright;
 								break;
 							}
 						}
@@ -1623,7 +1817,8 @@ var MergeTable = window.MergeTable = (function() {
 		// TODO 不使用清空当前选区的方法也能获取正确的表格字符串
 		clearSelection();
 		clearEditable();
-
+		if (defaults.nullRowRomoved)
+			removeNullRows();
 		return document.getElementById(id).innerHTML;
 	};
 
@@ -1634,8 +1829,8 @@ var MergeTable = window.MergeTable = (function() {
 		for (var i = 0; i < selection2ArrayStack.length; i++) {
 			for (var j = 0; j < selection2ArrayStack[i].length; j++) {
 				var obj = utils.index2Obj(selection2ArrayStack[i][j]);
-				if (persist.storage[obj.y][obj.x]) {
-					var cell = persist.storage[obj.y][obj.x].cloneNode(true);
+				if (persist.region[persist.currentRegionIdnex].storage[obj.y][obj.x]) {
+					var cell = persist.region[persist.currentRegionIdnex].storage[obj.y][obj.x].cloneNode(true);
 					if (persist.css[selection2ArrayStack[i][j]] !== undefined) {
 						cell.style.cssText = persist.css[selection2ArrayStack[i][j]];
 						selectionCells.push(cell);
@@ -1667,7 +1862,7 @@ var MergeTable = window.MergeTable = (function() {
 			var sty = persist.brush.selectedCss[i];
 			var obj = utils.index2Obj(i);
 			// 样式设置
-			persist.storage[obj.y][obj.x].style.cssText = sty;
+			persist.region[persist.currentRegionIdnex].storage[obj.y][obj.x].style.cssText = sty;
 			break;
 		}
 		// 清空格式刷样式缓存区
@@ -1688,6 +1883,43 @@ var MergeTable = window.MergeTable = (function() {
 			return false;
 		else
 			return true;
+	};
+
+	// 提供行号，检查此行是否是空行
+	function checkNullRow(y) {
+		if (persist.region[persist.currentRegionIdnex].storage[y]) {
+			var i = 0;
+			while (!persist.region[persist.currentRegionIdnex].storage[y][i]) {
+				i++;
+				if (i === persist.region[persist.currentRegionIdnex].storage[y].length)
+					break;
+			}
+			if (i === persist.region[persist.currentRegionIdnex].storage[y].length)
+				return true;
+			else
+				return false;
+		} else {
+			alert(defaults.noRowExist);
+			return undefined;
+		}
+	};
+
+	// 获取行
+	function getRow(y) {
+		var tableContainer = document.getElementById(id);
+		var table = utils.firstChild(tableContainer);
+		return table.rows[y];
+	};
+
+	// 移除空行
+	function removeNullRows() {
+		for (var i = 0; i < persist.region[persist.currentRegionIdnex].storage.length; i++) {
+			if (checkNullRow(i)) {
+				deleteRowHandler(i, 0, true);
+				removeNullRows();
+				break;
+			}
+		}
 	};
 
 
