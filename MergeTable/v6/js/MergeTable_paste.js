@@ -881,6 +881,7 @@ var MergeTable = window.MergeTable = (function() {
 
 	function addColLeftHandler(y, x, arr) {
 		var cell = persist.storage[y][x];
+		var regionIndex = getIndexByElement(cell.parentNode.parentNode);
 		if (x === 0) {
 			var nextRow = null;
 			for (var i = 0; i < persist.storage.length; i++) {
@@ -896,8 +897,9 @@ var MergeTable = window.MergeTable = (function() {
 				persist.storage[i].splice(0, 0, insertCell);
 				utils.attachEvent(insertCell);
 			}
-			persist.range.start = y + defaults.separator + (x + 1) + defaults.separator + getIndexByElement(cell.parentNode.parentNode);
-			persist.selection = [persist.range.start];
+			var newIndex = y + defaults.separator + (x + 1) + defaults.separator + regionIndex;
+			persist.range.start = newIndex;
+			persist.selection = [newIndex];
 		} else {
 			var p_x = x - 1;
 			if (p_x >= 0) {
@@ -1059,7 +1061,11 @@ var MergeTable = window.MergeTable = (function() {
 			persist.range.start = y + defaults.separator + (parseInt(arr[1]) + 1) + defaults.separator + getIndexByElement(cell.parentNode.parentNode);
 			persist.selection = [persist.range.start];
 		}
-
+		var oldIndex = y + defaults.separator + arr[1] + defaults.separator + regionIndex;
+		if (persist.css.hasOwnProperty(oldIndex)) {
+			persist.css[persist.range.start] = persist.css[oldIndex];
+			delete persist.css[oldIndex];
+		}
 	};
 
 	function addColLeft() {
