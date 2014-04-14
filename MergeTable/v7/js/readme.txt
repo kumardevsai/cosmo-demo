@@ -1,0 +1,1 @@
+此版本承自v5:MergeTable_paste.js
