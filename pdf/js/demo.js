@@ -3,7 +3,7 @@ function init_pdf() {
 	var obj = pdf_one.object;
 	if (window.attachEvent) {
 		document.getElementById("print_pdf").attachEvent('onclick', function() {
-			obj.Print();
+			obj.printPages();
 		});
 		document.getElementById("print_pdf_all").attachEvent('onclick', function() {
 			obj.PrintAll();

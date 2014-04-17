@@ -9,7 +9,7 @@
 	TODO 
 	1.代码优化
 	2.有bug，未复现
-	3.单元格尺寸的计算（添加行、添加列）
+	3.单元格尺寸的计算（添加行、添加列）(计划移除)
 	4.关于单元格被选中时的自定义样式（不仅是背景色，包括虚线边框，透明度等）
 	5.实现绝对的正方形选区（而不是提示选区不正确显示红色）
 	
@@ -1593,6 +1593,9 @@ var MergeTable = window.MergeTable = (function() {
 			var idx = cellindex;
 			for (var i = idx; i < row.cells.length && k < arry.length; i++, k++) {
 				var cell = row.cells[i];
+				// 锁定的单元格不可以编辑（不可粘贴）
+				if (cell.getAttribute("td_type") === "lock")
+					continue;
 				var inps = row.cells[i].getElementsByTagName('input');
 				if (inps.length > 0) {
 					row.cells[i].children[0].value = arry[k];
@@ -1845,23 +1848,21 @@ var MergeTable = window.MergeTable = (function() {
 				// 没开启格式刷时单元格被选中的样式
 				ele.style.backgroundColor = defaults.normal;
 				// 检查单元格是否可编辑
-				if(checkCellEditable(ele))
-				{
-				    // 设置可编辑单元格
-				    contentEditable(ele, index);
+				if (checkCellEditable(ele)) {
+					// 设置可编辑单元格
+					contentEditable(ele, index);
 				}
 			}
 		}
 	};
-	
+
 	// 检查单元格是否可编辑
-	function checkCellEditable(cell)
-	{
-	    // 表头、页眉、页脚不可以编辑
-	    if(cell.tagName.toLowerCase() === "th" || cell.parentNode.parentNode.tagName.toLowerCase() === "thead" || cell.parentNode.parentNode.tagName.toLowerCase() === "tfoot")
-	        return false;
-	    else
-	        return true;
+	function checkCellEditable(cell) {
+		// 页眉、页脚不可以编辑
+		if (cell.getAttribute("td_type") === "lock")
+			return false;
+		else
+			return true;
 	};
 
 	// 设置被选中单元格的样式
@@ -2270,8 +2271,8 @@ var MergeTable = window.MergeTable = (function() {
 		var selection = Array.prototype.slice.call(persist.selection);
 		var rows = findRowsBySelection(selection);
 		var tbody = rows[0].parentNode;
-		if(tbody.tagName.toLowerCase() == "thead" || tbody.tagName.toLowerCase() == "tfoot")
-		    return;
+		if (tbody.tagName.toLowerCase() == "thead" || tbody.tagName.toLowerCase() == "tfoot")
+			return;
 		var type_ = tbody.getAttribute("tb_type");
 		// 类型相同不拆分
 		if (type_ == type)
@@ -2313,35 +2314,32 @@ var MergeTable = window.MergeTable = (function() {
 		else if (type === "tbpivot")
 			tbody.className = "tb_pivot"
 	};
-    
-    // 锁定单元格
-    function lockCells(){
-        // 选区为空
+
+	// 锁定单元格
+	function lockCells() {
+		// 选区为空
 		if (persist.selection.length <= 0) {
 			alert(defaults.selectionNullMsg);
 			return;
 		}
-        var selection2ArrayStack = selectionTrans2ArrayStack();
-        for(var i = 0 ;i < selection2ArrayStack.length ; i ++)
-        {
-            for(var j = 0 ; j < selection2ArrayStack[i].length ; j ++)
-            {
-                var obj = utils.index2Obj(selection2ArrayStack[i][j]);
-                if(persist.storage[obj.y][obj.x])
-                {
-                    persist.storage[obj.y][obj.x].className = "td_lock";
-                    persist.storage[obj.y][obj.x].setAttribute("td_type" , "lock");
-                }
-            }
-        }
-        clearSelection();
+		var selection2ArrayStack = selectionTrans2ArrayStack();
+		for (var i = 0; i < selection2ArrayStack.length; i++) {
+			for (var j = 0; j < selection2ArrayStack[i].length; j++) {
+				var obj = utils.index2Obj(selection2ArrayStack[i][j]);
+				if (persist.storage[obj.y][obj.x]) {
+					persist.storage[obj.y][obj.x].className = "td_lock";
+					persist.storage[obj.y][obj.x].setAttribute("td_type", "lock");
+				}
+			}
+		}
+		clearSelection();
 		// 清空选区范围
 		persist.range = {
 			start: null,
 			end: null
 		};
-    }
-    
+	}
+
 	// 公开方法
 	// TODO 为每一个方法添加回调函数
 	return {
@@ -2394,6 +2392,6 @@ var MergeTable = window.MergeTable = (function() {
 		// 设置tbody类型 
 		setTbodyType: setTbodyType,
 		// 锁定单元格
-		lockCells: lockCells 
+		lockCells: lockCells
 	};
 })();
