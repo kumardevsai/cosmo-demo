@@ -1,0 +1,65 @@
+<!doctype>
+<html>
+	<head>
+		<title>
+			excel数据格式化测试
+		</title>
+		<meta charset="utf-8">
+		<script type="text/javascript" src="MSONumberFormatter.js"></script>
+		<script type="text/javascript">
+			function excute(val , formation)
+			{
+				var result = MSONumberFormatter.format(val , formation);
+				if(result.flag == true)
+					alert("格式化完成--->" + result.val);
+				else
+					alert("没有格式化--->" + result.val);
+			}
+		</script>
+	</head>
+	<body>
+		<p>
+			<span>G/通用格式</span></br>
+			<span>输入:</span><input type="text" id="_G"><button onclick="excute(document.getElementById('_G').value,'G/通用格式');">格式化</button>
+		</p>
+
+		<p>
+			<span>###.##</span></br>
+			<span>输入:</span><input type="text" id="_DP"><button onclick="excute(document.getElementById('_DP').value,'###.##');">格式化</button>
+		</p>
+
+		<p>
+			<span>000.00</span></br>
+			<span>输入:</span><input type="text" id="_D0"><button onclick="excute(document.getElementById('_D0').value,'000.00');">格式化</button>
+		</p>
+
+		<p>
+			<span>"ss1"@"dd2"</span></br>
+			<span>输入:</span><input type="text" id="_W_AT"><button onclick="excute(document.getElementById('_W_AT').value,'&quot;ss1&quot;@&quot;dd&quot;');">格式化</button>
+		</p>
+
+		<p>
+			<span>##,###</span></br>
+			<span>输入:</span><input type="text" id="_K"><button onclick="excute(document.getElementById('_K').value,'##,###');">格式化</button>
+		</p>
+
+		<p>
+			<span>#.#%</span></br>
+			<span>输入:</span><input type="text" id="_PS"><button onclick="excute(document.getElementById('_PS').value,'#.#%');">格式化</button>
+		</p>
+
+		<p>
+			<span>000.00%</span></br>
+			<span>输入:</span><input type="text" id="_P0"><button onclick="excute(document.getElementById('_P0').value,'000.00%');">格式化</button>
+		</p>
+
+		<p>
+			<span>$#,##0.0000;[Red]$#,##0.0000</span></br>
+			<span>输入:</span><input type="text" id="_MONEY"><button onclick="excute(document.getElementById('_MONEY').value,'$#,##0.00;[Red]$#,##0.00');">格式化</button>
+		</p>
+		<p>
+			<span> _ * #,##0_ ;_ * -#,##0_ ;_ * "-"??_ ;_ @_ </span></br>
+			<span>输入:</span><input type="text" id="_FFS_0"><button onclick="excute(document.getElementById('_FFS_0').value,' _ * #,##0_ ;_ * -#,##0_ ;_ * &quot;-&quot;??_ ;_ @_ ');">格式化</button>
+		</p>
+	</body>
+</html>

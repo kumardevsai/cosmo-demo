@@ -1,0 +1,21 @@
+<!doctype>
+<html>
+	<head>
+		<title>函数测试</title>
+		<meta charset="utf-8">
+		</script>
+		<script type="text/javascript" src="excel_formula2.js"></script>
+		<script type="text/javascript">
+			window.onload = function(){
+				ExcelFormula.updateStorage({a1:'719.9234',a2:'2'});
+				var result = ExcelFormula.ceiling("$a1,$a2");
+				document.getElementById("s").innerHTML = "<em>"+result.flag+"</em></br>"
+													   + "<em>"+result.value+"</em></br>"
+													   + "<em>"+(result.message ? result.message : "")+"</em>";
+			};
+		</script>
+	</head>
+	<body>
+		<div id="s"></div>
+	</body>
+</html>
