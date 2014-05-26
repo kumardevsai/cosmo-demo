@@ -1,0 +1,63 @@
+.tab{
+	list-style: none;
+	height: 35px;	
+	cursor: pointer;
+	font-size: 12px;
+}
+
+.left , .middle , .right{
+	height: 35px;
+	text-align: center;
+	float: left;
+	display: block;
+	background-image: url('../images/main/page_tab.png');
+}
+
+.left{
+	width: 20px;
+}
+
+.left-normal{
+	background-position: 0px 235px;
+}
+
+.left-actived{
+}
+
+.right{
+	width: 50px;
+}
+
+.right-normal{
+	background-position: 0px 35px;
+}
+
+.right-actived{
+	background-position: 0px 335px;
+}
+
+.middle{
+	line-height: 40px;
+}
+
+.middle-normal{
+	background-position: 0px 135px;
+}
+
+.middle-actived{
+	background-position: 0px 435px;
+}
+
+.close{
+	width: 14px;
+	height: 14px;
+	display: block;
+	background: url('../images/main/tips_close.png');
+	background-repeat: no-repeat;
+	vertical-align: middle;
+	margin: 12px 0 0 6px;
+}
+
+.btn-hover{
+	background-position: 0px -100px;
+}
