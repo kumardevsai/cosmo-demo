@@ -8,9 +8,41 @@
 		<script type="text/javascript" src="js/tab.js"></script>
 	</head>
 	<body>
-		
+		<div class="bg">
+			<div class="bar">
+				<div class="nav" id="nav">
+					<ul id="container" class="container">
+						
+					</ul>
+				</div>
+				<div class="scroller">
+					<div class="leftScroll" onclick="MupTab.scrollLeft();">
+						
+					</div>
+					<div class="rightScroll" onclick="MupTab.scrollRight();">
+						
+					</div>
+				</div>
+			</div>
+			<div id="target" class="target">
+				
+			</div>
+		</div>
 	</body>
 	<script type="text/javascript">
-		MupTab.addOrUpdateTab("xx" , "http://www.baidu.com" , "百度" , true);
+		MupTab.setContainer("container");
+		MupTab.setTarget("target");
+		MupTab.setOptions({
+			nav : "nav"
+		});
+		MupTab.addOrUpdateTab("baidu" , "http://www.baidu.com" , "百度" , false);
+		MupTab.addOrUpdateTab("sina" , "" , "新浪" , true);
+		MupTab.addOrUpdateTab("sohu" , "" , "搜狐xxxxxxxxxxxxxxxxxxx1" , true);
+		MupTab.addOrUpdateTab("1" , "" , "搜狐xxxxxxxxxxxxxxxxxxx2" , true);
+		MupTab.addOrUpdateTab("2" , "" , "搜狐xxxxxxxxxxxxxxxxxxx3" , true);
+		MupTab.addOrUpdateTab("3" , "" , "搜狐xxxxxxxxxxxxxxxxxxx4" , true);
+		MupTab.addOrUpdateTab("4" , "" , "搜狐xxxxxxxxxxxxxxxxxxx5" , true);
+		MupTab.addOrUpdateTab("5" , "" , "搜狐xxxxxxxxxxxxxxxxxxx6" , true);
+		MupTab.addOrUpdateTab("6" , "" , "搜狐xxxxxxxxxxxxxxxxxxx7" , true);
 	</script>
 </html>

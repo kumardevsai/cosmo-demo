@@ -333,7 +333,18 @@ var ExcelFormula = window.ExcelFormula = (function() {
 
 		// ceiling函数处理程序
 		function ceilingHandler(a, b, c, d) {
+			var result;
+			if (c.mark === "-") {
 
+			} else {
+				var mo = c.num % d.num;
+				if (mo) {
+					result = parseInt(c.num) - mo + parseInt(d.num);
+				} else {
+					result = c.num;
+				}
+			}
+			return result;
 		};
 
 		return {
@@ -598,7 +609,7 @@ var ExcelFormula = window.ExcelFormula = (function() {
 						return pro;
 					a = a.v, b = b.v, c = c.v, d = d.v;
 
-					if (c.mark !== d.mark && d.num != 0)
+					if (c.mark !== d.mark && d != 0)
 						return valueProcessor.num_error;
 					// 计算结果
 					var result = ceilingHandler(a, b, c, d);
