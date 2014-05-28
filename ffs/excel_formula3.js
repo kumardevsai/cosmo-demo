@@ -352,9 +352,6 @@ var ExcelFormula = window.ExcelFormula = (function() {
 			return result;
 		};
 
-		function floorHandler(a , b , c , d){
-		};
-
 		return {
 			/**
 				返回不大于算数值的整数
@@ -638,14 +635,7 @@ var ExcelFormula = window.ExcelFormula = (function() {
 					var pro = roundParamsProcessor(arg, a, b, c, d, true);
 					if (pro)
 						return pro;
-					a = a.v, b = b.v, c = c.v, d = d.v;
-
-					if(b == 0)
-						return valueProcessor._0_error;
-					if (c.mark !== d.mark)
-						return valueProcessor.num_error;
-					// 计算结果
-					var result = floorHandler(a, b, c, d);
+					var result = formulae.FLOOR(a , b , c, , d);
 					return {
 						flag: true,
 						value: result

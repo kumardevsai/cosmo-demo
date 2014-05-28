@@ -33,6 +33,7 @@
 /*global define */
 
 var Formulae = (function () {
+  /**
   if (typeof exports !== "undefined") {
     module.exports = exportModule(
       require('numeric'),
@@ -50,11 +51,12 @@ var Formulae = (function () {
       exportModule
     );
   }
+  **/
 
-  function exportModule(numeric, numeral, jStatLib, moment, _, _s, md5Lib) {
+  //function exportModule(numeric, numeral, jStatLib, moment, _, _s, md5Lib) {
     var Formula = {},
-        jStat   = jStatLib.jStat,
-        md5     = md5Lib.md5;
+        jStat   = jStat,
+        md5     = md5;
 
     var MEMOIZED_FACT = [];
 
@@ -4967,6 +4969,6 @@ var Formulae = (function () {
       return numeral(number).format(format);
     };
     return Formula;
-  }
+  //}
 }).call(this);
 
