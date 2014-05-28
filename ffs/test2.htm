@@ -10,18 +10,21 @@
 		<script type="text/javascript" src="js/numeric.min.js"></script>
 		<script type="text/javascript" src="js/underscore.string.min.js"></script>
 		<script type="text/javascript" src="formula.js"></script>
-		<script type="text/javascript" src="excel_formula2.js"></script>
+		<script type="text/javascript" src="tableutils.js"></script>
+		<script type="text/javascript" src="excel_formula3.js"></script>
 		<script type="text/javascript">
-			window.onload = function(){
-				ExcelFormula.updateStorage({a1:'2.5',a2:'2'});
-				var result = ExcelFormula.floor("$a1,$a2");
-				document.getElementById("s").innerHTML = "<em>"+result.flag+"</em></br>"
-													   + "<em>"+result.value+"</em></br>"
-													   + "<em>"+(result.message ? result.message : "")+"</em>";
+			function ex(){
+				eval('ExcelFormula.updateStorage({'+document.getElementById("data").value+'});');
+				var result = ExcelFormula.excute(document.getElementById("fmla").value);
+				document.getElementById("s").innerHTML = "<em>"+result.value+"</em>";
 			};
 		</script>
 	</head>
 	<body>
+		<textarea id="data" style="width:400px;height:100px;">a1:'2.5',a2:'2'
+		</textarea></br>
+		<input type="text" id="fmla" style="width:400px;" value="=">
+		<button onclick="ex();">计算</button>
 		<div id="s"></div>
 	</body>
 </html>

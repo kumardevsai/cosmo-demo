@@ -296,6 +296,8 @@ var MupTab = window.MupTab = (function() {
 					// 标签激活
 						last.active();
 				}
+				// 删除关系
+				delete TabItems[this.id];
 			},
 			// 渲染标签
 			render: function(flag) {
@@ -337,6 +339,8 @@ var MupTab = window.MupTab = (function() {
 				var tab = this.render();
 				// 添加标签节点引用关系
 				TabElements[this.id] = tab;
+				// 添加关系
+				TabItems[this.id] = this;
 				// 添加面板节点引用关系
 				frameElements[this.id] = this.createIframe();
 				// 添加事件监听
@@ -489,6 +493,13 @@ var MupTab = window.MupTab = (function() {
 		return scrollerHelper(defaults.scrollRightPercent);
 	};
 
+	function activeTab(id, url, text, closable) {
+		if (TabItems[id])
+			TabItems[id].active();
+		else
+			addOrUpdateTab(id, url, text, closable);
+	};
+
 	/**
 		外部调用接口
 	**/
@@ -498,6 +509,7 @@ var MupTab = window.MupTab = (function() {
 		setContainer: setContainer,
 		setTarget: setTarget,
 		scrollLeft: scrollLeft,
-		scrollRight: scrollRight
+		scrollRight: scrollRight,
+		activeTab: activeTab
 	};
 }());
