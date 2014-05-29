@@ -138,7 +138,7 @@ var MupTab = window.MupTab = (function() {
 		var total = 0;
 		for (var i in TabElements) {
 			var tab = TabElements[i];
-			total += tab.offsetWidth + defaults.marginLeft;
+			total += tab.parentNode.offsetWidth + defaults.marginLeft;
 		}
 		if (total > 0)
 			total -= defaults.marginLeft;
@@ -315,10 +315,6 @@ var MupTab = window.MupTab = (function() {
 					li.className = "item";
 					// 添加到父元素
 					li.appendChild(tab);
-					// 标签的总个数为1
-					if (group.tabs.length === 1)
-					// 样式左侧偏移为0
-						li.style.marginLeft = 0 + "px";
 					// 显示标签
 					container.appendChild(li);
 				}
@@ -329,6 +325,9 @@ var MupTab = window.MupTab = (function() {
 				// 创建元素节点
 				var ifr = document.createElement("iframe");
 				ifr.className = "ifr";
+				// 属性大写！
+				ifr.frameBorder = "no";
+				ifr.border = 0;
 				// 显示到面板容器
 				target.appendChild(ifr);
 				return ifr;
