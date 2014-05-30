@@ -15,7 +15,8 @@
 		<script type="text/javascript">
 			function ex(){
 				eval('ExcelFormula.updateStorage({'+document.getElementById("data").value+'});');
-				var result = ExcelFormula.excute(document.getElementById("fmla").value);
+				ExcelFormula.setFormula("e2" , document.getElementById("fmla").value);
+				var result = ExcelFormula.excute("e2");
 				document.getElementById("s").innerHTML = "<em>"+result.value+"</em>";
 			};
 		</script>
