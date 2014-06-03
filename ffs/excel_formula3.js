@@ -75,34 +75,35 @@ var ExcelFormula = window.ExcelFormula = (function() {
 		};
 	};
 
+	// 分解公式，去除范围表示
 	function resolveIndexRange(formula) {
 		return formula.replace(/((\$?([a-zA-Z]+)\$?([1-9][0-9]*)):(\$?([a-zA-Z]+)\$?([1-9][0-9]*)))/ig, function(m) {
 			m = m.toUpperCase().replace(/\$/, "").split(":");
 			var arr = getRange(m[0], m[1]);
-			if (/Formulae\.(sum)/ig.test(formula))
-				m = arr.join("+");
-			else
-				m = arr.join(",");
+			m = arr.join(",");
 			return m.toUpperCase();
 		});
 	};
 
+	// 带入计算公式
 	function resolveformula(formula) {
 		formula = formula.replace(/[\s\r\n]*/ig, "").replace(/^\=/, "").replace(/(int|trunc|round|roundup|rounddown|ceiling|floor|mround|even|odd|sum|sumif|product|sumproduct|sumsq|sumx2py2|sumx2my2|sumxmy2|subtotal|quotient|mod|abs|sign|gcd|lcm|seriessum|max|maxa|min|mina|average|averagea|count|counta|countblank)(?=\()/ig, function(m) {
 			return "Formulae." + m.toUpperCase();
 		});
 		formula = resolveIndexRange(formula);
 		formula = formula.replace(/(\$?([a-zA-Z]+)\$?([1-9][0-9]*))/ig, function(m) {
-			m = m.replace(/\$/g, "");
+			m = m.toUpperCase().replace(/\$/g, "");
 			return m;
 		});
 		return formula;
 	};
 
+	// 获取单元格索引
 	function getIndexes(formula) {
 		return formula.match(reg.index_);
 	};
 
+	// 根据单元格索引执行对应的函数
 	function excute(index) {
 		index = index.toUpperCase();
 		if (reg.index.test(index)) {
@@ -111,6 +112,7 @@ var ExcelFormula = window.ExcelFormula = (function() {
 		}
 	};
 
+	// 执行所有函数
 	function excuteAll() {
 		var arr = [];
 		for (var index in Items)
@@ -118,13 +120,14 @@ var ExcelFormula = window.ExcelFormula = (function() {
 		return arr;
 	};
 
+	// 执行处理
 	function doExcute(formula) {
 		if (/^\=/.test(formula)) {
 			formula = resolveformula(formula);
 			formula = formula.replace(reg.index_, function(m) {
-				var val = storage[m].toString();
+				var val = storage[m.toUpperCase()].toString();
 				val !== undefined ? val = val.replace(/[a-zA-Z]+\d*/ig, function(m) {
-					return "\"" + m + "\"";
+					return "\"" + m.toUpperCase() + "\"";
 				}) : null;
 				return val ? val : (/Formulae\.(count)/ig.test(formula) ? "" : "0");
 			});
@@ -150,6 +153,7 @@ var ExcelFormula = window.ExcelFormula = (function() {
 			};
 	};
 
+	// 获取属性数组
 	function getPropertyArray(object) {
 		var arr = [];
 		for (var i in object) {
@@ -159,9 +163,10 @@ var ExcelFormula = window.ExcelFormula = (function() {
 		return arr;
 	};
 
+	// 检查嵌套
 	function checkCycle(index, arr) {
 		var str = arr.join(",");
-		if (str.indexOf(index + ",") !== -1 || str.indexOf("," + index) === str.length - index.length - 1)
+		if (str.indexOf(index + ",") !== -1 || str.indexOf("," + index) === str.length - index.length - 1 && str.indexOf("," + index) !== -1)
 			return false;
 		else {
 			var flag = true;
@@ -176,6 +181,7 @@ var ExcelFormula = window.ExcelFormula = (function() {
 		return true;
 	};
 
+	// 表达式集合
 	var Items = {};
 
 	// 表达式类
@@ -184,7 +190,6 @@ var ExcelFormula = window.ExcelFormula = (function() {
 		this.formula = formula ? formula : null;
 		this.subs = {};
 		this.ubers = {};
-		this.fmla;
 	};
 
 	// 原型
@@ -247,6 +252,7 @@ var ExcelFormula = window.ExcelFormula = (function() {
 		};
 	}());
 
+	// 设置一个表达式
 	function setFormula(index, formula) {
 		index = index.toUpperCase();
 		if (reg.index.test(index)) {
@@ -267,6 +273,7 @@ var ExcelFormula = window.ExcelFormula = (function() {
 		}
 	};
 
+	// 更新表达式
 	function updateFormulas(arr) {
 		for (var i = 0; i < arr.length; i++) {
 			var f = arr[i];
@@ -283,17 +290,20 @@ var ExcelFormula = window.ExcelFormula = (function() {
 			};
 	};
 
+	// 清空表达式
 	function clearFormulas() {
 		Items = {};
 	};
 
+	// 检查表达式
 	function checkExcute(index, formula, arr) {
 		if (/^=/.test(formula)) {
-			return checkCycle(index, arr);
+			return checkCycle(index, arr ? arr : getIndexes(resolveformula(formula)));
 		}
 		return false;
 	};
 
+	// 消息处理
 	var msgCenter = {
 		cycleException: {
 			indexes: [],
