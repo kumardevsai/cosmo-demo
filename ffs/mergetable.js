@@ -227,10 +227,6 @@ var MergeTable = window.MergeTable = (function() {
 					}
 				}
 			}
-			setFormulas();
-			setFormulaStorage();
-			var result_arr = ExcelFormula.caculate(TableUtils.index2Tag(persist.selection[0]));
-			useResult(result_arr);
 		} else {
 			// 提示错误信息
 			alert(defaults.mergeMsg);
@@ -245,8 +241,6 @@ var MergeTable = window.MergeTable = (function() {
 			var obj = TableUtils.index2Obj(persist.range.start);
 			// 完全拆分单元格操作
 			clearMergeHandler(obj.y, obj.x);
-
-			refreshForlumaAndStorage();
 		} else {
 			// 提示错误信息
 			alert(defaults.oneSelectedMsg);
@@ -362,7 +356,6 @@ var MergeTable = window.MergeTable = (function() {
 		if (checkSplitV()) {
 			var obj = TableUtils.index2Obj(persist.range.start);
 			splitVHandler(obj.y, obj.x);
-			refreshForlumaAndStorage();
 		} else {
 			alert(defaults.splitVMsg);
 			return;
@@ -398,7 +391,6 @@ var MergeTable = window.MergeTable = (function() {
 		if (checkSplitH()) {
 			var obj = TableUtils.index2Obj(persist.range.start);
 			splitHHandler(obj.y, obj.x);
-			refreshForlumaAndStorage();
 		} else {
 			alert(defaults.splitHMsg);
 			return;
@@ -488,7 +480,6 @@ var MergeTable = window.MergeTable = (function() {
 		if (checkSelectionOne()) {
 			var obj = TableUtils.index2Obj(persist.range.start);
 			addRowTopHandler(obj.y, obj.x);
-			refreshForlumaAndStorage();
 		} else {
 			alert(defaults.oneSelectedMsg);
 			return;
@@ -594,7 +585,6 @@ var MergeTable = window.MergeTable = (function() {
 		if (checkSelectionOne()) {
 			var obj = TableUtils.index2Obj(persist.range.start);
 			addRowBottomHandler(obj.y, obj.x);
-			refreshForlumaAndStorage();
 		} else {
 			alert(defaults.oneSelectedMsg);
 			return;
@@ -693,7 +683,7 @@ var MergeTable = window.MergeTable = (function() {
 			}
 		}
 		persist.storage.splice(y, 1);
-		persist.start = null;
+		persist.range.start = null;
 		persist.selection = [];
 		// 如果要删除行
 		if (removeRow === true) {
@@ -716,7 +706,6 @@ var MergeTable = window.MergeTable = (function() {
 					y = obj.y;
 				deleteRowHandler(y, obj.x);
 			}
-			refreshForlumaAndStorage();
 		} else {
 			alert(defaults.deleteRowMsg);
 			return;
@@ -817,7 +806,7 @@ var MergeTable = window.MergeTable = (function() {
 					persist.storage[i].splice(x, 1);
 			}
 		}
-		persist.start = null;
+		persist.range.start = null;
 		persist.selection = [];
 	};
 
@@ -834,7 +823,6 @@ var MergeTable = window.MergeTable = (function() {
 				}
 				deleteColHandler(y, x);
 			}
-			refreshForlumaAndStorage();
 		} else {
 			alert(defaults.deleteColMsg);
 			return;
@@ -1034,7 +1022,6 @@ var MergeTable = window.MergeTable = (function() {
 		if (checkSelectionOne()) {
 			var obj = TableUtils.index2Obj(persist.range.start);
 			addColLeftHandler(obj.y, obj.x, [obj.y, obj.x]);
-			refreshForlumaAndStorage();
 		} else {
 			alert(defaults.oneSelectedMsg);
 			return;
@@ -1189,7 +1176,6 @@ var MergeTable = window.MergeTable = (function() {
 		if (checkSelectionOne()) {
 			var obj = TableUtils.index2Obj(persist.range.start);
 			addColRightHandler(obj.y, obj.x, [obj.y, obj.x]);
-			refreshForlumaAndStorage();
 		} else {
 			alert(defaults.oneSelectedMsg);
 			return;
@@ -1495,7 +1481,7 @@ var MergeTable = window.MergeTable = (function() {
 		var width_ = ele.offsetWidth;
 		input.style.height = (height_ - 5) + "px";
 		input.style.width = (width_ - 3) + "px";
-		input.value = ele.getAttribute("realvalue") !== null || ele.getAttribute("showformat") !== null ? (ele.getAttribute("realvalue") !== null? ele.getAttribute("realvalue"): "") : ele.innerHTML;
+		input.value = ele.getAttribute("realvalue") !== null || ele.getAttribute("showformat") !== null ? (ele.getAttribute("realvalue") !== null ? ele.getAttribute("realvalue") : "") : ele.innerHTML;
 		ele.innerHTML = "";
 		ele.appendChild(input);
 		AttachEvent(input, "click", function(e) {
@@ -1546,7 +1532,7 @@ var MergeTable = window.MergeTable = (function() {
 					val: inputValue
 				});
 
-				var result_arr = ExcelFormula.caculate(TableUtils.index2Tag(index));
+				var result_arr = ExcelFormula.excute(TableUtils.index2Tag(index));
 				useResult(result_arr);
 
 			}, 0);
@@ -2609,17 +2595,31 @@ var MergeTable = window.MergeTable = (function() {
 			defaults.formulaInput.value = defaults.formulaInput.value.replace(/\s*/g, "");
 			var index = persist.selection[0];
 			var obj = TableUtils.index2Obj(index);
+			var key = TableUtils.index2Tag(index);
 			if (defaults.formulaInput.value) {
-				if (ExcelFormula.checkExcute(TableUtils.index2Tag(index), defaults.formulaInput.value)) {
+				if (ExcelFormula.checkExcute(key, defaults.formulaInput.value)) {
 					persist.storage[obj.y][obj.x].setAttribute(defaults.fmla, escape(defaults.formulaInput.value));
-					setFormulas();
-					var result_arr = ExcelFormula.caculate(TableUtils.index2Tag(index));
-					useResult(result_arr);
+					var msg = ExcelFormula.updateFormulas([{
+						index: key,
+						formula: defaults.formulaInput.value
+					}]);
+					if (msg.flag === false)
+						alert(msg.message);
+					else {
+						var result_arr = ExcelFormula.excute(key);
+						useResult(result_arr);
+					}
+				} else {
+					alert("公式存在嵌套!");
 				}
 			} else {
-				setFormulas();
-				if (obj)
-					persist.storage[obj.y][obj.x].removeAttribute(defaults.fmla);
+				var msg = setFormulas();
+				if (msg.flag === false)
+					alert(msg.message);
+				else {
+					if (obj)
+						persist.storage[obj.y][obj.x].removeAttribute(defaults.fmla);
+				}
 			}
 		};
 	};
@@ -2645,7 +2645,7 @@ var MergeTable = window.MergeTable = (function() {
 				if (td) {
 					if (td.getAttribute(defaults.fmla)) {
 						arr.push({
-							key: TableUtils.num2Char(j + 1) + (i + 1),
+							index: TableUtils.num2Char(j + 1) + (i + 1),
 							formula: unescape(td.getAttribute(defaults.fmla))
 						});
 					}
@@ -2653,13 +2653,15 @@ var MergeTable = window.MergeTable = (function() {
 			}
 		}
 		ExcelFormula.clearFormulas();
-		ExcelFormula.updateFormulas(arr);
+		return ExcelFormula.updateFormulas(arr);
 	};
 
 	function useResult(result_arr) {
+		if (!result_arr)
+			return;
 		for (var i = 0; i < result_arr.length; i++) {
-			var key = result_arr[i].key;
-			var result = result_arr[i].result;
+			var key = result_arr[i].index;
+			var result = result_arr[i].value;
 			var obj = TableUtils.getTagObj(key);
 			var x_ = TableUtils.char2Num(obj.col);
 			var index = (obj.row - 1) + defaults.separator + (x_ - 1);
@@ -2687,11 +2689,14 @@ var MergeTable = window.MergeTable = (function() {
 	function refreshForlumaAndStorage() {
 		// 计算
 		setFormulaStorage();
-		setFormulas();
-		var result_arr = ExcelFormula.caculateAll();
-		useResult(result_arr);
-
-		showFormatterValues();
+		var msg = setFormulas();
+		if (msg.flag === false)
+			alert(msg.message);
+		else {
+			var result_arr = ExcelFormula.excuteAll();
+			useResult(result_arr);
+			showFormatterValues();
+		}
 	};
 
 	function showFormatterValue(cell) {
@@ -2717,7 +2722,39 @@ var MergeTable = window.MergeTable = (function() {
 				showFormatterValue(persist.storage[i][j]);
 			}
 		}
-	}
+	};
+
+	function setMsoNumberFormat(formattion) {
+		// 选区为空
+		if (persist.selection.length <= 0) {
+			alert(defaults.selectionNullMsg);
+			return;
+		}
+		// 选区数组转换二维数组
+		var selection2ArrayStack = selectionTrans2ArrayStack();
+		for (var i = 0; i < selection2ArrayStack.length; i++) {
+			for (var j = 0; j < selection2ArrayStack[i].length; j++) {
+				// 回去下标对象
+				var obj = TableUtils.index2Obj(selection2ArrayStack[i][j]);
+				// 存在单元格
+				var cell = persist.storage[obj.y][obj.x];
+				if (cell) {
+					// 设置样式
+					cell.setAttribute("showformat", escape(formattion));
+					var result = MSONumberFormatter.format(cell.getAttribute("realvalue"), formattion);
+					if (result.flag === true)
+						cell.innerHTML = result.val;
+				}
+			}
+		}
+		// 最后清除选区
+		clearSelection();
+		// 清空选区范围
+		persist.range = {
+			start: null,
+			end: null
+		};
+	};
 
 	// 公开方法
 	// TODO 为每一个方法添加回调函数
@@ -2777,6 +2814,9 @@ var MergeTable = window.MergeTable = (function() {
 		// 外部触发选区选择
 		triggerOnCellMouseUp: triggerOnCellMouseUp,
 		// 设置样式类
-		setSelectionCssClass: setSelectionCssClass
+		setSelectionCssClass: setSelectionCssClass,
+		// 重计算
+		refreshForlumaAndStorage: refreshForlumaAndStorage,
+		setMsoNumberFormat: setMsoNumberFormat
 	};
 })();

@@ -64,7 +64,11 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 			/**
 				会计 格式  _ * #,##0_ ;_ * -#,##0_ ;_ * "-"??_ ;_ @_ 
  			**/
-			_FFS_0: /^\s*_*\s*\**\s*(#+(,#+)?)(0+(\.0+)?)\s*_*\s*;\s*_*\s*\**\s*(-)(#+(,#+)?)(0+(\.0+)?)\s*_*\s*;\s*_*\s*\**\s*\"(.*)\"\?*_*\s*;\s*_*\s*@\s*_*\s*$/
+			_FFS_0: /^\s*_*\s*\**\s*(#+(,#+)?)(0+(\.0+)?)\s*_*\s*;\s*_*\s*\**\s*(-)(#+(,#+)?)(0+(\.0+)?)\s*_*\s*;\s*_*\s*\**\s*\"(.*)\"\?*_*\s*;\s*_*\s*@\s*_*\s*$/,
+			/**
+				数字带小数点和千分符
+			**/
+			_ND: /^#+(.#*)0(\.0*)/
 		}
 	};
 
@@ -78,7 +82,8 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 			"_PS": "_int _int_minus _float _float_minus",
 			"_P0": "_int _int_minus _float _float_minus",
 			"_MONEY": "_int _int_minus _float _float_minus",
-			"_FFS_0": "_int _int_minus _float _float_minus"
+			"_FFS_0": "_int _int_minus _float _float_minus",
+			"_ND": "_int _int_minus _float _float_minus"
 		};
 		return {
 			match: function(val, formation) {
@@ -120,17 +125,17 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 	// 执行函数
 	var excution = {
 		// 返回原始的数据格式值
-		_G: function(val, valType, formation) {
+		_G: function(val, formation) {
 			return val;
 		},
 		// 返回进位的数值
-		_DP: function(val, valType, formation) {
+		_DP: function(val, formation) {
 			// 小数点保留位数
 			var decimalDigits = formation.split(".")[1] ? formation.split(".")[1].length : 0;
 			return new Number(val).toFixed(decimalDigits);
 		},
 		// 返回以0补位的值
-		_D0: function(val, valType, formation) {
+		_D0: function(val, formation) {
 			var varry = val.split(".");
 			var p = varry[0];
 			// 获取小数点后的数值
@@ -158,6 +163,7 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 					}
 					// 数值长度大于保留位
 					else if (l.length > decimalDigits) {
+						/**
 						// 需要进位的数值大于5
 						if (parseInt(l.charAt(decimalDigits)) >= 5) {
 							// 进位操作
@@ -166,6 +172,9 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 						} else {
 							s2 = l.substring(0, decimalDigits);
 						}
+						**/
+						// 使用函数计算，如果小数末尾0，则自动省略，所以这里我们要重新条用此方法，在小数末尾追加0
+						return this._D0(Formulae.ROUNDUP(val, decimalDigits).toString(), formation);
 					} else
 						s2 = l;
 				} else {
@@ -180,11 +189,11 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 			}
 		},
 		// @
-		_W_AT: function(val, valType, formation) {
+		_W_AT: function(val, formation) {
 			return formation.replace(/"/g, "").replace(/@/g, val);
 		},
 		// 千分符
-		_K: function(val, valType, formation) {
+		_K: function(val, formation) {
 			if (formation.indexOf(",") === -1)
 				return val;
 			else {
@@ -200,7 +209,7 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 			}
 		},
 		// #.##%
-		_PS: function(val, valType, formation) {
+		_PS: function(val, formation) {
 			// 小数点位数
 			var decimalDigits = formation.split(".")[1] ? formation.split(".")[1].length - 1 : 0;
 			var s = new Number(val).toFixed(decimalDigits + 2);
@@ -216,7 +225,7 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 			}
 		},
 		// 0.00%
-		_P0: function(val, valType, formation) {
+		_P0: function(val, formation) {
 			// 小数点位数
 			var decimalDigits = formation.split(".")[1] ? formation.split(".")[1].length - 1 : 0;
 			var s = new Number(val).toFixed(decimalDigits + 2);
@@ -235,7 +244,7 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 				return a;
 		},
 		// 货币
-		_MONEY: function(val, valType, formation) {
+		_MONEY: function(val, formation) {
 			/**
 			0: "$#,##0.0000;[Red]$#,##0.0000"
 			1: "$"
@@ -282,7 +291,7 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 				d = "-" + d;
 			return d;
 		},
-		_FFS_0: function(val, valType, formation) {
+		_FFS_0: function(val, formation) {
 			/**
 			0: " _ * #,##0_ ;_ * -#,##0_ ;_ * "-"??_ ;_ @_ "
 			1: "#,##"
@@ -328,6 +337,12 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 					d = "-" + d;
 				return d;
 			}
+		},
+		_ND: function(val, formation) {
+			var m = formation.match(reg.mso._ND);
+			val = this._D0(val, formation.match(/0(\.0+)?/)[0]);
+			val = this._K(val.split(/\./)[0], "#,###") + "." + val.split(/\./)[1];
+			return val;
 		}
 	};
 
@@ -345,7 +360,7 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 		var result = validation.match(val, formation);
 		if (result.r === true) {
 			if (result.m !== null) {
-				_val = excution[result.m.mso](val, result.m.base, formation);
+				_val = excution[result.m.mso](val, formation);
 				flag = true;
 			} else
 				flag = false;
