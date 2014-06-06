@@ -33,7 +33,7 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 				例：代码：”00000”。1234567显示为1234567；123显示为00123
 				代码：”00.000”。100.14显示为100.140；1.1显示为01.100
 			**/
-			_D0: /^0*(\.0+)?$/,
+			_D0: /^0*(\.0+)?(_\s*)?$/,
 			/**
 				”@”：文本占位符，如果只使用单个@，作用是引用原始文本，
 				要在输入数字数据之后自动添加文本，使用自定义格式为：”文本内容”@；要在输入数字数据之前自动添加文本，使用自定义格式为：@”文本内容”。@符号的位置决定了Excel输入的数字数据相对于添加文本的位置。
@@ -60,15 +60,11 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 			/**
 				货币
 			**/
-			_MONEY: /^(￥|\$)(#+(,#+)?)(0+(\.0+)?);(\[Red\]|-)?(￥|\$)(#+(,#+)?)(0+(\.0+)?)$/,
-			/**
-				会计 格式  _ * #,##0_ ;_ * -#,##0_ ;_ * "-"??_ ;_ @_ 
- 			**/
-			_FFS_0: /^\s*_*\s*\**\s*(#+(,#+)?)(0+(\.0+)?)\s*_*\s*;\s*_*\s*\**\s*(-)(#+(,#+)?)(0+(\.0+)?)\s*_*\s*;\s*_*\s*\**\s*\"(.*)\"\?*_*\s*;\s*_*\s*@\s*_*\s*$/,
+			_MONEY: /^(￥|¥|\$)(#+(,#+)?)(0+(\.0+)?)$/,
 			/**
 				数字带小数点和千分符
 			**/
-			_ND: /^#+(.#*)0(\.0*)/
+			_ND: /^#+(.#*)?0(\.0+)?/
 		}
 	};
 
@@ -82,7 +78,6 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 			"_PS": "_int _int_minus _float _float_minus",
 			"_P0": "_int _int_minus _float _float_minus",
 			"_MONEY": "_int _int_minus _float _float_minus",
-			"_FFS_0": "_int _int_minus _float _float_minus",
 			"_ND": "_int _int_minus _float _float_minus"
 		};
 		return {
@@ -241,107 +236,19 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 			if (b)
 				return a + "." + b + "%";
 			else
-				return a;
+				return a + "%";
 		},
 		// 货币
 		_MONEY: function(val, formation) {
-			/**
-			0: "$#,##0.0000;[Red]$#,##0.0000"
-			1: "$"
-			2: "#,##"
-			3: ",##"
-			4: "0.0000"
-			5: ".0000"
-			6: "[Red]"
-			7: "$"
-			8: "#,##"
-			9: ",##"
-			10: "0.0000"
-			11: ".0000"
-			index: 0
-			input: "$#,##0.0000;[Red]$#,##0.0000"
-			**/
 			var m = formation.match(reg.mso._MONEY);
-			var decimalDigits = m[5] ? m[5].length - 1 : 0;
 			var marker = m[1];
-			var s = new Number(val).toFixed(decimalDigits);
-			var flag = true;
-			if (m[6] === "-")
-				flag = false;
-			if (flag === false)
-				s = s.substring(1);
-			var p = s.split(".")[0];
-			var c = s.split(".")[1];
-			var arr = p.split("").reverse();
-			for (var i = 0; i < arr.length; i++) {
-				if (/\d/.test(arr[i])) {
-					if (i !== 0 && i % 3 === 0)
-						arr[i] = arr[i] + ",";
-				}
-			}
-			arr = arr.reverse();
-			var d;
-			if (c)
-				d = arr.join("") + "." + c;
-			else
-				d = arr.join("");
-			d = m[7] + d;
-			// 正负符号
-			if (flag === false)
-				d = "-" + d;
-			return d;
-		},
-		_FFS_0: function(val, formation) {
-			/**
-			0: " _ * #,##0_ ;_ * -#,##0_ ;_ * "-"??_ ;_ @_ "
-			1: "#,##"
-			2: ",##"
-			3: "0"
-			4: undefined
-			5: "-"
-			6: "#,##"
-			7: ",##"
-			8: "0"
-			9: undefined
-			10: "-"
-			index: 0
-			input: " _ * #,##0_ ;_ * -#,##0_ ;_ * "-"??_ ;_ @_ "
-			**/
-			var m = formation.match(reg.mso._FFS_0);
-			if (val == 0)
-				return m[10];
-			else {
-				var decimalDigits = m[4] ? m[4].length - 1 : 0;
-				var s = new Number(val).toFixed(decimalDigits);
-				var flag = true;
-				if (/^-\d+/.test(s))
-					flag = false;
-				if (flag === false)
-					s = s.substring(1);
-				var p = s.split(".")[0];
-				var c = s.split(".")[1];
-				var arr = p.split("").reverse();
-				for (var i = 0; i < arr.length; i++) {
-					if (/\d/.test(arr[i])) {
-						if (i !== 0 && i % 3 === 0)
-							arr[i] = arr[i] + ",";
-					}
-				}
-				arr = arr.reverse();
-				if (c)
-					d = arr.join("") + "." + c;
-				else
-					d = arr.join("");
-				// 正负符号
-				if (flag === false)
-					d = "-" + d;
-				return d;
-			}
+			return marker + this._ND(val, formation.replace(/[￥|$|\\0022\\00A5\\0022|¥]/, ""));
 		},
 		_ND: function(val, formation) {
 			var m = formation.match(reg.mso._ND);
 			val = this._D0(val, formation.match(/0(\.0+)?/)[0]);
-			val = this._K(val.split(/\./)[0], "#,###") + "." + val.split(/\./)[1];
+			var arr = val.split(/\./);
+			val = this._K(arr[0], "#,###") + (arr[1] !== undefined ? "." + arr[1] : "");
 			return val;
 		}
 	};
@@ -355,6 +262,19 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 
 	// 格式化数据
 	function format(val, formation) {
+		// ms的默认百分带两个小数位
+		if (/^Percent$/i.test(formation))
+			formation = "0.00%";
+		// 转换货币符号
+		formation = formation.replace(/002200A50022/g, "￥");
+		// 去掉空格和下划线，不支持括号格式
+		formation = formation.replace(/_/g, "").replace(/\s/g, "").replace(/[\(\)]/g, "").replace(/\*/g, "");
+		// 去掉样色格式
+		formation = formation.replace(/\[Red\]/g, "");
+		// 去掉双引号，在ms中双引号用来包含货币符号
+		formation = formation.replace(/"/g, "");
+		if (/;/.test(formation))
+			formation = formation.split(/;/)[0];
 		var _val = val;
 		var flag = false;
 		var result = validation.match(val, formation);

@@ -104,11 +104,11 @@ var ExcelFormula = window.ExcelFormula = (function() {
 	};
 
 	// 根据单元格索引执行对应的函数
-	function excute(index) {
+	function excute(index, flag) {
 		index = index.toUpperCase();
 		if (reg.index.test(index)) {
 			if (index in Items)
-				return Items[index].excute();
+				return Items[index].excute(flag);
 		}
 	};
 
@@ -116,7 +116,7 @@ var ExcelFormula = window.ExcelFormula = (function() {
 	function excuteAll() {
 		var arr = [];
 		for (var index in Items)
-			arr = arr.concat(excute(index));
+			arr = arr.concat(excute(index, false));
 		return arr;
 	};
 
@@ -143,7 +143,7 @@ var ExcelFormula = window.ExcelFormula = (function() {
 			} catch (e) {
 				return {
 					flag: false,
-					value: "错误：表达式错误!"
+					value: "表达式错误!"
 				};
 			}
 		} else
@@ -227,7 +227,7 @@ var ExcelFormula = window.ExcelFormula = (function() {
 				delete Items[this.index];
 				return old;
 			},
-			excute: function() {
+			excute: function(flag) {
 				var arr = [];
 				if (this.formula) {
 					var result = doExcute(this.formula);
@@ -236,7 +236,8 @@ var ExcelFormula = window.ExcelFormula = (function() {
 					if (result.flag === true)
 						storage[this.index] = result.value;
 				}
-				arr = arr.concat(this.excuteUbers());
+				if (flag !== false)
+					arr = arr.concat(this.excuteUbers());
 				return arr;
 			},
 			excuteUbers: function() {

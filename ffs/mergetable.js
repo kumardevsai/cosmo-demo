@@ -61,7 +61,13 @@ var MergeTable = window.MergeTable = (function() {
 		// 显示单元格公式的input元素
 		formulaInput: null,
 		// 公式属性
-		fmla: "formula"
+		fmla: "formula",
+		// 显示格式文本框
+		formationInput: null,
+		realvalue: "realvalue",
+		showformat: "showformat",
+		td_type: "td_type",
+		tb_type: "tb_type"
 	};
 
 	// 数据存储
@@ -1312,7 +1318,7 @@ var MergeTable = window.MergeTable = (function() {
 				} else {
 					// 单元格样式缓存
 					if (!persist.backupAttrs[persist.selection[i]]) {
-						persist.backupAttrs[persist.selection[i]] = new PersistAttr(persist.storage[row][col].style.cssText, persist.storage[row][col].getAttribute("td_type"), persist.storage[row][col].className);
+						persist.backupAttrs[persist.selection[i]] = new PersistAttr(persist.storage[row][col].style.cssText, persist.storage[row][col].getAttribute(defaults.td_type), persist.storage[row][col].className);
 					}
 					num++;
 					if (checkBrushFormatOpened() && checkBrushSelected()) {
@@ -1327,9 +1333,9 @@ var MergeTable = window.MergeTable = (function() {
 						}
 						persist.storage[row][col].style.cssText = sty;
 						if (td_type !== null)
-							persist.storage[row][col].setAttribute("td_type", td_type);
+							persist.storage[row][col].setAttribute(defaults.td_type, td_type);
 						else
-							persist.storage[row][col].removeAttribute("td_type");
+							persist.storage[row][col].removeAttribute(defaults.td_type);
 						if (cls !== null)
 							persist.storage[row][col].className = cls;
 						else
@@ -1371,9 +1377,9 @@ var MergeTable = window.MergeTable = (function() {
 					if (persist.backupAttrs[persist.selection[i]]) {
 						persist.storage[row][col].style.cssText = persist.backupAttrs[persist.selection[i]].css;
 						if (persist.backupAttrs[persist.selection[i]].tdType !== null)
-							persist.storage[row][col].setAttribute("td_type", persist.backupAttrs[persist.selection[i]].tdType);
+							persist.storage[row][col].setAttribute(defaults.td_type, persist.backupAttrs[persist.selection[i]].tdType);
 						else
-							persist.storage[row][col].removeAttribute("td_type");
+							persist.storage[row][col].removeAttribute(defaults.td_type);
 						if (persist.backupAttrs[persist.selection[i]].cls !== null)
 							persist.storage[row][col].className = persist.backupAttrs[persist.selection[i]].cls;
 						else
@@ -1481,7 +1487,7 @@ var MergeTable = window.MergeTable = (function() {
 		var width_ = ele.offsetWidth;
 		input.style.height = (height_ - 5) + "px";
 		input.style.width = (width_ - 3) + "px";
-		input.value = ele.getAttribute("realvalue") !== null || ele.getAttribute("showformat") !== null ? (ele.getAttribute("realvalue") !== null ? ele.getAttribute("realvalue") : "") : ele.innerHTML;
+		input.value = ele.getAttribute(defaults.realvalue) !== null || ele.getAttribute(defaults.showformat) !== null ? (ele.getAttribute(defaults.realvalue) !== null ? ele.getAttribute(defaults.realvalue) : "") : ele.innerHTML;
 		ele.innerHTML = "";
 		ele.appendChild(input);
 		AttachEvent(input, "click", function(e) {
@@ -1516,13 +1522,8 @@ var MergeTable = window.MergeTable = (function() {
 				if (cellTd) {
 					// 将文本框中的值取出添加到单元格显示
 					cellTd.removeChild(input);
-					if (cellTd.getAttribute("realvalue") !== null || cellTd.getAttribute("showformat")) {
-						cellTd.setAttribute("realvalue", inputValue);
-						if (cellTd.getAttribute("showformat") !== null) {
-							showFormatterValue(cellTd);
-						}
-					} else
-						cellTd.innerHTML = inputValue;
+					cellTd.setAttribute(defaults.realvalue, inputValue);
+					showFormatterValue(cellTd);
 				}
 				// 清空可编辑文本框的缓存数组
 				persist.edition = {};
@@ -1594,9 +1595,9 @@ var MergeTable = window.MergeTable = (function() {
 						if (inps.length > 0) {
 							cell.children[0].value = arry[i].trim();
 						} else {
-							if (cell.getAttribute("realvalue") !== null || cell.getAttribute("showformat")) {
-								cell.setAttribute("realvalue", arry[i].trim());
-								if (cell.getAttribute("showformat"))
+							if (cell.getAttribute(defaults.realvalue) !== null || cell.getAttribute(defaults.showformat)) {
+								cell.setAttribute(defaults.realvalue, arry[i].trim());
+								if (cell.getAttribute(defaults.showformat))
 									showFormatterValue(cell);
 							}
 							cell.innerHTML = arry[i].trim();
@@ -1614,9 +1615,9 @@ var MergeTable = window.MergeTable = (function() {
 			if (input && input.parentNode) {
 				var val = input.value.Trim();
 				var cell = input.parentNode;
-				if (cell.getAttribute("realvalue") || cell.getAttribute("showformat")) {
-					cell.setAttribute("realvalue", val);
-					if (cell.getAttribute("showformat"))
+				if (cell.getAttribute(defaults.realvalue) || cell.getAttribute(defaults.showformat)) {
+					cell.setAttribute(defaults.realvalue, val);
+					if (cell.getAttribute(defaults.showformat))
 						showFormatterValue(cell);
 				} else
 					cell.innerHTML = val;
@@ -1657,8 +1658,8 @@ var MergeTable = window.MergeTable = (function() {
 						if (persist.storage[obj.y][obj.x]) {
 							// 清除内容
 							persist.storage[obj.y][obj.x].innerHTML = "";
-							if (persist.storage[obj.y][obj.x].getAttribute("realvalue"))
-								persist.storage[obj.y][obj.x].setAttribute("realvalue", "");
+							if (persist.storage[obj.y][obj.x].getAttribute(defaults.realvalue))
+								persist.storage[obj.y][obj.x].setAttribute(defaults.realvalue, "");
 						}
 					}
 				}
@@ -1862,11 +1863,11 @@ var MergeTable = window.MergeTable = (function() {
 					persist.storage[obj.y][obj.x].style.cssText = sty;
 
 					if (td_type !== null) {
-						persist.storage[obj.y][obj.x].setAttribute("td_type", td_type);
-						ele.setAttribute("td_type", td_type);
+						persist.storage[obj.y][obj.x].setAttribute(defaults.td_type, td_type);
+						ele.setAttribute(defaults.td_type, td_type);
 					} else {
-						persist.storage[obj.y][obj.x].removeAttribute("td_type");
-						ele.removeAttribute("td_type");
+						persist.storage[obj.y][obj.x].removeAttribute(defaults.td_type);
+						ele.removeAttribute(defaults.td_type);
 					}
 					if (cls !== null) {
 						persist.storage[obj.y][obj.x].className = cls;
@@ -1941,6 +1942,17 @@ var MergeTable = window.MergeTable = (function() {
 		}
 	};
 
+	// 将单元格格式显示到页面
+	function setFormationInput(ele) {
+		if (ele) {
+			if (defaults.formationInput) {
+				var formation = ele.getAttribute(defaults.showformat) ? unescape(ele.getAttribute(defaults.showformat)) : "";
+				defaults.formationInput.value = formation;
+				defaults.formationInput.title = "当前单元格格式为:" + formation;
+			}
+		}
+	};
+
 	// 鼠标按下操作
 	function onCellMouseDown(ele) {
 		// 清除选区
@@ -1955,6 +1967,7 @@ var MergeTable = window.MergeTable = (function() {
 
 		setCellIndexInput(index);
 		setFmlaInput(ele);
+		setFormationInput(ele);
 		index += defaults.separator + regionIdnex;
 		// 选区起始下标
 		persist.range.start = index;
@@ -1965,7 +1978,7 @@ var MergeTable = window.MergeTable = (function() {
 		// 鼠标被按下
 		persist.mouse.status = 0;
 		// 选区缓存样式
-		persist.backupAttrs[index] = new PersistAttr(ele.style.cssText, ele.getAttribute("td_type"), ele.className);
+		persist.backupAttrs[index] = new PersistAttr(ele.style.cssText, ele.getAttribute(defaults.td_type), ele.className);
 		// 判断是否开启格式刷
 		if (checkBrushFormatOpened() === true) {
 			// 格式单元格被选择
@@ -1973,7 +1986,7 @@ var MergeTable = window.MergeTable = (function() {
 				// 如果格式刷单元格样式缓存不存在
 				if (persist.brush.selectedAttrs[index] === undefined) {
 					// 设置格式刷单元格样式缓存
-					persist.brush.selectedAttrs[index] = new PersistAttr(ele.style.cssText, ele.getAttribute("td_type"), ele.className);
+					persist.brush.selectedAttrs[index] = new PersistAttr(ele.style.cssText, ele.getAttribute(defaults.td_type), ele.className);
 				}
 				// 格式刷正确边框样式
 				ele.style.border = defaults.brushright;
@@ -2016,7 +2029,7 @@ var MergeTable = window.MergeTable = (function() {
 						// 格式刷单元格如果被选中时更改样式，则格式刷的样式缓存也应该更改
 						for (var m in persist.brush.selectedAttrs) {
 							if (m === selection2ArrayStack[i][j]) {
-								persist.brush.selectedAttrs[m] = new PersistAttr(css, persist.storage[obj.y][obj.x].getAttribute("td_type"), persist.storage[obj.y][obj.x].className);
+								persist.brush.selectedAttrs[m] = new PersistAttr(css, persist.storage[obj.y][obj.x].getAttribute(defaults.td_type), persist.storage[obj.y][obj.x].className);
 								persist.storage[obj.y][obj.x].style.border = defaults.brushright;
 								break;
 							}
@@ -2057,7 +2070,7 @@ var MergeTable = window.MergeTable = (function() {
 						// 格式刷单元格如果被选中时更改样式，则格式刷的样式缓存也应该更改
 						for (var m in persist.brush.selectedAttrs) {
 							if (m === selection2ArrayStack[i][j]) {
-								persist.brush.selectedAttrs[m] = new PersistAttr(persist.brush.selectedAttrs[m].css, persist.storage[obj.y][obj.x].getAttribute("td_type"), persist.storage[obj.y][obj.x].className);
+								persist.brush.selectedAttrs[m] = new PersistAttr(persist.brush.selectedAttrs[m].css, persist.storage[obj.y][obj.x].getAttribute(defaults.td_type), persist.storage[obj.y][obj.x].className);
 								persist.storage[obj.y][obj.x].style.border = defaults.brushright;
 								break;
 							}
@@ -2098,9 +2111,9 @@ var MergeTable = window.MergeTable = (function() {
 					if (persist.backupAttrs[selection2ArrayStack[i][j]] !== undefined) {
 						cell.style.cssText = persist.backupAttrs[selection2ArrayStack[i][j]].css;
 						if (persist.backupAttrs[selection2ArrayStack[i][j]].tdType !== null)
-							cell.setAttribute("td_type", persist.backupAttrs[selection2ArrayStack[i][j]].tdType);
+							cell.setAttribute(defaults.td_type, persist.backupAttrs[selection2ArrayStack[i][j]].tdType);
 						else
-							cell.removeAttribute("td_type");
+							cell.removeAttribute(defaults.td_type);
 						if (persist.backupAttrs[selection2ArrayStack[i][j]].cls !== null)
 							cell.className = persist.backupAttrs[selection2ArrayStack[i][j]].cls;
 						else
@@ -2142,9 +2155,9 @@ var MergeTable = window.MergeTable = (function() {
 			else
 				persist.storage[obj.y][obj.x].className = "";
 			if (td_type !== null)
-				persist.storage[obj.y][obj.x].setAttribute("td_type", td_type);
+				persist.storage[obj.y][obj.x].setAttribute(defaults.td_type, td_type);
 			else
-				persist.storage[obj.y][obj.x].removeAttribute("td_type");
+				persist.storage[obj.y][obj.x].removeAttribute(defaults.td_type);
 			break;
 		}
 		persist.brush.selected = -1;
@@ -2417,10 +2430,10 @@ var MergeTable = window.MergeTable = (function() {
 					var value = ocell.innerHTML;
 					var cell = document.createElement("th");
 					cell.innerHTML = value;
-					if (ocell.getAttribute("realvalue"))
-						cell.setAttribute("realvalue", ocell.getAttribute("realvalue"));
-					if (ocell.getAttribute("showformat"))
-						cell.setAttribute("showformat", ocell.getAttribute("showformat"));
+					if (ocell.getAttribute(defaults.realvalue))
+						cell.setAttribute(defaults.realvalue, ocell.getAttribute(defaults.realvalue));
+					if (ocell.getAttribute(defaults.showformat))
+						cell.setAttribute(defaults.showformat, ocell.getAttribute(defaults.showformat));
 					cell.colSpan = ocell.colSpan;
 					cell.rowSpan = ocell.rowSpan;
 					ocell.parentNode.insertBefore(cell, ocell);
@@ -2453,10 +2466,10 @@ var MergeTable = window.MergeTable = (function() {
 					// TODO 就这里不一样
 					var cell = document.createElement("td");
 					cell.innerHTML = value;
-					if (ocell.getAttribute("realvalue"))
-						cell.setAttribute("realvalue", ocell.getAttribute("realvalue"));
-					if (ocell.getAttribute("showformat"))
-						cell.setAttribute("showformat", ocell.getAttribute("showformat"));
+					if (ocell.getAttribute(defaults.realvalue))
+						cell.setAttribute(defaults.realvalue, ocell.getAttribute(defaults.realvalue));
+					if (ocell.getAttribute(defaults.showformat))
+						cell.setAttribute(defaults.showformat, ocell.getAttribute(defaults.showformat));
 					cell.colSpan = ocell.colSpan;
 					cell.rowSpan = ocell.rowSpan;
 					ocell.parentNode.insertBefore(cell, ocell);
@@ -2506,7 +2519,7 @@ var MergeTable = window.MergeTable = (function() {
 		var tbody = rows[0].parentNode;
 		if (tbody.tagName.toLowerCase() == "thead" || tbody.tagName.toLowerCase() == "tfoot")
 			return;
-		var type_ = tbody.getAttribute("tb_type");
+		var type_ = tbody.getAttribute(defaults.tb_type);
 		// 类型相同不拆分
 		if (type_ == type)
 			return;
@@ -2541,7 +2554,7 @@ var MergeTable = window.MergeTable = (function() {
 
 
 	function setType(tbody, type) {
-		tbody.setAttribute("tb_type", type);
+		tbody.setAttribute(defaults.tb_type, type);
 		if (type === "tblist")
 			tbody.className = "tb_list";
 		else if (type === "tbpivot")
@@ -2563,8 +2576,8 @@ var MergeTable = window.MergeTable = (function() {
 				var cell = persist.storage[obj.y][obj.x];
 				if (cell) {
 					cell.className = "td_lock";
-					cell.setAttribute("td_type", "lock");
-					persist.backupAttrs[index] = new PersistAttr(persist.backupAttrs[index].css, cell.getAttribute("td_type"), cell.className);
+					cell.setAttribute(defaults.td_type, "lock");
+					persist.backupAttrs[index] = new PersistAttr(persist.backupAttrs[index].css, cell.getAttribute(defaults.td_type), cell.className);
 				}
 			}
 		}
@@ -2630,7 +2643,7 @@ var MergeTable = window.MergeTable = (function() {
 			for (var j = 0; j < persist.storage[i].length; j++) {
 				if (persist.storage[i][j]) {
 					var a = TableUtils.num2Char(j + 1);
-					arr[a + (i + 1)] = persist.storage[i][j].getAttribute("realvalue") !== null ? persist.storage[i][j].getAttribute("realvalue") : persist.storage[i][j].innerHTML;
+					arr[a + (i + 1)] = persist.storage[i][j].getAttribute(defaults.realvalue) !== null ? persist.storage[i][j].getAttribute(defaults.realvalue) : persist.storage[i][j].innerHTML;
 				}
 			}
 		}
@@ -2659,29 +2672,41 @@ var MergeTable = window.MergeTable = (function() {
 	function useResult(result_arr) {
 		if (!result_arr)
 			return;
+		var errorMsg = "";
 		for (var i = 0; i < result_arr.length; i++) {
 			var key = result_arr[i].index;
-			var result = result_arr[i].value;
 			var obj = TableUtils.getTagObj(key);
 			var x_ = TableUtils.char2Num(obj.col);
 			var index = (obj.row - 1) + defaults.separator + (x_ - 1);
 			if (persist.storage[obj.row - 1]) {
 				var cell = persist.storage[obj.row - 1][x_ - 1];
 				if (cell) {
+					var result = result_arr[i].value;
 					if (result !== null && result !== undefined) {
-						if (cell.getAttribute("realvalue") || cell.getAttribute("showformat")) {
-							cell.setAttribute("realvalue", result);
-							if (cell.getAttribute("showformat"))
-								showFormatterValue(cell);
-						} else
-							cell.innerHTML = result;
-						/**
+						if (result_arr[i].flag === false) {
+							errorMsg += result_arr[i].index + result + ",";
+							cell.innerHTML = "#ERROR";
+							if (cell.getAttribute(defaults.realvalue))
+								cell.setAttribute(defaults.realvalue, "");
+						} else {
+							if (cell.getAttribute(defaults.realvalue) || cell.getAttribute(defaults.showformat)) {
+								cell.setAttribute(defaults.realvalue, result);
+								if (cell.getAttribute(defaults.showformat))
+									showFormatterValue(cell);
+							} else
+								cell.innerHTML = result;
+							/**
 						    if (persist.selection[0] && persist.selection[0].indexOf(index) != -1)
 							contentEditable(cell, index);
 						**/
+						}
 					}
 				}
 			}
+		}
+		if (errorMsg !== "") {
+			errorMsg = "错误:" + errorMsg.replace(/,$/, "");
+			// alert(errorMsg);
 		}
 	};
 
@@ -2701,17 +2726,17 @@ var MergeTable = window.MergeTable = (function() {
 
 	function showFormatterValue(cell) {
 		if (cell) {
-			var realvalue = cell.getAttribute("realvalue");
-			if (realvalue !== undefined) {
-				var formattion = cell.getAttribute("showformat");
-				if (formattion) {
-					formattion = unescape(formattion);
-					formattion = formattion.replace(/\\/, "");
+			var realvalue = cell.getAttribute(defaults.realvalue);
+			if (realvalue !== null) {
+				var formation = cell.getAttribute(defaults.showformat);
+				if (formation) {
+					formation = unescape(formation);
+					formation = formation.replace(/\\/g, "");
 
-					var result = MSONumberFormatter.format(realvalue, formattion);
-					if (result.flag === true)
-						cell.innerHTML = result.val;
-				}
+					var result = MSONumberFormatter.format(realvalue ? realvalue : cell.innerHTML, formation);
+					cell.innerHTML = result.val;
+				} else
+					cell.innerHTML = realvalue;
 			}
 		}
 	};
@@ -2724,7 +2749,7 @@ var MergeTable = window.MergeTable = (function() {
 		}
 	};
 
-	function setMsoNumberFormat(formattion) {
+	function setMsoNumberFormat(formation) {
 		// 选区为空
 		if (persist.selection.length <= 0) {
 			alert(defaults.selectionNullMsg);
@@ -2740,10 +2765,16 @@ var MergeTable = window.MergeTable = (function() {
 				var cell = persist.storage[obj.y][obj.x];
 				if (cell) {
 					// 设置样式
-					cell.setAttribute("showformat", escape(formattion));
-					var result = MSONumberFormatter.format(cell.getAttribute("realvalue"), formattion);
-					if (result.flag === true)
+					cell.setAttribute(defaults.showformat, escape(formation));
+					var realvalue = cell.getAttribute(defaults.realvalue);
+					var originValue = cell.innerHTML;
+					var result = MSONumberFormatter.format(realvalue ? realvalue : originValue, formation.replace(/\\/g, ""));
+					if (result.flag === true) {
 						cell.innerHTML = result.val;
+						if (realvalue === null)
+							cell.setAttribute(defaults.realvalue, originValue);
+					} else
+						cell.setAttribute(defaults.realvalue, originValue);
 				}
 			}
 		}
