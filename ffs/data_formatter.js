@@ -204,7 +204,7 @@
 
     AttachEvent(window, "load", inits, false);
 
-    var useksperateCheckbox, numDigits, viewNumSelect, numDigits4Money, markForMoney, viewMoneySelect, okBtn, cancelBtn, numTypeSelect;
+    var useksperateCheckbox, numDigits, viewNumSelect, numDigits4Money, markForMoney, viewMoneySelect, numDigitsForPercent, okBtn, cancelBtn, numTypeSelect;
 
     function inits() {
 

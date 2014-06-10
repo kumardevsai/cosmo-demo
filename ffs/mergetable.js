@@ -1490,6 +1490,8 @@ var MergeTable = window.MergeTable = (function() {
 		input.value = ele.getAttribute(defaults.realvalue) !== null || ele.getAttribute(defaults.showformat) !== null ? (ele.getAttribute(defaults.realvalue) !== null ? ele.getAttribute(defaults.realvalue) : "") : ele.innerHTML;
 		ele.innerHTML = "";
 		ele.appendChild(input);
+		if (window.navigator.userAgent.toLowerCase().indexOf("firefox") !== -1)
+			input.focus();
 		AttachEvent(input, "click", function(e) {
 			document.getElementById(id).onselectstart = function() {};
 			TableUtils.preventEvent(e);
@@ -1592,15 +1594,14 @@ var MergeTable = window.MergeTable = (function() {
 					var cell = persist.storage[rowindex + j][cellindex + i];
 					if (cell) {
 						var inps = cell.getElementsByTagName('input');
+						cell.setAttribute(defaults.realvalue, arry[i].trim());
 						if (inps.length > 0) {
 							cell.children[0].value = arry[i].trim();
 						} else {
-							if (cell.getAttribute(defaults.realvalue) !== null || cell.getAttribute(defaults.showformat)) {
-								cell.setAttribute(defaults.realvalue, arry[i].trim());
-								if (cell.getAttribute(defaults.showformat))
-									showFormatterValue(cell);
-							}
-							cell.innerHTML = arry[i].trim();
+							if (cell.getAttribute(defaults.showformat))
+								showFormatterValue(cell);
+							else
+								cell.innerHTML = arry[i].trim();
 						}
 					}
 				}

@@ -165,15 +165,17 @@ var ExcelFormula = window.ExcelFormula = (function() {
 
 	// 检查嵌套
 	function checkCycle(index, arr) {
-		var str = arr.join(",");
+		var str = arr ? arr.join(",") : "";
 		if (str.indexOf(index + ",") !== -1 || str.indexOf("," + index) === str.length - index.length - 1 && str.indexOf("," + index) !== -1)
 			return false;
 		else {
 			var flag = true;
-			for (var i = 0; i < arr.length; i++) {
-				var subIndex = arr[i];
-				if (subIndex in Items) {
-					flag = checkCycle(subIndex, getPropertyArray(Items[subIndex].subs));
+			if (arr) {
+				for (var i = 0; i < arr.length; i++) {
+					var subIndex = arr[i];
+					if (subIndex in Items) {
+						flag = checkCycle(subIndex, getPropertyArray(Items[subIndex].subs));
+					}
 				}
 			}
 			return flag;

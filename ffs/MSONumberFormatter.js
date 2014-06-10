@@ -262,6 +262,9 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 
 	// 格式化数据
 	function format(val, formation) {
+		// 处理0的问题
+		if (val !== "" && val == 0)
+			val = "0";
 		// ms的默认百分带两个小数位
 		if (/^Percent$/i.test(formation))
 			formation = "0.00%";
@@ -271,10 +274,21 @@ var MSONumberFormatter = window.MSONumberFormatter = (function(win, global) {
 		formation = formation.replace(/_/g, "").replace(/\s/g, "").replace(/[\(\)]/g, "").replace(/\*/g, "");
 		// 去掉样色格式
 		formation = formation.replace(/\[Red\]/g, "");
+		if (/;/.test(formation)) {
+			var arr = formation.split(/;/);
+			for (var i = 1; i < arr.length; i++) {
+				if (/"(.*)"\?/.test(arr[i])) {
+					if (val === "0")
+						return {
+							val: arr[i].match(/"(.*)"\?/)[1].replace(/"/g, "").replace(/\*/g, ""),
+							flag: true
+						};
+				}
+			}
+			formation = arr[0];
+		}
 		// 去掉双引号，在ms中双引号用来包含货币符号
 		formation = formation.replace(/"/g, "");
-		if (/;/.test(formation))
-			formation = formation.split(/;/)[0];
 		var _val = val;
 		var flag = false;
 		var result = validation.match(val, formation);
