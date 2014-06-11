@@ -1,0 +1,16 @@
+
+
+
+
+@font-face {
+    font-family: 'RokkittRegular';
+    src: url("http://qiches.com/templates/ja_argo/fonts/rokkitt/Rokkitt-webfont.eot");
+    src: url("http://qiches.com/templates/ja_argo/fonts/rokkitt/Rokkitt-webfont.eot?#iefix") format('embedded-opentype'),
+         url("http://qiches.com/templates/ja_argo/fonts/rokkitt/Rokkitt-webfont.woff") format('woff'),
+         url("http://qiches.com/templates/ja_argo/fonts/rokkitt/Rokkitt-webfont.ttf") format('truetype'),
+         url("http://qiches.com/templates/ja_argo/fonts/rokkitt/Rokkitt-webfont.svg#RokkittRegular") format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+

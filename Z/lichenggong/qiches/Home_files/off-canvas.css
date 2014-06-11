@@ -1,0 +1,127 @@
+
+
+#off-canvas-nav {
+  display: none;
+} 
+#off-canvas-nav-right {
+  display: none;
+  position: absolute;
+  top: 72px;
+  right: -260px;
+  bottom:0px;
+  width: 260px;
+  z-index: 100;
+  background: none;
+  background-color: red;
+  -webkit-transform: translateX(0px);
+  -moz-transform: translateX(0px);
+  -o-transform: translateX(0px);
+  transform: translateX(0px);
+  -webkit-transition: -webkit-transform 500ms ease;
+  -moz-transition: -moz-transform 500ms ease;
+  -o-transition: -o-transform 500ms ease;
+  transition: transform 500ms ease;
+}
+@media screen and (min-width: 321px) and (max-width: 768px) {
+  .off-canvas {
+    width: 100%;
+    overflow-x: hidden;
+    position: relative;
+  }
+  .off-canvas body {
+    width: 100%;
+    overflow-x: hidden;
+    -o-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    position: relative;
+  }
+  .off-canvas body > * {
+    -webkit-transform: translateX(0);
+    -moz-transform: translateX(0);
+    -o-transform: translateX(0);
+    transform: translateX(0);
+    -webkit-transition: -webkit-transform 500ms ease;
+    -moz-transition: -moz-transform 500ms ease;
+    -o-transition: -o-transform 500ms ease;
+    transition: transform 500ms ease;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -o-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  .off-canvas #t3-mainnav .nav-collapse,
+  .off-canvas #ja-mainnav .nav-collapse {
+    display: none;
+  }
+  .off-canvas #off-canvas-nav {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0px;
+    z-index: 1;
+    background: none;
+  }
+  .off-canvas #off-canvas-nav .t3-mainnav {
+    margin: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 500px;
+    -webkit-transform: translateX(-70%);
+    -moz-transform: translateX(-70%);
+    -o-transform: translateX(-70%);
+    transform: translateX(-70%);
+  }
+  .off-canvas #off-canvas-nav .t3-mainnav .nav-collapse {
+    height: auto;
+    background: none;
+  }
+  .off-canvas-enabled body > * {
+    -webkit-transform: translateX(300px);
+    -moz-transform: translateX(300px);
+    -o-transform: translateX(300px);
+    transform: translateX(300px);
+  }
+  .off-canvas-enabled #t3-mainnav {
+    display: block;
+  }
+  .off-canvas #off-canvas-nav-right {
+    display: block;
+    position: absolute;
+    top: 72px;
+    right: -260px;
+    bottom:0px;
+    width: 260px;
+    z-index: 100;
+    background: none;
+    background-color: red;
+    -webkit-transform: translateX(-260px);
+    -moz-transform: translateX(260px);
+    -o-transform: translateX(260px);
+    transform: translateX(260px);
+    -webkit-transition: -webkit-transform 500ms ease;
+    -moz-transition: -moz-transform 500ms ease;
+    -o-transition: -o-transform 500ms ease;
+    transition: transform 500ms ease;
+  }
+  .off-canvas-enabled-right body > * {
+    -webkit-transform: translateX(-50px);
+    -moz-transform: translateX(-50px);
+    -o-transform: translateX(-50px);
+    transform: translateX(-50px);
+    -webkit-transition: -webkit-transform 500ms ease;
+    -moz-transition: -moz-transform 500ms ease;
+    -o-transition: -o-transform 500ms ease;
+    transition: transform 500ms ease;
+  }
+  .off-canvas-enabled-right #t3-mainnav-right {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  
+}

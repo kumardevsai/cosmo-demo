@@ -1452,7 +1452,7 @@ var MergeTable = window.MergeTable = (function() {
 		var exist = false;
 		var num = 0;
 		for (var i = 0; i < persist.selection.length; i++) {
-			if (persist.selection[i] === persist.range.start)
+			if (persist.selection[i] === persist.range.start || persist.range.start.indexOf(persist.selection[i] + defaults.separator) !== -1)
 				exist = true;
 			var arr = persist.selection[i].split(defaults.separator);
 			var y = arr[0];
