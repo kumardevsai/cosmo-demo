@@ -1,0 +1,12 @@
+#gaodemap{
+	border:1px solid #e7e7e7;
+}
+
+.result{
+	overflow: auto;
+	border:1px solid #e7e7e7;
+}
+
+.select_span:hover{
+	text-decoration: underline;;
+}
