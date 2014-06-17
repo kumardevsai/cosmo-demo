@@ -142,6 +142,54 @@ var SearchGroup = (function(win) {
 			show: function() {
 				this.element.style.display = "";
 				this.showed = true;
+			},
+			upSelect: function() {
+				this.keyboardSelect(this.getPreviousShowed());
+			},
+			downSelect: function() {
+				this.keyboardSelect(this.getNextShowed());
+			},
+			keyboardSelect: function(showed) {
+				this.selectedOpt.mouseon = false;
+				this.selectedOpt.keyon = false;
+				if (showed) {
+					showed.select();
+					showed.mouseon = true;
+					showed.keyon = true;
+				}
+			},
+			getCurrentSelectedIndex: function() {
+				var i = 0,
+					len = this.opts.length;
+				for (i; i < len; i++) {
+					if (this.opts[i] === this.selectedOpt)
+						return i;
+				}
+				return -1;
+			},
+			getPreviousShowed: function(index) {
+				var currentSelectedIndex = index !== undefined ? index : this.getCurrentSelectedIndex();
+				if (currentSelectedIndex >= 0) {
+					if (currentSelectedIndex - 1 >= 0) {
+						if (this.opts[currentSelectedIndex - 1].showed === true)
+							return this.opts[currentSelectedIndex - 1];
+						else
+							return this.getPreviousShowed(currentSelectedIndex - 1);
+					} else
+						return this.getPreviousShowed(this.opts.length);
+				}
+			},
+			getNextShowed: function(index) {
+				var currentSelectedIndex = index !== undefined ? index : this.getCurrentSelectedIndex();
+				if (currentSelectedIndex >= -1) {
+					if (currentSelectedIndex + 1 <= this.opts.length - 1) {
+						if (this.opts[currentSelectedIndex + 1].showed === true)
+							return this.opts[currentSelectedIndex + 1];
+						else
+							return this.getNextShowed(currentSelectedIndex + 1);
+					} else
+						return this.getNextShowed(-1);
+				}
 			}
 		};
 	}());
@@ -160,6 +208,8 @@ var SearchGroup = (function(win) {
 		this.searchInputDropDown;
 		// 鼠标是否悬停在列表项上
 		this.mouseon = false;
+		// 是否进行键盘选择
+		this.keyon = false;
 	};
 
 	// 下拉列表子项原型
@@ -218,13 +268,19 @@ var SearchGroup = (function(win) {
 			e = e || win.event;
 			switch (e.keyCode) {
 				case 38:
-					//upSelect(searchInput);
+					if (searchInput.searchInputDropDown.showed === true)
+						searchInput.searchInputDropDown.upSelect();
 					break;
 				case 40:
-					//downSelect(searchInput);
+					if (searchInput.searchInputDropDown.showed === true)
+						searchInput.searchInputDropDown.downSelect();
 					break;
 				case 37:
 				case 39:
+					break;
+				case 13:
+					if (searchInput.searchInputDropDown.showed === true)
+						optSelectedHelperHandler(searchInput.searchInputDropDown.selectedOpt);
 					break;
 				default:
 					// 更新搜索文本
@@ -273,7 +329,7 @@ var SearchGroup = (function(win) {
 	var searchBlurHelper = function(searchInput) {
 		return function() {
 			var selectedOpt = searchInput.searchInputDropDown.selectedOpt;
-			if (selectedOpt && selectedOpt.mouseon === false)
+			if (selectedOpt && (selectedOpt.mouseon === false || selectedOpt.mouseon === true && selectedOpt.keyon === true))
 				searchInput.searchInputDropDown.hide();
 		};
 	};
@@ -292,13 +348,15 @@ var SearchGroup = (function(win) {
 			}
 			// 其他浏览器阻止下拉框弹出
 			utils.preventDefault(e);
-			if (searchInputDropDown.showed === false) {
-				// 点击下拉，显示所有的列表项，不应用当前的搜索
-				searchHandler(searchInputDropDown.searchInput, searchInputDropDown.search(""));
-				// 文本框获取焦点
-				searchInputDropDown.searchInput.focus();
-			} else
-				searchInputDropDown.hide();
+			setTimeout(function() {
+				if (searchInputDropDown.showed === false) {
+					// 点击下拉，显示所有的列表项，不应用当前的搜索
+					searchHandler(searchInputDropDown.searchInput, searchInputDropDown.search(""));
+					// 文本框获取焦点
+					searchInputDropDown.searchInput.focus();
+				} else
+					searchInputDropDown.hide();
+			}, 0);
 		};
 	};
 
@@ -346,12 +404,16 @@ var SearchGroup = (function(win) {
 
 	// 列表项选择
 	var optSelectedHelper = function(opt) {
-		return function() {
-			// 更新搜索文本
-			opt.searchInputDropDown.searchInput.updateInputText(opt.value);
-			// 隐藏下拉列表
-			opt.searchInputDropDown.hide();
+		return function(e) {
+			optSelectedHelperHandler(opt);
 		};
+	};
+
+	function optSelectedHelperHandler(opt) {
+		// 更新搜索文本
+		opt.searchInputDropDown.searchInput.updateInputText(opt.value);
+		// 隐藏下拉列表
+		opt.searchInputDropDown.hide();
 	};
 
 	// 鼠标滑过列表项
