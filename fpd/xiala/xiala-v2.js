@@ -3,23 +3,9 @@ var SearchGroup = (function(win) {
 	var doc = win ? win.document : document;
 	if (!doc)
 		return;
+	var body_ = doc.body;
 
 	var isIe = doc.all ? true : false;
-
-	var utils = {
-		stopPropagtion: function(e) {
-			if (e.stopPropagtion)
-				e.stopPropagtion();
-			else
-				e.cancelBubble = true;
-		},
-		preventDefault: function(e) {
-			if (e.preventDefault)
-				e.preventDefault();
-			else
-				e.returnValue = false;
-		}
-	};
 
 	// 默认配置
 	var defaults = {
@@ -350,20 +336,8 @@ var SearchGroup = (function(win) {
 		};
 	};
 
-	var selMouseDownHelper = function(searchInputDropDown) {
+	var searchInputMouseDownHelper = function(searchInputDropDown) {
 		return function(e) {
-			e = e || win.event;
-			// 兼容IE阻止原生select下拉框弹出 
-			// TODO bug 快速点击下拉框箭头将导致此段代码失效,木有好的解决办法
-			if (document.all) {
-				var t = e.srcElement;
-				t.disabled = true;
-				setTimeout(function() {
-					t.disabled = false;
-				}, 0);
-			}
-			// 其他浏览器阻止下拉框弹出
-			utils.preventDefault(e);
 			if (searchInputDropDown.showed === false) {
 				// 点击下拉，显示所有的列表项，不应用当前的搜索
 				searchHandler(searchInputDropDown.searchInput, searchInputDropDown.search(""));
@@ -395,6 +369,45 @@ var SearchGroup = (function(win) {
 		};
 	};
 
+	function setDropDownPostion(searchInputDropDown) {
+		var input = searchInputDropDown.searchInput.element;
+		var body_style = {
+			height: body_.offsetHeight,
+			scrollTop: body_.scrollTop
+		};
+		var input_style = {
+			height: input.offsetHeight,
+			offsetTop: input_.offsetTop
+		};
+
+		var topHeight = input_style.offsetTop - body_style.scrollTop;
+		var bottomHeight = body_style.height - input_style.height - topHeight;
+
+		var dropDown = searchInputDropDown.element;
+		if (dropDown.offsetHeight <= bottomHeight) {
+			dropDown.style.top = "20px";
+			dropDown.style.height = "auto";
+		} else {
+			if (bottomHeight > 60) {
+				dropDown.style.top = "20px";
+				dropDown.style.height = bottomHeight + "px";
+			} else {
+				if (topHeight > dropDown.offsetHeight) {
+					dropDown.style.top = "-" + (topHeight - dropDown.offsetHeight) + "px";
+					dropDown.style.height = "auto";
+				} else {
+					if (topHeight > 60) {
+						dropDown.style.top = "-" + topHeight + "px";
+						dropDown.style.height = topHeight + "px";
+					} else {
+						dropDown.style.top = "20px";
+						dropDown.style.height = "100px";
+					}
+				}
+			}
+		}
+	};
+
 	// 创建下拉搜索
 	function createSearch(sel, input) {
 		// 获取页面下拉框的id
@@ -416,7 +429,7 @@ var SearchGroup = (function(win) {
 			// 按键抬起触发搜索
 			AttachEvent(input, "keyup", searchHelper(searchInput_), false);
 			AttachEvent(input, "blur", searchBlurHelper(searchInput_), false);
-			AttachEvent(sel, "mousedown", selMouseDownHelper(searchInputDropDown), false);
+			AttachEvent(input, "mousedown", searchInputMouseDownHelper(searchInputDropDown), false);
 			AttachEvent(searchInputDropDown.element, "mouseover", searchInputDropDownMouseOverHelper(searchInputDropDown), false);
 			AttachEvent(searchInputDropDown.element, "mouseout", searchInputDropDownMouseOutHelper(searchInputDropDown), false);
 			if (isIe)
@@ -490,7 +503,7 @@ var SearchGroup = (function(win) {
 			width: input.offsetWidth
 		};
 		var tgtPosition = {
-			width: refPosition.width + (isIe ? 18 : 16)
+			width: refPosition.width
 		};
 		var dropDown = searchInputDropDown.element;
 		for (var i in tgtPosition) {

@@ -56,6 +56,8 @@ var nextPageHelper = (function() {
 					var objdiv = CreateTable(xmlobj, tableContainer);
 					appendNext(objdiv, flag);
 					readXmlObjAttrs(xmlobj, flag);
+
+					reDrawHeaderTar();
 				}
 			).doPost(pdfobj.Param.ToXml());
 		}
@@ -86,6 +88,37 @@ var nextPageHelper = (function() {
 		for (i; i < len; i++) {
 			if (trs[j])
 				tbody_.appendChild(trs[j]);
+		}
+	};
+
+	function reDrawHeadTarTable() {
+		var objDivMaster = tableContainer.children[1];
+		var objTableHead = document.createElement("table");
+		var newTBody = document.createElement("tbody");
+		objTableHead.id = "HeadTar";
+		objTableHead.style.position = "relative";
+		objTableHead.appendChild(newTBody);
+		DrawTable(objDivMaster.children[0], objTableHead, 0, parseInt(attr(tableContainer, "LockHeader")), -1);
+		objTableHead.srcTable = objDivMaster.children[0];
+		return objTableHead;
+	};
+
+	function reDrawHeaderTar() {
+		if (attr(tableContainer, "LockHeader") && parseInt(attr(tableContainer, "LockHeader")) > 0) {
+			var table = reDrawHeadTarTable();
+			var div = tableContainer.children[2];
+			if (div) {
+				var objDivMaster = tableContainer.children[1];
+				div.innerHTML = "";
+				div.appendChild(table);
+				AttachEvent(objDivMaster, 'scroll', newdivScroll1(table))
+				div.style.overflow = "hidden";
+				div.style.zIndex = 802;
+				div.style.width = objDivMaster.offsetWidth - 16 + "px";
+				div.style.position = 'absolute';
+				div.style.left = objDivMaster.offsetLeft;
+				div.style.top = objDivMaster.offsetTop;
+			}
 		}
 	};
 
