@@ -290,8 +290,10 @@ var SearchGroup = (function(win) {
 					// 更新搜索文本
 					searchInput.text = searchInput.element.value;
 					// 搜索
-					var result = searchInput.search();
-					searchHandler(searchInput, result);
+					searchHandler(searchInput, searchInput.search());
+					searchInput.searchInputDropDown.element.style.height = "auto";
+					setDropDownPostion(searchInput.searchInputDropDown);
+					searchInput.searchInputDropDown.show();
 					break;
 			}
 		};
@@ -303,48 +305,46 @@ var SearchGroup = (function(win) {
 		var i = 0,
 			j = 0,
 			len1 = s.length,
-			len2 = h.length,
-			totalHeight = 0;
-		if (len1 === 0)
-			searchInput.searchInputDropDown.hide();
-		else {
-			var flag = false;
-			searchInput.searchInputDropDown.show();
-			for (i; i < len1; i++) {
-				s[i].show();
-				totalHeight += s[i].element.offsetHeight;
-				if (s[i] === searchInput.searchInputDropDown.selectedOpt)
-					flag = true;
-			}
-			if (flag === false) {
-				if (s[0])
-					s[0].select();
-			}
-			for (j; j < len2; j++) {
-				h[j].hide();
-			}
+			len2 = h.length;
+		var flag = false;
+		for (i; i < len1; i++) {
+			s[i].show();
+			if (s[i] === searchInput.searchInputDropDown.selectedOpt)
+				flag = true;
 		}
-		var dropDown = searchInput.searchInputDropDown.element;
-		totalHeight > 240 ? dropDown.style.height = 240 + "px" : dropDown.style.height = "auto";
+		if (flag === false) {
+			if (s[0])
+				s[0].select();
+		}
+		for (j; j < len2; j++) {
+			h[j].hide();
+		}
+		searchInput.searchInputDropDown.show();
 	};
 
 	var searchBlurHelper = function(searchInput) {
 		return function() {
 			var selectedOpt = searchInput.searchInputDropDown.selectedOpt;
-			if (selectedOpt && (selectedOpt.mouseon === false || selectedOpt.mouseon === true && selectedOpt.keyon === true))
+			if (selectedOpt && (selectedOpt.mouseon === false || selectedOpt.mouseon === true && selectedOpt.keyon === true)) {
+				searchInput.searchInputDropDown.element.style.height = "auto";
 				searchInput.searchInputDropDown.hide();
+			}
 		};
 	};
 
 	var searchInputMouseDownHelper = function(searchInputDropDown) {
 		return function(e) {
+			searchInputDropDown.element.style.height = "auto";
 			if (searchInputDropDown.showed === false) {
 				// 点击下拉，显示所有的列表项，不应用当前的搜索
 				searchHandler(searchInputDropDown.searchInput, searchInputDropDown.search(""));
+				setDropDownPostion(searchInputDropDown);
+				searchInputDropDown.show();
 				// 文本框获取焦点
 				searchInputDropDown.searchInput.focus();
-			} else
+			} else {
 				searchInputDropDown.hide();
+			}
 		};
 	};
 
@@ -377,7 +377,7 @@ var SearchGroup = (function(win) {
 		};
 		var input_style = {
 			height: input.offsetHeight,
-			offsetTop: input_.offsetTop
+			offsetTop: input.parentNode.offsetTop
 		};
 
 		var topHeight = input_style.offsetTop - body_style.scrollTop;
@@ -385,23 +385,46 @@ var SearchGroup = (function(win) {
 
 		var dropDown = searchInputDropDown.element;
 		if (dropDown.offsetHeight <= bottomHeight) {
-			dropDown.style.top = "20px";
-			dropDown.style.height = "auto";
+			if (dropDown.offsetHeight < 200) {
+				dropDown.style.top = "20px";
+				dropDown.style.height = "auto";
+			} else {
+				dropDown.style.top = "20px";
+				dropDown.style.height = "200px";
+			}
 		} else {
+			if (bottomHeight > 200) {
+				dropDown.style.top = "20px";
+				dropDown.style.height = "200px";
+				return;
+			}
 			if (bottomHeight > 60) {
 				dropDown.style.top = "20px";
 				dropDown.style.height = bottomHeight + "px";
 			} else {
 				if (topHeight > dropDown.offsetHeight) {
-					dropDown.style.top = "-" + (topHeight - dropDown.offsetHeight) + "px";
-					dropDown.style.height = "auto";
-				} else {
-					if (topHeight > 60) {
-						dropDown.style.top = "-" + topHeight + "px";
-						dropDown.style.height = topHeight + "px";
+					if (dropDown.offsetHeight > 200) {
+						dropDown.style.top = "-200px";
+						dropDown.style.height = "200px";
 					} else {
-						dropDown.style.top = "20px";
-						dropDown.style.height = "100px";
+						dropDown.style.top = "-" + dropDown.offsetHeight + "px";
+						dropDown.style.height = "auto";
+					}
+				} else {
+					if (topHeight > 200) {
+						dropDown.style.top = "-200px";
+						dropDown.style.height = "200px";
+					} else {
+						if (topHeight > 60) {
+							dropDown.style.top = "-" + topHeight + "px";
+							dropDown.style.height = topHeight + "px";
+						} else {
+							dropDown.style.top = "20px";
+							if (dropDown.offsetHeight > 60)
+								dropDown.style.height = "60px";
+							else
+								dropDown.style.height = "auto";
+						}
 					}
 				}
 			}
@@ -503,7 +526,7 @@ var SearchGroup = (function(win) {
 			width: input.offsetWidth
 		};
 		var tgtPosition = {
-			width: refPosition.width
+			width: !isIe ? refPosition.width - 2 : refPosition.width
 		};
 		var dropDown = searchInputDropDown.element;
 		for (var i in tgtPosition) {
