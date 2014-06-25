@@ -1,0 +1,9 @@
+@media print{
+	#btn4, #btn2, #edit{
+		display: none;
+	}
+	#table0{
+		width:100px;
+		height:100px;
+	}
+}
