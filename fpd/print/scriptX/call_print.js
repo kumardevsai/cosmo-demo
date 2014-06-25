@@ -10,7 +10,8 @@
         html: "fffffffffffffffff",
         header: "ffffffffff",
         footer: 'xxxxxxxxxxx',
-        root: "div1"
+        root: "div1",
+        cabPath:'../../fileaccess.aspx?filename=/reports/suppot_proc/打印/scriptX/download/smsx.cab'
     };
     **/
     if (!obj)
@@ -99,7 +100,7 @@
     function print_this() {
         if (/msie/i.test(agent)) {
             set_config_ie();
-            MeadCo.ScriptX.PrintPage(false);
+            MeadCo.ScriptX.PrintPage(true);
             return;
         }
         window.print();
@@ -109,15 +110,17 @@
         var config = {
             header: pageSetup === false ? "" : (header ? header : ""),
             footer: pageSetup === false ? "" : (footer ? footer : ""),
-            bottomMargin: "0",
-            leftMargin: "0",
-            rightMargin: "0",
-            topMargin: "0"
+            bottomMargin: 0,
+            leftMargin: 0,
+            rightMargin: 0,
+            topMargin: 0
         };
 
         if (MeadCo.ScriptX.Init()) {
             for (var i in config) {
-                MeadCo.ScriptX.Printing[i] = config[i];
+                if (MeadCo.ScriptX.Printing[i] !== undefined) {
+                    MeadCo.ScriptX.Printing[i] = config[i];
+                }
                 // MeadCo.ScriptX.Printing.orientation = "landscape";
             }
         }

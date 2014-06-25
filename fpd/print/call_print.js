@@ -94,10 +94,10 @@
         var config = {
             header: pageSetup === false ? "" : (header ? header : ""),
             footer: pageSetup === false ? "" : (footer ? footer : ""),
-            margin_left: "0",
-            margin_top: "0",
-            margin_right: "0",
-            margin_bottom: "0"
+            margin_left: 0,
+            margin_top: 0,
+            margin_right: 0,
+            margin_bottom: 0
         };
         var Wsh = new ActiveXObject("WScript.Shell");
         for (var i in config) {
