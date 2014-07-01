@@ -1,0 +1,18 @@
+{
+	"name": "adminpasser",
+	"background": {
+		"scripts": ["js/indexeddb.js", "js/background.js"]
+	},
+	"permissions": [
+		"storage", "unlimitedStorage", "tabs", "http://*/*"
+	],
+	"manifest_version": 2,
+	"version": "1.0",
+	"description": "自动填充",
+	"browser_action": {
+		"default_icon": "images/icon.png",
+		"default_popup": "list.html",
+		"default_title": "http密码保存"
+	},
+	"web_accessible_resources": ["images/question_mark.png", "images/check_alt.png"]
+}

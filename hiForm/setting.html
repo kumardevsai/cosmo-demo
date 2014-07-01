@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+	<meta charset='utf-8'>
+	<link rel="stylesheet" type="text/css" href="css/common.css">
+	<link rel="stylesheet" type="text/css" href="css/list.css">
+	<script type="text/javascript" src='js/jquery.min.js'></script>
+	<script type="text/javascript" src='js/setting.js'></script>
+	<body>
+		<div class='form'>
+			<div class='title-bar'>
+				<span>
+					属性设置(<span style='font-weight:normal;color:red;'>当前设置保存在缓存中</span>)
+				</span>
+			</div>
+			<div class='top-bar'>
+				<img src="images/list_nested_28.png" id='goList' class='go-list' title='查看列表' style='height:16px;'>
+				<img src='images/plus.png' id='addHttp' class='go-list' title='添加'>
+			</div>
+			<div id='listAll'>
+				<div class="item">
+					<input type="checkbox" id='setAutoCatch' class="item-checkbox" checked>
+					<label for='setAutoCatch'>自动填充当前网页HTTP地址到表单录入</label>
+				</div>
+				<div class="item">
+					<input type="checkbox" id='checkPage' class="item-checkbox" checked>
+					<label for='checkPage'>始终检测网页地址</label>
+				</div>
+				<div class="item">
+					<input type="checkbox" id='checkLogin' class="item-checkbox">
+					<label for='checkLogin'>填充账户后直接登录</label>
+				</div>
+				<div class="item">
+					<input type="checkbox" id='isFilterParams' class="item-checkbox">
+					<label for='isFilterParams'>过滤时间戳及参数</label>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+	<meta charset='utf-8'>
+	<link rel="stylesheet" type="text/css" href="css/common.css">
+	<link rel="stylesheet" type="text/css" href="css/hiform.css">
+	<script type="text/javascript" src='js/jquery.min.js'></script>
+	<script type="text/javascript" src='js/indexeddb.js'></script>
+	<script type="text/javascript" src='js/hiform.js'></script>
+	<form action>
+		<div class='form'>
+			<legend class='form-title'>
+				welcome
+			</legend>
+			<div class='action-bar'>
+				<img src="images/search.png" class='go-list' title='查找输入框' id='goSearch'>
+				<img src="images/settings.png" class='go-list' title='属性设置' id='goSetting'>
+				<img src="images/list_nested_28.png" class='go-list' title='查看保存列表' id='goList'>
+			</div>
+			<p>
+				<label for='httphost'>
+					地&nbsp;&nbsp;址：
+				</label>
+				<input type='text' id='httphost' required autofocus placeholder='请填写http地址'>	
+			</p>
+			<p>
+				<label for='username'>
+					用户名：
+				</label>
+				<input type='text' id='username' required placeholder="请填写用户名称" list='usernamelist' autocomplete='on'>	
+				<datalist id='usernamelist' style='display:none;'>
+					<option value='admin'>admin</option>
+					<option value='user'>user</option>
+					<option value='username'>username</option>
+				</datalist>
+			</p>
+			<p>
+				<label for='password'>
+					密&nbsp;&nbsp;码：
+				</label>
+				<input type='text' id='password' required placeholder="请填写密码">	
+			</p>
+			<p>
+				<button id='ok' class='button'>保存</button>
+				<button id='cancel' class='button'>取消</button>
+			</p>
+		</div>
+	</form>
+</html>
