@@ -123,10 +123,10 @@ var loginHandler = window.loginHandler = (function(win, global) {
 
 	function doRegist() {
 		$.ajax({
-			url: "regist_funcs.php?action=regist&t=" + Math.random(),
+			url: "/regist-user",
 			async: true,
 			cache: false,
-			type: "post",
+			method: "post",
 			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
 			dataType: "json",
 			data: {

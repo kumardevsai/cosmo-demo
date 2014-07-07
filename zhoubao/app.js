@@ -9,8 +9,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var partials = require('express-partials');
 var app = express();
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/zhoubao');
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -56,5 +55,15 @@ app.use(function(err, req, res, next) {
     });
 });
 
+
+// 以下是调试使用 node --debug app.js
+// #!/usr/bin/env node
+var debug = require('debug')('zhoubao');
+
+app.set('port', process.env.PORT || 3000);
+
+var server = app.listen(app.get('port'), function() {
+    debug('Express server listening on port ' + server.address().port);
+});
 
 module.exports = app;
