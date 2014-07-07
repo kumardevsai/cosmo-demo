@@ -1,0 +1,82 @@
+<!doctype>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>
+			wo niu
+		</title>
+		<style type="text/css">
+			html, body{
+				height: 100%;
+				width: 100%;
+				margin: 0;
+				padding: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="woniu" width="600px" height="600px"></canvas>
+	</body>
+	<script type="text/javascript">
+		(function(){
+			/**
+				它的极坐标方程为：r = aθ
+				这种螺线的每条臂的距离永远相等于 2πa。
+				笛卡尔坐标
+				方程式为：
+				r=10*(1+t)
+				x=r*cos(t * 360)
+				y=r*sin(t * 360)
+				z=0
+			**/
+			function getPoint(t){
+				var r = 1 * (1 + t) ; 
+				var x = r * Math.cos(t * 7);
+				var y = r * Math.sin(t * 7);
+				return {
+					x : x , 
+					y : y
+				};
+			};
+			var pice = 100;
+			function getPointHelper(t){
+				var c = 0 ; 
+				return function(){
+					c ++ ;
+					if(c === pice)
+					{
+						c = 1 ; 
+					}
+					return getPoint(c * t);
+				};
+			};
+
+			var  p = getPointHelper(1);
+
+			var woniu = document.getElementById("woniu");
+			var ctx = woniu.getContext("2d");
+
+			ctx.moveTo(300 , 300);
+
+			var count = 0;
+			var inter = setInterval(function(){
+				if(count >= pice - 1)
+				{
+					ctx.clearRect(0 , 0 , 600 , 600);
+					ctx.moveTo(300 , 300);
+					count = 0;
+				}
+				else
+				{
+					if(count === 0)
+						ctx.beginPath();
+					var p1 = p();
+					ctx.lineTo( 300 + p1.x , 300 + p1.y);
+					ctx.stroke();
+					count ++;
+				}
+			} , 50);
+
+		}());
+	</script>
+</html>
