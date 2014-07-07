@@ -1,0 +1,13 @@
+.form-fieldset{
+	border:1px solid #e7e7e7;padding:40px;margin-top:20px;border-radius:5px;
+}
+.help-block{
+	font-size: 10px;
+}
+.helper-error{
+	color:red;
+}
+
+.helper-success{
+	color:green;
+}

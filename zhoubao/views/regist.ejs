@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+  </head>
+  <body>
+  	<% include header %>
+  	<script type="text/javascript" src="/javascripts/regist.js"></script>
+	   <script type="text/javascript" src="javascripts/classlist.js"></script>
+	   <link rel="stylesheet" type="text/css" href="/stylesheets/common.css">
+  	<div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                </div>
+                <div class="col-md-6">
+                    <form role="form" class="form-fieldset">
+                      <div class="form-group">
+                        <label for="inputEmail">邮件地址</label>
+                        <input type="email" class="form-control" id="inputEmail">
+                      </div>
+                      <span class="help-block" id="inputEmailHelper">例:example@gmail.com</span>
+                      <div class="form-group">
+                        <label for="inputUsername">用户名</label>
+                        <input type="text" class="form-control" id="inputUsername">
+                      </div>
+                      <span class="help-block" id="inputUsernameHelper">数字字母下划线(第一个字符必须是英文，长度6-10)</span>
+                      <div class="form-group">
+                        <label for="inputPassword">密码</label>
+                        <input type="password" class="form-control" id="inputPassword">
+                      </div>
+                      <span class="help-block" id="inputPasswordHelper">数字字母下划线(第一个字符必须是英文，长度6-10)</span>
+                      <button class="btn btn-primary" id="okBtn">注册</button>
+                    </form>
+                </div>
+                <div class="col-md-3">
+                </div>
+            </div>
+        </div>
+  </body>
+</html>
