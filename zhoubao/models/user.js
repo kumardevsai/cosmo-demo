@@ -3,11 +3,15 @@ var mongoDB = mongo.db;
 var mongoose = mongo.mongoose;
 var Schema = mongoose.Schema;
 
+/**
+  用户信息文档结构
+**/
 var UserSchema = new Schema({
   username: {
     type: String
   },
   nickname: String,
+  password: String,
   registDate: {
     type: Date,
     default: Date.now

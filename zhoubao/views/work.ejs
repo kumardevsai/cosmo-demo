@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+		<title><%=title%></title>
+		<link rel="stylesheet" type="text/css" href="/plugins/sidepushbar/css/default.css" />
+		<link rel="stylesheet" type="text/css" href="/plugins/sidepushbar/css/component.css" />
+		<script src="/javascripts/modernizr.custom.js"></script>
+	</head>
+	<% include header %>
+	<style type="text/css">
+		.list-group{
+			margin-bottom: 0;
+		}
+		.list-group-item:first-child {
+			border-top-left-radius: 0px;
+			border-top-right-radius: 0px;
+		}
+		.list-group-item:last-child {
+			border-bottom-left-radius: 0px;
+			border-bottom-right-radius: 0px;
+			border-bottom: none;
+		}
+		.cbp-spmenu-left{
+			top:56px;
+		}
+		.cbp-spmenu{
+			background:#FFF;
+		}
+		.cbp-spmenu-vertical a{
+			border-bottom: 1px solid #ddd;
+		}
+
+		.panel-heading {
+			border-top-left-radius: 0px;
+			border-top-right-radius: 0px;
+			padding:15px 15px;
+		}
+		.panel{
+			border-radius: 0px;
+			margin-bottom:10px;
+		}
+		.panel-body {
+			padding: 0;
+		}
+		.list-group-item{
+			border-right:none;
+		}
+
+		.panel-in{
+			width: 100%;
+			height: 100%;
+		}
+		.panel-in-arrow{
+			border-bottom: 1px solid #ddd;
+			border-right: 1px solid #ddd;
+			border-top: 1px solid #ddd;
+			height: 100%;
+		}
+		.cbp-spmenu-left {
+			left: -220px;
+		}
+		.cbp-spmenu-push-toleft {
+			left: -220px;
+		}
+		@media screen and (max-height: 26.375em){
+
+			.cbp-spmenu-left,
+			.cbp-spmenu-push-toleft {
+				left: -170px;
+			}
+
+		}
+	</style>
+	<body class="cbp-spmenu-push">
+		<nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-left" id="cbp-spmenu-s1">
+			<table class="panel-in">
+				<tr>
+					<td valign=top>
+						<div class="panel panel-primary">
+						  <div class="panel-heading">
+						    <h3 class="panel-title">常用</h3>
+						  </div>
+						  <div class="panel-body">
+						    <div class="list-group">
+							  <a href="#" class="list-group-item">模板<li class="glyphicon glyphicon-chevron-down" style="float: right;"></li></a>
+							</div>
+						  </div>
+						</div>
+						<div class="panel panel-success">
+						  <div class="panel-heading">
+						    <h3 class="panel-title">周报</h3>
+						  </div>
+						  <div class="panel-body">
+						    <div class="list-group">
+							  <a href="#" class="list-group-item">文件夹<li class="glyphicon glyphicon-chevron-down" style="float: right;"></li></a>
+							  <a href="#" class="list-group-item">标签<li class="glyphicon glyphicon-chevron-down" style="float: right;"></li></a>
+							</div>
+						  </div>
+						</div>
+					</td>
+					<td style="width:20px;" valign=top>
+						<div class="panel-in-arrow" id="collapsePanel">
+						</div>
+					</td>
+				</tr>
+			</table>
+		</nav>
+		<div class="container">
+		</div>
+		<script src="/javascripts/classie.js"></script>
+		<script src="/javascripts/work.js"></script>
+	</body>
+</html>

@@ -3,6 +3,7 @@ var path = require('path');
 var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
+var sessionParser = require('cookie-session');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
@@ -19,6 +20,15 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
+// session
+app.use(sessionParser({
+    keys: ["zhoubao"]
+}));
+app.use(function(req, res, next) {
+    res.locals.session = req.session;
+    next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
