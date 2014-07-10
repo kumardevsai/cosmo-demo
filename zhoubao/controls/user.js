@@ -1,10 +1,12 @@
 var UserDoc = require('../models/user');
 var UserModel = UserDoc.UserModel;
-var UserSchema = UserModel.schema;
 
 var UserController = (function() {
-	function add(user) {
-		UserSchema.add(user);
+	function add(user, callback) {
+		new UserModel(user).save(function(err, user_, numberAffected) {
+			if (callback)
+				callback(err, user_, numberAffected);
+		});
 	};
 
 	function findOneUserByUsername(username, callback) {

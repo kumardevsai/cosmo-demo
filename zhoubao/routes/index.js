@@ -45,6 +45,20 @@ router.post('/regist-user', function(req, res) {
 					username: username,
 					email: email,
 					password: password
+				}, function(err, user, numberAffected) {
+					if (err) {
+						res.send({
+							status: "fail",
+							message: err.message ? err.message : "内部错误!"
+						});
+					} else {
+						if (user && numberAffected === 1) {
+							res.send({
+								status: "success",
+								message: "注册成功!"
+							});
+						}
+					}
 				});
 			}
 		}
