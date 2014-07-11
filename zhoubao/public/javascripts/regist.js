@@ -48,6 +48,8 @@
 
 		// 提交按钮点击事件
 		utils.AttachEvent(g("okBtn"), "click", regist, false);
+
+		form.email.focus();
 	};
 
 	// 注册验证正则表达式

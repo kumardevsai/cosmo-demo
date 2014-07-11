@@ -44,6 +44,8 @@
 
 		// 提交按钮点击事件
 		utils.AttachEvent(g("okBtn"), "click", login, false);
+
+		form.username.focus();
 	};
 
 	// 登录验证正则表达式
