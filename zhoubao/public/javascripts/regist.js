@@ -141,20 +141,19 @@
 
 	// 检查提交内容，是否可以与服务进行交互
 	function check() {
-		var flag = true;
 		for (var i in form) {
-			if (checkInput(i) === false)
-				flag === false;
+			if (checkInput(i) === false) {
+				return false;
+			}
 		}
-		if (flag === true) {
-			regist();
-		}
+		return true;
 	};
 
 	// 按钮注册
 	function regist(e) {
 		utils.preventDefault(e);
-		doRegist();
+		if (check())
+			doRegist();
 	};
 
 	// 注册任务
