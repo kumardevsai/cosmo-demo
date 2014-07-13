@@ -1,5 +1,3 @@
-var crypto = require('crypto');
-
 var UserDoc = require('../models/user');
 var UserModel = UserDoc.UserModel;
 

@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
+
 var IndexController = require('../controls/index');
 var UserController = require('../controls/user');
+var HolderController = require('../controls/holder');
 
 /* GET home page. */
 router.get('/', IndexController.index);
@@ -19,5 +21,9 @@ router.get('/logout', IndexController.logout);
 router.post('/regist-user', UserController.registUser);
 
 router.post("/login-user", UserController.userLogin);
+
+router.post("/holder-add", HolderController.add);
+
+router.get("/holder-list", HolderController.list);
 
 module.exports = router;
