@@ -83,28 +83,31 @@ var quickQuery = (function() {
         var queries = quickQueries[tableid];
         var objbuild = document.getElementById(tableid);
         return function() {
-            var flag = false;
-            var obj = {};
+            var obj = null;
             for (var i in queries) {
                 // 排除空条件查询
                 if (queries[i].el.value !== "") {
+                    if (obj === null)
+                        obj = {};
                     obj[i] = {
                         type: queries[i].type,
                         val: queries[i].el.value
                     };
-                    flag = true;
                 }
             }
-            if (flag === true) {
-                getDataFromServer(objbuild, obj);
-            }
+            getDataFromServer(objbuild, obj);
         };
     };
 
     // 获取xml创建表格
     function getDataFromServer(objbuild, obj) {
-        var xml = queryCache.getCache(obj);
-        attr(objbuild, "where", whereCondition(obj));
+        var xml = null;
+        if (obj) {
+            xml = queryCache.getCache(obj);
+            attr(objbuild, "where", whereCondition(obj));
+        } else {
+            objbuild.removeAttribute("where");
+        }
         TableBuild(objbuild.parentNode, objbuild, null, xml, obj);
     };
 
@@ -112,10 +115,13 @@ var quickQuery = (function() {
     function whereCondition(obj) {
         var where = "";
         for (var i in obj) {
-            if (obj[i].type === "input")
-                where += " " + i + " like '%" + obj[i].val + "%' and ";
-            else
-                where += " " + i + "='" + obj[i].val + "' and ";
+            where += " " + i + " like '%" + obj[i].val + "%' and ";
+            /**
+                if (obj[i].type === "input")
+                    where += " " + i + " like '%" + obj[i].val + "%' and ";
+                else
+                    where += " " + i + "='" + obj[i].val + "' and ";
+            **/
         }
         where = where.replace(/and(\s*)?$/, "");
         return where;
@@ -182,20 +188,21 @@ var queryCache = (function() {
 
     // 不支持复杂对象
     function objEqualIn(o1, o2) {
-        var flag = true;
         for (var i in o1) {
             if (o2.hasOwnProperty(i)) {
-                if (typeof o1[i] === "object")
+                if (typeof o1[i] === "object") {
                     flag = o1[i].type === o2[i].type && o1[i].val === o2[i].val;
-                else {
+                    if (flag === false)
+                        return flag;
+                } else {
                     if (o1[i] !== o2[i]) {
-                        flag = false;
+                        return false;
                     }
                 }
             } else
-                flag = false;
+                return false;
         }
-        return flag;
+        return true;
     };
 
     function objEqual(o1, o2) {
