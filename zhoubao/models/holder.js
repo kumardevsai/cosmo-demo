@@ -15,7 +15,7 @@ var HolderSchema = new Schema({
     default: Date.now
   },
   userId: {
-    type: mongoose.Types.ObjectId
+    type: Schema.ObjectId
   }
 });
 

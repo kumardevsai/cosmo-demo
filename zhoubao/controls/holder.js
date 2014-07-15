@@ -5,7 +5,7 @@ var HolderController = (function() {
 		var name = req.body.name;
 		console.log(req.session.user);
 		var userid = req.session.user.id;
-		HolderService.findOneByName(name, userid, function()(err, one) {
+		HolderService.findOneByName(name, userid, function(err, one) {
 			if (err) {
 				res.send({
 					status: "fail",

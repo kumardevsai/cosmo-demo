@@ -1,13 +1,14 @@
 (function() {
-	var templateBtn;
+	var newHolderBtn;
 	window.onload = Inits;
 
 	function Inits() {
-		templateBtn = document.getElementById("templateBtn");
-		AttachEvent(templateBtn, "click", collapseTemplateTree, false);
+		newHolderBtn = document.getElementById("newHolderBtn");
+		AttachEvent(newHolderBtn , "click" , newHolder , false);
 	};
 
-	function collapseTemplateTree() {
-
+	function newHolder(){
+		
 	};
+
 }());
