@@ -11,33 +11,35 @@ var HolderService = (function() {
 
 	// 添加报夹
 	function add(holder, callback) {
-		UserModel.save(holder, function(err, holder_, numberAffected) {
+		new HolderModel(holder).save(function(err, holder_, numberAffected) {
 			if (callback)
 				callback(err, holder_, numberAffected);
 		});
 	};
 
-	function findOneByName(name, userid, callback) {
-		UserModel.findOne({
+	function findOneByName(name, userId, callback) {
+		HolderModel.findOne({
 			name: name,
-			userid: userid
+			userId: userId
 		}, function(err, holder) {
 			if (callback)
 				callback(err, holder);
 		});
 	};
 
-	function list(userid, callback) {
-		UserModel.find({
-			userid: userid
-		}, function(err, holders) {
+	function list(userId, callback) {
+		HolderModel.find({
+			userId: userId
+		}, "name", function(err, holders) {
 			if (callback)
 				callback(err, holders);
 		});
 	};
 
 	return {
-		add: add
+		add: add,
+		findOneByName: findOneByName,
+		list: list
 	};
 }());
 

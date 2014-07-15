@@ -3,9 +3,8 @@ var HolderController = (function() {
 
 	function add(req, res) {
 		var name = req.body.name;
-		console.log(req.session.user);
-		var userid = req.session.user.id;
-		HolderService.findOneByName(name, userid, function(err, one) {
+		var userId = req.session.user._id;
+		HolderService.findOneByName(name, userId, function(err, one) {
 			if (err) {
 				res.send({
 					status: "fail",
@@ -20,7 +19,7 @@ var HolderController = (function() {
 				} else {
 					HolderService.add({
 						name: name,
-						userid: userid
+						userId: userId
 					}, function(err, holder, numberAffected) {
 						if (err) {
 							res.send({
@@ -31,7 +30,11 @@ var HolderController = (function() {
 							if (holder && numberAffected) {
 								res.send({
 									status: "success",
-									message: "添加成功!"
+									message: "添加成功!",
+									data: {
+										_id: holder._id,
+										name: holder.name
+									}
 								});
 							}
 						}
@@ -42,8 +45,8 @@ var HolderController = (function() {
 	};
 
 	function list(req, res) {
-		var userid = req.session.user.id;
-		HolderService.list(userid, function(err, holders) {
+		var userId = req.session.user._id;
+		HolderService.list(userId, function(err, holders) {
 			if (err) {
 				res.send({
 					status: "fail",
