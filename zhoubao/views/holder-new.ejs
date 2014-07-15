@@ -87,8 +87,8 @@
                   cancelBtnHolderNew.click();
                   if(holderGroups)
                     holderGroups.add({
-                      text: data.name , 
-                      id : data._id
+                      text: data.data.name , 
+                      id : data.data._id
                     });
                 } else if (data.status === "fail") {
                   changeHeplerClass(holderNewHelper , data.message,"fail");
