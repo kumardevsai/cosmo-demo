@@ -8,7 +8,11 @@
 	</ul>
   </div>
 </div>
-
+<style type="text/css">
+	.badge a{
+		color: #FFF;
+	}
+</style>
 <script type="text/javascript">
 	var holderGroups = (function(){
 		var holderGroup = document.getElementById('holderGroup');
@@ -20,7 +24,7 @@
 
 		function createItem(obj)
 		{
-			var html_ = "<li class='list-group-item'><span class='badge'>0</span>"+obj.text+"</li>";
+			var html_ = "<li class='list-group-item'><span class='badge'><a href='javascript:panel.createNewPanel({type:\"holder\",id:\""+obj.id+"\"})'>0</a></span>"+obj.text+"</li>";
 			var temp = document.createElement("div");
 			temp.innerHTML = html_;
 			return temp.children[0];
