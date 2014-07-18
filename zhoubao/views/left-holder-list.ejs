@@ -24,7 +24,7 @@
 
 		function createItem(obj)
 		{
-			var html_ = "<li class='list-group-item'><span class='badge'><a href='javascript:panel.createNewPanel({type:\"holder\",id:\""+obj.id+"\"})'>0</a></span>"+obj.text+"</li>";
+			var html_ = "<li class='list-group-item'><span class='badge'><a href='javascript:tabPanelGroup.createNewPanel({type:\"holder\",id:\""+obj.id+"\",text:\""+obj.text+"\"})'>0</a></span>"+obj.text+"</li>";
 			var temp = document.createElement("div");
 			temp.innerHTML = html_;
 			return temp.children[0];
@@ -53,7 +53,8 @@
 	                	{
 	                		holderGroups.add({
 	                			text : result[i].name,
-	                			id : result[i]._id
+	                			id : result[i]._id,
+	                			type : "holder"
 	                		});
 	                	}
 	                } else if (data.status === "fail") {

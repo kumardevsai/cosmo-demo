@@ -2,31 +2,35 @@
 <html lang="en" class="no-js">
     
     <head>
+        <title>
+            <%=title%>
+        </title>
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="/stylesheets/common.css">
-        <title>
-            <%=title%>
-        </title>
+        <script type="text/javascript" src="/javascripts/panel.js"></script>
     </head>
     <% include header %>
         
-        <body>
-            <div class="container-fluid">
-            	<div class="row">
-            		<div class="col-xs-3">
-            			<% include left-nav-desk %>
-            			<% include left-nav-normal %>
-            		</div>
-            		<div class="col-xs-9">
-            			<ul class="nav nav-tabs" role="tablist" id="tabParent">
-						  <li class="active"><a href="#">面板</a></li>
-						</ul>
-            		</div>
-            	</div>
-            </div>
-            <% include holder-new %>
-        </body>
-
+    <body>
+        <div class="container-fluid">
+        	<div class="row">
+        		<div class="col-xs-3">
+        			<% include left-nav-desk %>
+        			<% include left-nav-normal %>
+        		</div>
+        		<div class="col-xs-9">
+        			<div class="row">
+                        <ul class="nav nav-tabs" role="tablist" id="tabParent">
+                        </ul>   
+                    </div>
+                    <div class="row" id="panelParent">
+                    </div>
+        		</div>
+        	</div>
+        </div>
+        <% include holder-new %>
+    </body>
+    <script type="text/javascript" src="/javascripts/work.js"></script>
 </html>
