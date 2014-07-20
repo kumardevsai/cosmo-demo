@@ -1,0 +1,119 @@
+<!doctype html>
+<div class="modal fade" id="myModal-dailyCata-new" tabindex="-1" role="dialog" aria-labelledby="myModalLabel-dailyCata-new" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel-dailyCata-new">新建日志目录</h4>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info" role="alert">
+          请不要使用特殊字符！
+        </div>
+        <div class="input-group">
+          <span class="input-group-addon">
+            <li class="glyphicon glyphicon-folder-close"></li>
+          </span>
+          <input type="text" class="form-control" id="dailyCataname" placeHolder="请输入日志目录名称">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="cancelBtnDailyCataNew">取消</button>
+        <button type="button" class="btn btn-primary" id="submitNewDailyCataBtn">保存</button>
+        <span class="help-block" id="dailyCataNewHelper"></span>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+    (function(){
+      var submitNewDailyCataBtn,dailyCataname,dailyCataNewHelper,cancelBtnDailyCataNew;
+
+      submitNewDailyCataBtn = document.getElementById('submitNewDailyCataBtn');
+      dailyCataname = document.getElementById('dailyCataname');
+      dailyCataNewHelper = document.getElementById('dailyCataNewHelper');
+      cancelBtnDailyCataNew = document.getElementById('cancelBtnDailyCataNew');
+
+      var reg = {
+        name : new RegExp("[\\￥,\\ ,\\。,\\`,\\~,\\!,\\@,\\#,\\$,\\%,\\^,\\+,\\*,\\&,\\\\,\\/,\\?,\\|,\\:,\\.,\\<,\\>,\\{,\\},\\(,\\),\\'',\\;,\\=,\"]")
+      };
+
+      function checkdDailyCataName(){
+        var name = dailyCataname.value;
+        if(reg.name.test(name))
+        {
+          dailyCataname.parentNode.classList.remove("has-success");
+          dailyCataname.parentNode.classList.add("has-error");
+          return false;
+        }
+        else
+        {
+          dailyCataname.parentNode.classList.remove("has-error");
+          dailyCataname.parentNode.classList.add("has-success");
+          return true;
+        }
+      };
+
+      function inits(){
+        utils.AttachEvent(submitNewDailyCataBtn , "click" , function(){
+          if(checkdDailyCataName())
+          {
+            doAdd();
+          }
+        } , false);
+      };
+
+      if(window.attachEvent)
+        window.attachEvent('onload' , inits);
+      else if(window.addEventListener)
+        window.addEventListener('load' , inits , false);
+
+      function doAdd(){
+        $.ajax({
+          url: "/dailyCata-add",
+          async: true,
+          cache: false,
+          method: "post",
+          contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+          dataType: "json",
+          data: {
+            "name": dailyCataname.value
+          },
+          success: function(data, status) {
+            if (status === "success") {
+              if (data) {
+                if (data.status === "success") {
+                  changeHeplerClass(dailyCataNewHelper , data.message,"success");
+                  cancelBtnDailyCataNew.click();
+                  if(dailyCataGroups)
+                    dailyCataGroups.add({
+                      text: data.data.name , 
+                      id : data.data._id
+                    });
+                } else if (data.status === "fail") {
+                  changeHeplerClass(dailyCataNewHelper , data.message,"fail");
+                }
+              }
+            } else {
+              changeHeplerClass(dailyCataNewHelper , "抱歉，新建日志目录失败!","fail");
+            }
+          },
+          error: function(data, status) {},
+          complete: function(data, status) {}
+        });
+      };
+
+      // 改变提示的内容及样式
+      function changeHeplerClass(eleHelper, text, status) {
+        eleHelper.innerHTML = text;
+        if (status === "fail") {
+          eleHelper.classList.remove('helper-success');
+          eleHelper.classList.add('helper-error');
+        } else if (status === "success") {
+          eleHelper.classList.remove('helper-error');
+          eleHelper.classList.add('helper-success');
+        }
+      };
+
+    }());
+</script>

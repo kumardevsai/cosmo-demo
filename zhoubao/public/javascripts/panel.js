@@ -11,7 +11,16 @@ var tabPanelGroup = (function(win) {
 	var tabs = {
 		collection: {},
 		activedId: null,
+		indexes: [],
+		addOne: function(tab) {
+			if (this.existOne(tab.id))
+				return;
+			this.collection[tab.id] = tab;
+			this.indexes.push(tab.id);
+		},
 		activeOne: function(tab) {
+			if (typeof tab === "string")
+				tab = this.collection[tab];
 			if (this.activedId)
 				this.disActiveOne(this.collection[this.activedId]);
 
@@ -24,17 +33,35 @@ var tabPanelGroup = (function(win) {
 		},
 		destroyOne: function(tab) {
 			tab.destroy();
-			if (this.activedId === tab.id) {
+			var tabid = tab.id;
+			if (this.activedId === tabid) {
 				this.activedId = null;
-				this.collection[tab.id] = null;
 			}
+			this.collection[tabid] = null;
+			delete this.collection[tabid];
+			for (var i = 0; i < this.indexes.length; i++) {
+				if (this.indexes[i] === tabid) {
+					this.indexes.splice(i, 1);
+					break;
+				}
+			}
+			if (this.indexes.length > 0) {
+				this.activeOne(this.collection[this.indexes[0]]);
+			}
+		},
+		existOne: function(tabid) {
+			if (this.collection[tabid])
+				return true;
+			else
+				return false;
 		}
 	};
 
 	// 标签类型
 	var Types = {
 		// 报夹
-		holder: "holder"
+		holder: "holder",
+		dailyCata : "dailyCata"
 	};
 
 	function Tab(obj) {
@@ -128,8 +155,22 @@ var tabPanelGroup = (function(win) {
 		@param obj {id : String,text : String,type : String}
 	**/
 	function createNewPanel(obj, callback) {
+		var tabid = "tab_" + obj.type + "_" + obj.id;
+		if (tabs.existOne(tabid)) {
+			tabs.activeOne(tabid);
+			return;
+		}
+		if (tabs.indexes.length >= 6) {
+			$('#tipMaxTabsTool').dialogModal({
+				onOkBut: function() {},
+				onCancelBut: function() {},
+				onLoad: function() {},
+				onClose: function() {},
+			});
+			return;
+		}
 		var tab = new Tab({
-			id: "tab_" + obj.id,
+			id: tabid,
 			type: obj.type,
 			text: obj.text,
 			closable: obj.closable
@@ -143,10 +184,11 @@ var tabPanelGroup = (function(win) {
 			}
 		}, false);
 		if (tab.closable === true)
-			tab.on("close", function() {
+			tab.on("close", function(e) {
+				utils.stopPropagation(e);
 				tabs.destroyOne(tab);
 			}, false);
-		tabs.collection[tab.id] = tab;
+		tabs.addOne(tab);
 
 		var panel = new Panel();
 		var panelElement = createPanel();
@@ -156,7 +198,7 @@ var tabPanelGroup = (function(win) {
 		tab.panel = panel;
 		panel.tab = tab;
 		if (callback)
-			callback(panel.element);
+			callback(panel.element.children[0]);
 
 		tabs.activeOne(tab);
 	};
@@ -165,7 +207,19 @@ var tabPanelGroup = (function(win) {
 	function createTab(obj) {
 		if (tabParent) {
 			var temp = doc.createElement("div");
-			var tpl = templates.tab.replace(/\{text\}/, obj.text).replace(/\{title\}/, obj.title ? obj.title : obj.text);
+			var text = "";
+			switch(obj.type)
+			{
+				case Types.holder:
+					text += "周报夹-";
+					break;
+				case Types.dailyCata:
+					text += "日志目录-";
+					break;
+				default:
+					break;
+			}
+			var tpl = templates.tab.replace(/\{text\}/, text + obj.text).replace(/\{title\}/, obj.title ? obj.title : obj.text);
 			if (obj.closable === false)
 				tpl = tpl.replace(/\{\?.*\?\}/, "");
 			else

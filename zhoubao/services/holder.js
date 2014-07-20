@@ -36,10 +36,20 @@ var HolderService = (function() {
 		});
 	};
 
+	function findOneById(id, callback) {
+		HolderModel.findOne({
+			_id: id
+		}, "name", function(err, holder) {
+			if (callback)
+				callback(err, holder);
+		});
+	};
+
 	return {
 		add: add,
 		findOneByName: findOneByName,
-		list: list
+		list: list,
+		findOneById: findOneById
 	};
 }());
 

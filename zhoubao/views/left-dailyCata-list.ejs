@@ -1,9 +1,9 @@
 <!doctype>
-<div id="collapseHolder" class="panel-collapse collapse">
+<div id="collapseDailyCata" class="panel-collapse collapse">
   <div class="panel-body">
-  	<ul class="list-group" id="holderGroup">
+  	<ul class="list-group" id="dailyCataGroup">
   		<li class="list-group-item">
-		    	新建报夹<span class="glyphicon glyphicon-plus" style="float: right;" id="newHolderBtn" data-toggle="modal" data-target="#myModal-holder-new"></span>
+		    	新建日志目录<span class="glyphicon glyphicon-plus" style="float: right;" id="newDailyCataBtn" data-toggle="modal" data-target="#myModal-dailyCata-new"></span>
 	  	</li>
 	</ul>
   </div>
@@ -14,12 +14,12 @@
 	}
 </style>
 <script type="text/javascript">
-	var holderGroups = (function(){
-		var holderGroup = document.getElementById('holderGroup');
+	var dailyCataGroups = (function(){
+		var dailyCataGroup = document.getElementById('dailyCataGroup');
 
 		function add(obj){
 			var item = createItem(obj);
-			holderGroup.appendChild(item);
+			dailyCataGroup.appendChild(item);
 		};
 
 		function completeTabPanel(panel , obj){
@@ -27,7 +27,7 @@
 			div.className = "embed-responsive embed-responsive-16by9";
 			var iframe = document.createElement("iframe");
 			iframe.className = "embed-responsive-item";
-			iframe.src = "/holder-detail?id=" + obj.id + "&t=" + Math.random();
+			iframe.src = "/dailyCata-detail?id=" + obj.id + "&t=" + Math.random();
 			div.appendChild(iframe);
 			panel.appendChild(div);
 		};
@@ -66,7 +66,7 @@
 	(function(){
 		function doList(){
 			$.ajax({
-	          url: "/holder-list",
+	          url: "/dailyCata-list",
 	          async: true,
 	          cache: false,
 	          method: "get",
@@ -79,10 +79,10 @@
 	                	var result = data.data;
 	                	for(var i in result)
 	                	{
-	                		holderGroups.add({
+	                		dailyCataGroups.add({
 	                			text : result[i].name,
 	                			id : result[i]._id,
-	                			type : "holder"
+	                			type : "dailyCata"
 	                		});
 	                	}
 	                } else if (data.status === "fail") {

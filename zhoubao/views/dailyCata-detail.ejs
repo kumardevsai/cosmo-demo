@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+    
+    <head>
+        <title>
+            <%=title%>
+        </title>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <%include common-header%>
+    </head>
+        
+    <body>
+        <div class="panel panel-default">
+          <div class="panel-heading" style="padding:0;">
+            <nav class="navbar navbar-default" role="navigation" style="margin-bottom:0px;border:none;border-radius:5px 5px 0px 0px;">
+              <div class="container-fluid">
+                <button type="button" class="btn btn-default navbar-btn" id="dailyAddBtn">添加日志</button>
+              </div><!-- /.container-fluid -->
+            </nav>
+            <input id="dailyCataId" value="<%=dailyCata._id%>" type="hidden">
+          </div>
+          <div class="panel-body">
+            <div class="embed-responsive embed-responsive-16by9">
+              <iframe class="embed-responsive-item" src="/daily-list" id="dailyFrame"></iframe>
+            </div>
+          </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+        (function(){
+            var dailyAddBtn = document.getElementById("dailyAddBtn");
+            var dailyFrame = document.getElementById("dailyFrame");
+            var dailyCataId = document.getElementById("dailyCataId").value;
+            utils.AttachEvent(dailyAddBtn , "click" , dailyAdd , false);
+
+            function dailyAdd(){
+                dailyFrame.src = '/daily-add?dailyCataId=' + dailyCataId + "&t=" + Math.random();
+            };
+
+        }());
+    </script>
+</html>

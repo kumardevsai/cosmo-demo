@@ -1,10 +1,10 @@
-var HolderService = require('../services/holder');
-var HolderController = (function() {
+var DailyCataService = require('../services/dailyCata');
+var DailyCataController = (function() {
 
 	function add(req, res) {
 		var name = req.body.name;
 		var userId = req.session.user._id;
-		HolderService.findOneByName(name, userId, function(err, one) {
+		DailyCataService.findOneByName(name, userId, function(err, one) {
 			if (err) {
 				res.send({
 					status: "fail",
@@ -14,26 +14,26 @@ var HolderController = (function() {
 				if (one) {
 					res.send({
 						status: "fail",
-						message: "报夹已存在!"
+						message: "日志目录已存在!"
 					});
 				} else {
-					HolderService.add({
+					DailyCataService.add({
 						name: name,
 						userId: userId
-					}, function(err, holder, numberAffected) {
+					}, function(err, dailyCata, numberAffected) {
 						if (err) {
 							res.send({
 								status: "fail",
 								message: "添加失败!"
 							});
 						} else {
-							if (holder && numberAffected) {
+							if (dailyCata && numberAffected) {
 								res.send({
 									status: "success",
 									message: "添加成功!",
 									data: {
-										_id: holder._id,
-										name: holder.name
+										_id: dailyCata._id,
+										name: dailyCata.name
 									}
 								});
 							}
@@ -46,7 +46,7 @@ var HolderController = (function() {
 
 	function list(req, res) {
 		var userId = req.session.user._id;
-		HolderService.list(userId, function(err, holders) {
+		DailyCataService.list(userId, function(err, dailyCatas) {
 			if (err) {
 				res.send({
 					status: "fail",
@@ -56,7 +56,7 @@ var HolderController = (function() {
 				res.send({
 					status: "success",
 					message: "查询成功!",
-					data: holders
+					data: dailyCatas
 				});
 			}
 		});
@@ -64,16 +64,16 @@ var HolderController = (function() {
 
 	function detail(req, res) {
 		var id = req.query.id;
-		HolderService.findOneById(id, function(err, holder) {
+		DailyCataService.findOneById(id, function(err, dailyCata) {
 			if (err) {
 				res.end({
 					status: "fail",
 					message: "请求出错"
 				});
 			} else {
-				res.render("holder-detail", {
-					title: "打开报夹",
-					holder: holder
+				res.render("dailyCata-detail", {
+					title: "打开日志目录",
+					dailyCata: dailyCata
 				});
 			}
 		});
@@ -87,4 +87,4 @@ var HolderController = (function() {
 
 }());
 
-module.exports = HolderController;
+module.exports = DailyCataController;

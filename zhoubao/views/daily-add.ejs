@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" class="no-js">
+    
+    <head>
+        <title>
+            <%=title%>
+        </title>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <%include common-header%>
+        <link rel="stylesheet" type="text/css" href="/plugins/popModal/popModal.css">
+        <script type="text/javascript" src="/plugins/popModal/popModal.js"></script>
+    </head>
+    <body>
+        <form role="form">
+          <div class="form-group">
+            <label for="name">标题</label>
+            <input type="text" class="form-control" id="name">
+          </div>
+          <div class="form-group">
+            <label for="content">内容</label>
+            <textarea class="form-control" rows="6" id="content"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="file">上传附件</label>
+            <input type="file" id="file">
+            <p class="help-block">您上传的附件将会作为日志的一部分保存起来!</p>
+          </div>
+          <button type="submit" class="btn btn-primary" id="dailySubmitBtn">提交</button>
+        </form>
+        <%include dailyNameNullTip%>
+    </body>
+    <script type="text/javascript">
+      (function(){
+        var dailySubmitBtn = document.getElementById("dailySubmitBtn");
+
+        utils.AttachEvent(dailySubmitBtn , "click" , dailySubmit , false);
+
+        var nameInput = document.getElementById("name");
+
+        var contentInput = document.getElementById("content");
+
+        function dailySubmit(e){
+          utils.preventDefault(e);
+          if(checkNull())
+          {
+
+          }
+        };
+
+        function checkNull(){
+          if(nameInput.value.replace(/^\s*/,"").replace(/\s*$/,"") === "")
+          {
+            $('#dailyNameNullTip').dialogModal({
+                onOkBut: function() {},
+                onCancelBut: function() {},
+                onLoad: function() {},
+                onClose: function() {},
+            });
+            return false;
+          }
+          else
+            return true;
+        };
+
+      }());
+    </script>
+</html>
